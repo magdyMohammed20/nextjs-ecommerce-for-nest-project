@@ -1,0 +1,23 @@
+{
+  "title": "Users",
+  "subtitle": "Manage user accounts and their roles.",
+  "addUser": "Add User",
+  "searchPlaceholder": "Search users by name or email...",
+  "table": {
+    "user": "User",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "approve": "Approve account",
+  "reject": "Reject account",
+  "youMarker": "(you)",
+  "empty": "No users found.",
+  "userNotFound": "User not found.",
+  "deleteDialog": {
+    "title": "Delete user?",
+    "description": "This will permanently delete the account for \"{{name}}\". This action cannot be undone."
+  },
+  "rootAdminDeleteLocked": "The primary admin account cannot be deleted."
+}

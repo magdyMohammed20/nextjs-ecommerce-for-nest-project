@@ -1,0 +1,13 @@
+{
+  "title": "Create an account",
+  "subtitle": "Join the platform. Choose your role to explore the difference.",
+  "name": "Name",
+  "namePlaceholder": "John Doe",
+  "email": "Email",
+  "emailPlaceholder": "you@example.com",
+  "password": "Password",
+  "createAccount": "Create Account",
+  "approvalNote": "New accounts require administrator approval before you can sign in.",
+  "alreadyHaveAccount": "Already have an account?",
+  "signIn": "Sign In"
+}

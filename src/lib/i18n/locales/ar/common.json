@@ -1,0 +1,94 @@
+{
+  "appName": "ShopWave",
+  "tagline": "تسوّق بذكاء واركب الموجة",
+  "theme": {
+    "toggle": "تبديل الوضع الليلي"
+  },
+  "language": {
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "products": "المنتجات",
+    "users": "المستخدمون",
+    "profile": "ملفي الشخصي",
+    "openMenu": "فتح قائمة التنقل"
+  },
+  "roles": {
+    "admin": "مشرف",
+    "user": "مستخدم"
+  },
+  "statuses": {
+    "pending": "قيد الانتظار",
+    "active": "نشط",
+    "rejected": "مرفوض"
+  },
+  "actions": {
+    "save": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "deleting": "جارٍ الحذف...",
+    "logout": "تسجيل الخروج",
+    "signIn": "تسجيل الدخول"
+  },
+  "search": {
+    "placeholder": "بحث...",
+    "clear": "مسح البحث"
+  },
+  "pagination": {
+    "showing": "عرض",
+    "of": "من",
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "accessDenied": {
+    "title": "403 — تم رفض الوصول",
+    "description": "ليست لديك صلاحية لعرض هذه الصفحة."
+  },
+  "toasts": {
+    "welcomeBack": "مرحباً بعودتك، {{name}}",
+    "accountCreated": "تم إنشاء الحساب لـ {{name}}. يُرجى تسجيل الدخول.",
+    "accountPendingApproval": "تم إنشاء الحساب لـ {{name}}. حسابك قيد الموافقة وستتمكن من تسجيل الدخول بمجرد موافقة المشرف عليه.",
+    "userApproved": "تمت الموافقة على حساب {{name}}.",
+    "userRejected": "تم رفض طلب حساب {{name}}.",
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+    "userUpdated": "تم تحديث المستخدم بنجاح",
+    "userCreated": "تم إنشاء المستخدم \"{{name}}\" بنجاح",
+    "userDeleted": "تم حذف المستخدم بنجاح",
+    "productCreated": "تم إنشاء المنتج بنجاح",
+    "productUpdated": "تم تحديث المنتج بنجاح",
+    "productDeleted": "تم حذف المنتج بنجاح",
+    "avatarUploaded": "تم رفع الصورة بنجاح",
+    "imageUploaded": "تم رفع الصورة بنجاح",
+    "invalidImageType": "يرجى اختيار ملف صورة (jpeg، png، webp، gif)",
+    "imageTooLarge": "يجب أن يكون حجم الصورة 5MB أو أقل",
+    "uploadFailed": "فشل الرفع",
+    "loginFailed": "فشل تسجيل الدخول",
+    "registrationFailed": "فشل إنشاء الحساب",
+    "somethingWentWrong": "حدث خطأ ما",
+    "failedToLoadUsers": "تعذّر تحميل المستخدمين",
+    "failedToDeleteUser": "تعذّر حذف المستخدم",
+    "failedToLoadUser": "تعذّر تحميل المستخدم",
+    "failedToLoadProducts": "تعذّر تحميل المنتجات",
+    "failedToDeleteProduct": "تعذّر حذف المنتج",
+    "failedToLoadProduct": "تعذّر تحميل المنتج",
+    "failedToLoadDashboard": "تعذّر تحميل بيانات لوحة التحكم"
+  },
+  "avatar": {
+    "label": "الصورة الشخصية",
+    "upload": "رفع صورة",
+    "uploading": "جارٍ الرفع...",
+    "remove": "إزالة",
+    "description": "JPG أو PNG أو WebP أو GIF، بحد أقصى 5MB. الصور المربعة أفضل.",
+    "pasteHint": "أو الصق رابط صورة أعلاه.",
+    "gallery": "اختيار من المكتبة",
+    "dialogTitle": "اختر صورة رمزية",
+    "dialogDescription": "اختر النمط ثم اضغط على الصورة لتطبيقها.",
+    "currentSelection": "الاختيار الحالي",
+    "noPhoto": "لا توجد صورة محددة",
+    "selectGenerated": "اختيار صورة رمزية مولّدة",
+    "surpriseMe": "فاجئني",
+    "done": "تم"
+  }
+}

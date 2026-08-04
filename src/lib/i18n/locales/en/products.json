@@ -1,0 +1,39 @@
+{
+  "title": "Products",
+  "subtitle": "Browse the product catalog.",
+  "newProduct": "New Product",
+  "searchPlaceholder": "Search products...",
+  "show": "Show",
+  "perPage": "per page",
+  "table": {
+    "product": "Product",
+    "price": "Price",
+    "quantity": "Quantity",
+    "description": "Description",
+    "actions": "Actions"
+  },
+  "empty": "No products found.",
+  "createFirst": "Create your first product",
+  "outOfStock": "Out of stock",
+  "inStock": "{{quantity}} in stock",
+  "unavailable": "Unavailable",
+  "noDescription": "No description available",
+  "noDescriptionProvided": "No description provided for this product.",
+  "productNotFoundTitle": "Product not found",
+  "productNotFoundSubtitle": "The product you're looking for doesn't exist or was deleted.",
+  "invalidProductId": "Invalid product id.",
+  "backToProducts": "Back to products",
+  "editProduct": "Edit product",
+  "delete": "Delete",
+  "description": "Description",
+  "productDetails": "Product details",
+  "productID": "Product ID",
+  "price": "Price",
+  "availability": "Availability",
+  "inStockUnits": "In stock ({{quantity}} units)",
+  "browseMore": "Browse more products",
+  "deleteDialog": {
+    "title": "Delete product?",
+    "description": "This will permanently delete \"{{name}}\". This action cannot be undone."
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "appName": "ShopWave",
+  "tagline": "Shop smart, ride the wave",
+  "theme": {
+    "toggle": "Toggle dark mode"
+  },
+  "language": {
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "users": "Users",
+    "profile": "My Profile",
+    "openMenu": "Open navigation menu"
+  },
+  "roles": {
+    "admin": "Admin",
+    "user": "User"
+  },
+  "statuses": {
+    "pending": "Pending",
+    "active": "Active",
+    "rejected": "Rejected"
+  },
+  "actions": {
+    "save": "Save changes",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "logout": "Logout",
+    "signIn": "Sign In"
+  },
+  "search": {
+    "placeholder": "Search...",
+    "clear": "Clear search"
+  },
+  "pagination": {
+    "showing": "Showing",
+    "of": "of",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "accessDenied": {
+    "title": "403 — Access Denied",
+    "description": "You do not have permission to view this page."
+  },
+  "toasts": {
+    "welcomeBack": "Welcome back, {{name}}",
+    "accountCreated": "Account created for {{name}}. Please log in.",
+    "accountPendingApproval": "Account created for {{name}}. Your account is pending approval and you'll be able to sign in once an administrator approves it.",
+    "userApproved": "{{name}}'s account has been approved.",
+    "userRejected": "{{name}}'s account request has been rejected.",
+    "profileUpdated": "Profile updated successfully",
+    "userUpdated": "User updated successfully",
+    "userCreated": "User \"{{name}}\" created successfully",
+    "userDeleted": "User deleted successfully",
+    "productCreated": "Product created successfully",
+    "productUpdated": "Product updated successfully",
+    "productDeleted": "Product deleted successfully",
+    "avatarUploaded": "Photo uploaded successfully",
+    "imageUploaded": "Image uploaded successfully",
+    "invalidImageType": "Please select an image file (jpeg, png, webp, gif)",
+    "imageTooLarge": "Image must be 5MB or smaller",
+    "uploadFailed": "Upload failed",
+    "loginFailed": "Login failed",
+    "registrationFailed": "Registration failed",
+    "somethingWentWrong": "Something went wrong",
+    "failedToLoadUsers": "Failed to load users",
+    "failedToDeleteUser": "Failed to delete user",
+    "failedToLoadUser": "Failed to load user",
+    "failedToLoadProducts": "Failed to load products",
+    "failedToDeleteProduct": "Failed to delete product",
+    "failedToLoadProduct": "Failed to load product",
+    "failedToLoadDashboard": "Failed to load dashboard data"
+  },
+  "avatar": {
+    "label": "Profile photo",
+    "upload": "Upload photo",
+    "uploading": "Uploading...",
+    "remove": "Remove",
+    "description": "JPG, PNG, WebP or GIF. Max 5MB. Square images look best.",
+    "pasteHint": "Or paste an image URL above.",
+    "gallery": "Choose from gallery",
+    "dialogTitle": "Choose an avatar",
+    "dialogDescription": "Pick a style, then tap an avatar to apply it.",
+    "currentSelection": "Current selection",
+    "noPhoto": "No photo selected",
+    "selectGenerated": "Select generated avatar",
+    "surpriseMe": "Surprise me",
+    "done": "Done"
+  }
+}

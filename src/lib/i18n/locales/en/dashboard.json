@@ -1,0 +1,33 @@
+{
+  "title": "Dashboard",
+  "welcome": "Welcome back, {{name}}. Here's an overview of your store.",
+  "totalUsers": "Total Users",
+  "totalUsersDescription": "Registered accounts",
+  "totalProducts": "Total Products",
+  "totalProductsDescription": "In your catalog",
+  "outOfStock": "Out of Stock",
+  "outOfStockDescription": "Products with 0 quantity",
+  "recentUsers": "Recent Users",
+  "recentUsersDescription": "Latest registered accounts",
+  "noUsersYet": "No users yet.",
+  "quickActions": "Quick Actions",
+  "quickActionsDescription": "Common admin tasks",
+  "quickLinks": [
+    {
+      "title": "Add a product",
+      "description": "Create a new product"
+    },
+    {
+      "title": "Add a user",
+      "description": "Create a new account"
+    },
+    {
+      "title": "Manage users",
+      "description": "Edit roles & access"
+    },
+    {
+      "title": "View catalog",
+      "description": "Browse all products"
+    }
+  ]
+}

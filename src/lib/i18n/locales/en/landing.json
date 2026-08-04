@@ -1,0 +1,30 @@
+{
+  "badge": "Next.js + NestJS starter",
+  "titleStart": "A full-stack starter with",
+  "titleHighlight": "role-based access",
+  "subtitle": "Next.js frontend powered by a NestJS API with JWT authentication. Admins manage products and users, while regular users browse the catalog.",
+  "signIn": "Sign In",
+  "getStarted": "Get Started",
+  "createAccount": "Create an account",
+  "features": [
+    {
+      "title": "Role-based access",
+      "description": "Admin and user roles with distinct permissions, enforced on both API and UI."
+    },
+    {
+      "title": "Product catalog",
+      "description": "Admins create and manage products; every authenticated user can browse them."
+    },
+    {
+      "title": "User management",
+      "description": "Admins can view, update and delete accounts from a paginated table."
+    },
+    {
+      "title": "Secure by default",
+      "description": "Bcrypt-hashed passwords and JWT tokens signed and verified on every request."
+    }
+  ],
+  "ctaTitle": "Ready to try it out?",
+  "ctaSubtitle": "Sign in with your account and explore the dashboard.",
+  "footer": "ShopWave — modern ecommerce, built to scale."
+}

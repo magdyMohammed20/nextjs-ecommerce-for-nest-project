@@ -1,0 +1,33 @@
+{
+  "title": "لوحة التحكم",
+  "welcome": "مرحباً بعودتك، {{name}}. إليك نظرة عامة على متجرك.",
+  "totalUsers": "إجمالي المستخدمين",
+  "totalUsersDescription": "الحسابات المسجّلة",
+  "totalProducts": "إجمالي المنتجات",
+  "totalProductsDescription": "في كتالوجك",
+  "outOfStock": "نفد المخزون",
+  "outOfStockDescription": "منتجات بكمية صفر",
+  "recentUsers": "أحدث المستخدمين",
+  "recentUsersDescription": "أحدث الحسابات المسجّلة",
+  "noUsersYet": "لا يوجد مستخدمون بعد.",
+  "quickActions": "إجراءات سريعة",
+  "quickActionsDescription": "مهام إدارية شائعة",
+  "quickLinks": [
+    {
+      "title": "إضافة منتج",
+      "description": "إنشاء منتج جديد"
+    },
+    {
+      "title": "إضافة مستخدم",
+      "description": "إنشاء حساب جديد"
+    },
+    {
+      "title": "إدارة المستخدمين",
+      "description": "تعديل الأدوار والصلاحيات"
+    },
+    {
+      "title": "عرض الكتالوج",
+      "description": "تصفّح جميع المنتجات"
+    }
+  ]
+}

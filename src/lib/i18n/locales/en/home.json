@@ -1,0 +1,132 @@
+{
+  "announcement": "Summer Sale — up to 40% off sitewide. Free shipping on orders over $50.",
+  "nav": {
+    "shop": "Shop",
+    "categories": "Categories",
+    "deals": "Deals",
+    "testimonials": "Testimonials",
+    "signIn": "Sign in",
+    "getStarted": "Get started"
+  },
+  "hero": {
+    "badge": "New season collection is live",
+    "titleA": "Shop the future of",
+    "titleHighlight": "modern essentials",
+    "subtitle": "Discover a curated catalog of premium products for everyday life — designed to look great, built to last, and delivered fast to your door.",
+    "ctaShop": "Shop now",
+    "ctaBrowse": "Browse products",
+    "trustRating": "4.9/5",
+    "trustLabel": "from 12,000+ happy customers",
+    "freeShipping": "Free express shipping",
+    "securePay": "Secure checkout",
+    "hotDrop": "Hot drop"
+  },
+  "stats": [
+    { "value": 1200, "suffix": "+", "label": "Products in store" },
+    { "value": 48, "suffix": "k+", "label": "Happy customers" },
+    { "value": 99, "suffix": "%", "label": "Satisfaction rate" },
+    { "value": 24, "suffix": "/7", "label": "Customer support" }
+  ],
+  "categories": {
+    "title": "Shop by category",
+    "subtitle": "Find exactly what you're looking for",
+    "items": [
+      "Electronics",
+      "Fashion",
+      "Home & Living",
+      "Beauty",
+      "Sports & Outdoors",
+      "Books"
+    ]
+  },
+  "featured": {
+    "title": "Featured products",
+    "subtitle": "Hand-picked bestsellers our customers love",
+    "viewAll": "View all products",
+    "addToCart": "Add to cart",
+    "addedToCart": "Added to cart",
+    "sale": "Sale",
+    "items": [
+      {
+        "name": "Aurora Wireless Headphones",
+        "category": "Electronics",
+        "price": 129,
+        "oldPrice": 179
+      },
+      {
+        "name": "Nimbus Running Sneakers",
+        "category": "Sports & Outdoors",
+        "price": 89,
+        "oldPrice": 120
+      },
+      {
+        "name": "Lumen Desk Lamp",
+        "category": "Home & Living",
+        "price": 59,
+        "oldPrice": 79
+      },
+      {
+        "name": "Velvet Everyday Backpack",
+        "category": "Fashion",
+        "price": 75,
+        "oldPrice": 99
+      }
+    ]
+  },
+  "values": {
+    "title": "Why shop with us",
+    "subtitle": "Everything you need for a seamless shopping experience",
+    "items": [
+      { "title": "Free shipping", "description": "On all orders over $50, delivered to your door." },
+      { "title": "Secure payments", "description": "256-bit encrypted checkout with all major providers." },
+      { "title": "Easy returns", "description": "30-day money-back guarantee, no questions asked." },
+      { "title": "24/7 support", "description": "Real humans ready to help whenever you need us." }
+    ]
+  },
+  "promo": {
+    "badge": "Limited time offer",
+    "title": "Summer Sale — up to 50% off",
+    "subtitle": "Season's hottest styles at season's best prices. While stock lasts.",
+    "cta": "Shop the sale"
+  },
+  "testimonials": {
+    "title": "Loved by thousands",
+    "subtitle": "Don't take our word for it — here's what our customers say",
+    "items": [
+      {
+        "quote": "The quality is outstanding and delivery was lightning fast. I've already ordered twice more.",
+        "name": "Sara K.",
+        "role": "Product designer"
+      },
+      {
+        "quote": "Finally a store where everything feels curated. Every item I've bought exceeded my expectations.",
+        "name": "Omar H.",
+        "role": "Software engineer"
+      },
+      {
+        "quote": "Returns were effortless and customer support replied in minutes. Best online shopping experience.",
+        "name": "Lina M.",
+        "role": "Student"
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to upgrade your setup?",
+    "subtitle": "Create a free account, browse the catalog and check out in seconds.",
+    "action": "Create an account",
+    "action2": "Sign in"
+  },
+  "footer": {
+    "tagline": "Premium products, delivered fast.",
+    "shopTitle": "Shop",
+    "shopLinks": ["All products", "New arrivals", "Best sellers", "Sale"],
+    "supportTitle": "Support",
+    "supportLinks": ["Help center", "Shipping & returns", "Contact us", "FAQ"],
+    "newsTitle": "Stay in the loop",
+    "newsSubtitle": "Get exclusive deals and new arrivals in your inbox.",
+    "emailPlaceholder": "you@email.com",
+    "subscribe": "Subscribe",
+    "subscribed": "Thanks for subscribing!",
+    "rights": "All rights reserved."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "title": "Welcome back",
+  "subtitle": "Sign in to your account to continue.",
+  "email": "Email",
+  "emailPlaceholder": "you@example.com",
+  "password": "Password",
+  "signIn": "Sign In",
+  "or": "or",
+  "continueWithGoogle": "Continue with Google",
+  "noAccount": "Don't have an account?",
+  "register": "Register",
+  "pendingBanner": "Your account is pending approval. You'll be able to sign in as soon as an administrator approves it.",
+  "pendingError": "Your account is pending approval. Please wait for an administrator to approve it.",
+  "rejectedError": "Your registration request was rejected. Please contact support.",
+  "demoTitle": "Demo credentials",
+  "demoAdmin": "Admin",
+  "demoUser": "User"
+}

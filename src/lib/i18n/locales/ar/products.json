@@ -1,0 +1,39 @@
+{
+  "title": "المنتجات",
+  "subtitle": "تصفّح كتالوج المنتجات.",
+  "newProduct": "منتج جديد",
+  "searchPlaceholder": "ابحث عن منتج...",
+  "show": "عرض",
+  "perPage": "في الصفحة",
+  "table": {
+    "product": "المنتج",
+    "price": "السعر",
+    "quantity": "الكمية",
+    "description": "الوصف",
+    "actions": "إجراءات"
+  },
+  "empty": "لا توجد منتجات.",
+  "createFirst": "أنشئ منتجك الأول",
+  "outOfStock": "نفد المخزون",
+  "inStock": "{{quantity}} في المخزون",
+  "unavailable": "غير متوفر",
+  "noDescription": "لا يوجد وصف",
+  "noDescriptionProvided": "لا يوجد وصف لهذا المنتج.",
+  "productNotFoundTitle": "المنتج غير موجود",
+  "productNotFoundSubtitle": "المنتج الذي تبحث عنه غير موجود أو تم حذفه.",
+  "invalidProductId": "معرّف منتج غير صالح.",
+  "backToProducts": "العودة إلى المنتجات",
+  "editProduct": "تعديل المنتج",
+  "delete": "حذف",
+  "description": "الوصف",
+  "productDetails": "تفاصيل المنتج",
+  "productID": "معرّف المنتج",
+  "price": "السعر",
+  "availability": "التوفر",
+  "inStockUnits": "في المخزون ({{quantity}} وحدة)",
+  "browseMore": "تصفّح المزيد من المنتجات",
+  "deleteDialog": {
+    "title": "حذف المنتج؟",
+    "description": "سيؤدي هذا إلى حذف \"{{name}}\" نهائياً. لا يمكن التراجع عن هذا الإجراء."
+  }
+}

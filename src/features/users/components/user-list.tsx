@@ -1,0 +1,316 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Check, Clock, Pencil, Shield, Trash2, User as UserIcon, X } from "lucide-react";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { usersApi } from "../api/users-api";
+import { isRootAdmin } from "../lib/root-admin";
+import type { User } from "../types/user-types";
+import type { UserStatus } from "@/features/auth/types/auth-types";
+import type { PaginationMeta } from "@/lib/pagination";
+import { useAuth } from "@/features/auth/context/auth-provider";
+import { UserAvatar } from "@/components/shared/user-avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Pagination } from "@/components/shared/pagination";
+import { SearchInput } from "@/components/shared/search-input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+const LIMIT = 10;
+
+const statusBadgeStyles: Record<UserStatus, string> = {
+  active: "border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300",
+  pending: "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300",
+  rejected: "border-destructive/40 bg-destructive/10 text-destructive",
+};
+
+const statusIcons: Record<UserStatus, typeof Clock> = {
+  active: Check,
+  pending: Clock,
+  rejected: X,
+};
+
+export function UserList() {
+  const { user: currentUser } = useAuth();
+  const { t } = useTranslation("users");
+
+  const [users, setUsers] = useState<User[]>([]);
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
+  const [meta, setMeta] = useState<PaginationMeta>({
+    page: 1,
+    limit: LIMIT,
+    total: 0,
+    totalPages: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let ignore = false;
+
+    usersApi
+      .getAll({ page, limit: LIMIT, search })
+      .then((res) => {
+        if (!ignore) {
+          setUsers(res.data);
+          setMeta(res.meta);
+        }
+      })
+      .catch((error) => {
+        if (!ignore) {
+          toast.error(
+            error instanceof Error ? error.message : t("toasts.failedToLoadUsers", { ns: "common" }),
+          );
+        }
+      })
+      .finally(() => {
+        if (!ignore) setIsLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [page, search, t]);
+
+  function handlePageChange(nextPage: number) {
+    setPage(nextPage);
+    setIsLoading(true);
+  }
+
+  function handleSearchChange(nextSearch: string) {
+    if (nextSearch === search) return;
+    setSearch(nextSearch);
+    setPage(1);
+    setIsLoading(true);
+  }
+
+  async function handleDelete() {
+    if (!userToDelete) return;
+    if (isRootAdmin(userToDelete.email)) {
+      toast.error(t("rootAdminDeleteLocked"));
+      setUserToDelete(null);
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      await usersApi.remove(userToDelete.id);
+      const lastItemOnPage = users.length === 1 && meta.page > 1;
+      setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
+      if (lastItemOnPage) {
+        setPage(meta.page - 1);
+      }
+      toast.success(t("toasts.userDeleted", { ns: "common" }));
+      setUserToDelete(null);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t("toasts.failedToDeleteUser", { ns: "common" }),
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
+  async function handleStatusChange(user: User, status: UserStatus) {
+    if (!isRootAdmin(currentUser?.email)) {
+      toast.error(t("statusChangeRestricted", { ns: "userForm" }));
+      return;
+    }
+    try {
+      const updated = await usersApi.updateStatus(user.id, status);
+      setUsers((prev) => prev.map((u) => (u.id === user.id ? updated : u)));
+      toast.success(
+        status === "active"
+          ? t("toasts.userApproved", { ns: "common", name: user.name })
+          : t("toasts.userRejected", { ns: "common", name: user.name }),
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t("toasts.somethingWentWrong", { ns: "common" }),
+      );
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <SearchInput
+        value={query}
+        onValueChange={setQuery}
+        onSearch={handleSearchChange}
+        placeholder={t("searchPlaceholder")}
+        className="w-full sm:w-80"
+      />
+
+      {isLoading ? (
+        <div className="space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-14 w-full" />
+          ))}
+        </div>
+      ) : users.length === 0 ? (
+        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
+          <div className="rounded-full bg-muted p-4">
+            <UserIcon className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <p className="text-sm text-muted-foreground">{t("empty")}</p>
+        </div>
+      ) : (
+        <div className="rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableHead>{t("table.user")}</TableHead>
+                <TableHead>{t("table.email")}</TableHead>
+                <TableHead>{t("table.role")}</TableHead>
+                <TableHead>{t("table.status")}</TableHead>
+                <TableHead className="text-right">{t("table.actions")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {users.map((user) => {
+                const isSelf = currentUser?.id === user.id;
+                const isRoot = isRootAdmin(user.email);
+                return (
+                  <TableRow key={user.id} className="hover:bg-muted/40">
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <UserAvatar
+                          name={user.name}
+                          avatarUrl={user.avatarUrl}
+                          className="h-8 w-8 text-xs"
+                        />
+                        <span className="font-medium">
+                          {user.name}
+                          {isSelf && (
+                            <span className="ml-2 text-xs text-muted-foreground">{t("youMarker")}</span>
+                          )}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                    <TableCell>
+                      <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                        {user.role === "admin" && (
+                          <Shield className="mr-1 h-3 w-3" />
+                        )}
+                        {t(`roles.${user.role}`, { ns: "common" })}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={statusBadgeStyles[user.status]}>
+                        {(() => {
+                          const StatusIcon = statusIcons[user.status];
+                          return <StatusIcon className="mr-1 h-3 w-3" />;
+                        })()}
+                        {t(`statuses.${user.status}`, { ns: "common" })}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        {user.status === "pending" && isRootAdmin(currentUser?.email) && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-emerald-600 hover:text-emerald-600"
+                              title={t("approve")}
+                              onClick={() => handleStatusChange(user, "active")}
+                            >
+                              <Check className="h-3.5 w-3.5" />
+                              <span className="sr-only">{t("approve")}</span>
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-destructive hover:text-destructive"
+                              title={t("reject")}
+                              onClick={() => handleStatusChange(user, "rejected")}
+                            >
+                              <X className="h-3.5 w-3.5" />
+                              <span className="sr-only">{t("reject")}</span>
+                            </Button>
+                          </>
+                        )}
+                        <Button asChild size="sm" variant="outline">
+                          <Link href={`/users/${user.id}/edit`}>
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Link>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive"
+                          disabled={isSelf || isRoot}
+                          title={isRoot ? t("rootAdminDeleteLocked") : undefined}
+                          onClick={() => setUserToDelete(user)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      <Pagination
+        page={meta.page}
+        totalPages={meta.totalPages}
+        total={meta.total}
+        limit={meta.limit}
+        onPageChange={handlePageChange}
+      />
+
+      <AlertDialog
+        open={Boolean(userToDelete)}
+        onOpenChange={(open) => !open && setUserToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("deleteDialog.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("deleteDialog.description", { name: userToDelete?.name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>
+              {t("actions.cancel", { ns: "common" })}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? t("actions.deleting", { ns: "common" }) : t("actions.delete", { ns: "common" })}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}

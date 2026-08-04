@@ -1,0 +1,19 @@
+{
+  "title": "Edit Profile",
+  "subtitle": "Update your account information and password.",
+  "backToProfile": "Back to profile",
+  "yourAccount": "Your account",
+  "goodToKnow": "Good to know",
+  "roleCannotChange": "Your role cannot be changed from this page.",
+  "passwordBlankHint": "Leave the password blank to keep it unchanged.",
+  "fullName": "Full name",
+  "email": "Email",
+  "changePassword": "Change password",
+  "changePasswordHint": "Leave blank to keep your current password.",
+  "newPassword": "New password",
+  "confirmPassword": "Confirm password",
+  "passwordHint": "Leave blank to keep your current password. New passwords must be at least 8 characters.",
+  "saveChanges": "Save changes",
+  "cancel": "Cancel",
+  "accountRole": "Account role"
+}
