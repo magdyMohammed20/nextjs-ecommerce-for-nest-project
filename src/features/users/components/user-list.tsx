@@ -279,7 +279,7 @@ export function UserList() {
       )}
 
       <Pagination
-        page={meta.page}
+        page={meta?.page}
         totalPages={meta.totalPages}
         total={meta.total}
         limit={meta.limit}

@@ -18,10 +18,12 @@ type ApiFetchOptions = RequestInit & {
 };
 
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
-  const { token = getToken(), skipAuth = false, headers, ...rest } = options;
+  const { token = getToken(), skipAuth = false, headers, body, ...rest } = options;
+
+  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
 
   const finalHeaders: Record<string, string> = {
-    "Content-Type": "application/json",
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...(headers as Record<string, string> | undefined),
   };
 
@@ -32,6 +34,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   const res = await fetch(`${API_URL}${path}`, {
     ...rest,
     headers: finalHeaders,
+    body,
     cache: "no-store",
   });
 
@@ -39,23 +42,39 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     return undefined as T;
   }
 
-  let body: unknown = null;
+  let bodyJson: unknown = null;
   try {
-    body = await res.json();
+    bodyJson = await res.json();
   } catch {
-    body = null;
+    bodyJson = null;
   }
 
   if (!res.ok) {
-    const messageField = (body as { message?: unknown } | null)?.message;
+    const messageField = (bodyJson as { message?: unknown } | null)?.message;
     const errors = Array.isArray(messageField) ? (messageField as string[]) : undefined;
-    const message = errors
+    let message = errors
       ? errors.join(", ")
       : typeof messageField === "string"
         ? messageField
         : `Request failed with status ${res.status}`;
+
+    if (res.status === 429) {
+      message = "Too many requests, please wait a moment and try again";
+    }
+
     throw new ApiError(res.status, message, errors);
   }
 
-  return body as T;
+  // The backend wraps every successful response in { data: ... } via the
+  // global TransformInterceptor. Unwrap it so features keep their shapes.
+  const unwrapped = (bodyJson as { data?: unknown } | null)?.data;
+  return (unwrapped !== undefined ? unwrapped : bodyJson) as T;
+}
+
+/**
+ * Mutator used by orval-generated API clients. Orval calls it with
+ * `(url, options)` like `fetch`, and we route it through our auth-aware apiFetch.
+ */
+export async function orvalFetch<T>(url: string, options?: RequestInit): Promise<T> {
+  return apiFetch<T>(url, options ?? {});
 }

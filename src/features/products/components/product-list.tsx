@@ -118,7 +118,7 @@ export function ProductList() {
     setIsDeleting(true);
     try {
       await productsApi.remove(productToDelete.id);
-      const lastItemOnPage = products.length === 1 && meta.page > 1;
+      const lastItemOnPage = products?.length === 1 && meta.page > 1;
       setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
       if (lastItemOnPage) {
         setPage(meta.page - 1);
@@ -203,7 +203,7 @@ export function ProductList() {
             ))}
           </div>
         )
-      ) : products.length === 0 ? (
+      ) : products?.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
           <div className="rounded-full bg-muted p-4">
             <Package className="h-8 w-8 text-muted-foreground" />
@@ -216,76 +216,76 @@ export function ProductList() {
           )}
         </div>
       ) : isAdmin ? (
-          <div className="rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableHead>{t("table.product")}</TableHead>
-                  <TableHead>{t("table.price")}</TableHead>
-                  <TableHead>{t("table.quantity")}</TableHead>
-                  <TableHead>{t("table.description")}</TableHead>
-                  <TableHead className="text-right">{t("table.actions")}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.id} className="hover:bg-muted/40">
-                    <TableCell>
-                      <Link
-                        href={`/products/${product.id}`}
-                        className="group flex items-center gap-3"
+        <div className="rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableHead>{t("table.product")}</TableHead>
+                <TableHead>{t("table.price")}</TableHead>
+                <TableHead>{t("table.quantity")}</TableHead>
+                <TableHead>{t("table.description")}</TableHead>
+                <TableHead className="text-right">{t("table.actions")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products?.map((product) => (
+                <TableRow key={product.id} className="hover:bg-muted/40">
+                  <TableCell>
+                    <Link
+                      href={`/products/${product.id}`}
+                      className="group flex items-center gap-3"
+                    >
+                      <ProductImage
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="h-10 w-10 shrink-0 rounded-md object-cover"
+                      />
+                      <span className="font-medium transition-colors group-hover:text-primary">
+                        {product.name}
+                      </span>
+                    </Link>
+                  </TableCell>
+                  <TableCell>${Number(product.price).toFixed(2)}</TableCell>
+                  <TableCell>
+                    <Badge variant={product.quantity === 0 ? "destructive" : "secondary"}>
+                      {product.quantity}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="max-w-xs truncate text-muted-foreground">
+                    {product.description ?? "—"}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button asChild size="sm" variant="outline">
+                        <Link href={`/products/${product.id}/edit`}>
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Link>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => setProductToDelete(product)}
                       >
-                        <ProductImage
-                          src={product.imageUrl}
-                          alt={product.name}
-                          className="h-10 w-10 shrink-0 rounded-md object-cover"
-                        />
-                        <span className="font-medium transition-colors group-hover:text-primary">
-                          {product.name}
-                        </span>
-                      </Link>
-                    </TableCell>
-                    <TableCell>${Number(product.price).toFixed(2)}</TableCell>
-                    <TableCell>
-                      <Badge variant={product.quantity === 0 ? "destructive" : "secondary"}>
-                        {product.quantity}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="max-w-xs truncate text-muted-foreground">
-                      {product.description ?? "—"}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button asChild size="sm" variant="outline">
-                          <Link href={`/products/${product.id}/edit`}>
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Link>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => setProductToDelete(product)}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map((product) => (
+          {products?.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       )}
 
       <Pagination
-        page={meta.page}
+        page={meta?.page}
         totalPages={meta.totalPages}
         total={meta.total}
         limit={meta.limit}

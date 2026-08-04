@@ -1,18 +1,13 @@
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  description: string | null;
-  quantity: number;
-  imageUrl?: string | null;
-}
+import type { CreateProductDto } from "@/lib/generated/api";
 
-export interface CreateProductPayload {
-  name: string;
-  price: number;
-  description?: string;
-  quantity?: number;
-  imageUrl?: string;
-}
+export type {
+  CreateProductDto,
+  MessageDto,
+  PaginationMetaDto,
+  Product,
+  ProductPageDto,
+  UploadResponseDto,
+} from "@/lib/generated/api";
 
-export type UpdateProductPayload = Partial<CreateProductPayload>;
+export type CreateProductPayload = CreateProductDto;
+export type UpdateProductPayload = Partial<CreateProductDto>;
