@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { BadgeCheck, Leaf, ShieldCheck, Star, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteNavbar } from "@/components/shared/site-navbar";
+import { SiteFooter } from "@/components/shared/site-footer";
 import { PageHero } from "@/components/shared/page-hero";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -157,6 +158,8 @@ export default function AboutPage() {
           </Reveal>
         </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { HelpCircle, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteNavbar } from "@/components/shared/site-navbar";
+import { SiteFooter } from "@/components/shared/site-footer";
 import { PageHero } from "@/components/shared/page-hero";
 import { FaqList } from "@/features/faq/components/faq-list";
 import { faqApi } from "@/features/faq/api/faq-api";
@@ -96,6 +97,7 @@ export default function FaqPage() {
     question: string;
     answer: string;
   }[] | null>(null);
+  const [isEmpty, setIsEmpty] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { ref: contactRef, visible: contactVisible } = useReveal(0);
 
@@ -107,15 +109,15 @@ export default function FaqPage() {
       .then((faqs) => {
         const localized = toLocalizedItems(faqs, isArabic);
         if (!ignore) {
-          if (localized.length > 0) {
-            setLiveItems(localized);
-          } else {
-            setLiveItems(staticItems);
-          }
+          setLiveItems(localized);
+          setIsEmpty(localized.length === 0);
         }
       })
       .catch(() => {
-        if (!ignore) setLiveItems(staticItems);
+        if (!ignore) {
+          setLiveItems(staticItems);
+          setIsEmpty(false);
+        }
       })
       .finally(() => {
         if (!ignore) setIsLoading(false);
@@ -156,6 +158,17 @@ export default function FaqPage() {
                   <Skeleton key={i} className="h-16 w-full rounded-2xl" />
                 ))}
               </div>
+            ) : isEmpty ? (
+              <motion.div variants={item} className="flex flex-col items-center gap-4 rounded-3xl border bg-card px-6 py-14 text-center shadow-sm">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+                  <HelpCircle className="h-7 w-7" />
+                </div>
+                <h2 className="text-xl font-bold">{t("emptyTitle")}</h2>
+                <p className="max-w-md text-sm text-muted-foreground">{t("emptyDescription")}</p>
+                <Button asChild size="lg" className="mt-2">
+                  <Link href="mailto:support@shopwave.com">{t("emptyCta")}</Link>
+                </Button>
+              </motion.div>
             ) : (
               <FaqList items={liveItems ?? staticItems} />
             )}
@@ -178,6 +191,8 @@ export default function FaqPage() {
           </motion.div>
         </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }
