@@ -29,6 +29,8 @@ interface NavItem {
   icon: LucideIcon;
   adminOnly?: boolean;
   userOnly?: boolean;
+  /** Match only the exact path (e.g. parent routes like /dashboard). */
+  exact?: boolean;
 }
 
 export function MobileNav() {
@@ -37,8 +39,8 @@ export function MobileNav() {
   const pathname = usePathname();
 
   const navItems: NavItem[] = [
-    { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, adminOnly: true },
-    { href: "/my-dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, userOnly: true },
+    { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, adminOnly: true, exact: true },
+    { href: "/my-dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, userOnly: true, exact: true },
     { href: "/products", label: t("nav.products"), icon: Package },
     { href: "/categories", label: t("nav.categories"), icon: Tags, adminOnly: true },
     { href: "/dashboard/faq", label: t("nav.faq"), icon: HelpCircle, adminOnly: true },
@@ -62,7 +64,9 @@ export function MobileNav() {
       <DropdownMenuContent align="start" className="w-52">
         {items.map((item) => {
           const Icon = item.icon;
-          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const active = item.exact
+            ? pathname === item.href
+            : pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <DropdownMenuItem key={item.href} asChild>
               <Link

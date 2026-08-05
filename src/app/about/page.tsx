@@ -4,11 +4,10 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, BadgeCheck, Leaf, ShieldCheck, Star, Users } from "lucide-react";
+import { BadgeCheck, Leaf, ShieldCheck, Star, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/shared/logo";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { LanguageSwitcher } from "@/components/language-switcher";
+import { SiteNavbar } from "@/components/shared/site-navbar";
+import { PageHero } from "@/components/shared/page-hero";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const container: Variants = {
@@ -80,34 +79,22 @@ export default function AboutPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Mini header */}
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-lg">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/"><Logo /></Link>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <ThemeToggle />
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/"><ArrowLeft className="me-1.5 h-4 w-4 rtl:-scale-x-100" />{t("nav.backHome")}</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <SiteNavbar />
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="relative overflow-hidden border-b bg-gradient-to-br from-primary/10 via-cyan-500/5 to-transparent py-24">
-          <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+        <PageHero>
+          <div className="mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 lg:px-8">
             <Reveal>
-              <motion.span variants={item} className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs font-medium text-primary shadow-sm">
-                <BadgeCheck className="h-3.5 w-3.5" />ShopWave
+              <motion.span variants={item} className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white shadow-sm backdrop-blur">
+                <BadgeCheck className="h-3.5 w-3.5 text-cyan-300" />ShopWave
               </motion.span>
-              <motion.h1 variants={item} className="mt-6 text-4xl font-bold leading-tight md:text-5xl">{t("title")}</motion.h1>
-              <motion.div variants={item} className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-primary to-cyan-500" />
-              <motion.p variants={item} className="mt-6 text-lg text-muted-foreground">{t("subtitle")}</motion.p>
+              <motion.h1 variants={item} className="mt-6 text-4xl font-bold leading-tight text-white md:text-5xl">{t("title")}</motion.h1>
+              <motion.div variants={item} className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-cyan-300 to-sky-400" />
+              <motion.p variants={item} className="mt-6 text-lg text-white/85">{t("subtitle")}</motion.p>
             </Reveal>
           </div>
-        </section>
+        </PageHero>
 
         {/* Mission */}
         <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">

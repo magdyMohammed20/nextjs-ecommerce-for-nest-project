@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, animate, motion, useInView, type Variants } from "framer-motion";
@@ -178,6 +178,16 @@ export default function LandingPage() {
     e.currentTarget.reset();
   }
 
+  function handleAnchorNav(e: ReactMouseEvent<HTMLElement>, href: string) {
+    if (!href.startsWith("#")) {
+      setMobileOpen(false);
+      return;
+    }
+    e.preventDefault();
+    setMobileOpen(false);
+    document.getElementById(href.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   return (
     <div className="flex flex-1 flex-col">
       {/* Announcement */}
@@ -196,7 +206,7 @@ export default function LandingPage() {
             <Link href="/" className="flex items-center"><Logo /></Link>
             <nav className="hidden items-center gap-1 lg:flex">
               {navLinks.map((link) => (
-                <Button key={link.href} asChild variant="ghost" size="sm">
+                <Button key={link.href} asChild variant="ghost" size="sm" onClick={(e) => handleAnchorNav(e, link.href)}>
                   <Link href={link.href}>{link.label}</Link>
                 </Button>
               ))}
@@ -234,7 +244,7 @@ export default function LandingPage() {
               <div className="space-y-1 px-4 py-3">
                 {navLinks.map((link) => (
                   <Button key={link.href} asChild variant="ghost" className="w-full justify-start"
-                    onClick={() => setMobileOpen(false)}>
+                    onClick={(e) => handleAnchorNav(e, link.href)}>
                     <Link href={link.href}>{link.label}</Link>
                   </Button>
                 ))}

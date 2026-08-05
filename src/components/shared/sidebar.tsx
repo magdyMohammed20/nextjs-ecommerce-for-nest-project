@@ -22,11 +22,15 @@ interface NavItem {
   icon: LucideIcon;
   adminOnly?: boolean;
   userOnly?: boolean;
+  /** Match only the exact path (e.g. parent routes like /dashboard). */
+  exact?: boolean;
 }
 
 function SidebarLink({ item }: { item: NavItem }) {
   const pathname = usePathname();
-  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+  const active = item.exact
+    ? pathname === item.href
+    : pathname === item.href || pathname.startsWith(`${item.href}/`);
   const Icon = item.icon;
 
   return (
@@ -61,8 +65,8 @@ export function Sidebar() {
   const { t } = useTranslation("common");
 
   const navItems: NavItem[] = [
-    { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, adminOnly: true },
-    { href: "/my-dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, userOnly: true },
+    { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, adminOnly: true, exact: true },
+    { href: "/my-dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, userOnly: true, exact: true },
     { href: "/products", label: t("nav.products"), icon: Package },
     { href: "/categories", label: t("nav.categories"), icon: Tags, adminOnly: true },
     { href: "/dashboard/faq", label: t("nav.faq"), icon: HelpCircle, adminOnly: true },

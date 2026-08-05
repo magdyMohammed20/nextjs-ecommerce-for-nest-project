@@ -4,11 +4,10 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, HelpCircle, MessageCircle } from "lucide-react";
+import { HelpCircle, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/shared/logo";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { LanguageSwitcher } from "@/components/language-switcher";
+import { SiteNavbar } from "@/components/shared/site-navbar";
+import { PageHero } from "@/components/shared/page-hero";
 import { FaqList } from "@/features/faq/components/faq-list";
 import { faqApi } from "@/features/faq/api/faq-api";
 import type { Faq } from "@/features/faq/types/faq-types";
@@ -129,36 +128,24 @@ export default function FaqPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Mini header */}
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-lg">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/"><Logo /></Link>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <ThemeToggle />
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/"><ArrowLeft className="me-1.5 h-4 w-4 rtl:-scale-x-100" />{t("nav.backHome")}</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <SiteNavbar />
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="border-b bg-gradient-to-br from-primary/10 via-cyan-500/5 to-transparent py-20">
-          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
+        <PageHero>
+          <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6 lg:px-8">
             <Reveal>
               <motion.div variants={item} className="flex justify-center mb-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-cyan-200 backdrop-blur border border-white/20">
                   <HelpCircle className="h-7 w-7" />
                 </div>
               </motion.div>
-              <motion.h1 variants={item} className="text-4xl font-bold leading-tight md:text-5xl">{t("title")}</motion.h1>
-              <motion.div variants={item} className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-primary to-cyan-500" />
-              <motion.p variants={item} className="mt-5 text-muted-foreground">{t("subtitle")}</motion.p>
+              <motion.h1 variants={item} className="text-4xl font-bold leading-tight text-white md:text-5xl">{t("title")}</motion.h1>
+              <motion.div variants={item} className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-cyan-300 to-sky-400" />
+              <motion.p variants={item} className="mt-5 text-white/85">{t("subtitle")}</motion.p>
             </Reveal>
           </div>
-        </section>
+        </PageHero>
 
         {/* Accordion */}
         <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
