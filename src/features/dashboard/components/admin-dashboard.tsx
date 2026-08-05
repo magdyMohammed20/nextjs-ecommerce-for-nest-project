@@ -1,19 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
+  Activity,
+  AlertTriangle,
   ArrowUpRight,
+  DollarSign,
   Package,
+  PackageCheck,
+  PackageX,
   ShieldCheck,
+  ShoppingCart,
+  Tags,
+  TrendingUp,
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { statsApi } from "../api/stats-api";
 import { usersApi } from "@/features/users/api/users-api";
-import { productsApi } from "@/features/products/api/products-api";
+import type { StatsDto } from "@/lib/generated/api";
 import type { User } from "@/features/users/types/user-types";
-import type { Product } from "@/features/products/types/product-types";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -25,6 +33,13 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
+function formatMoney(value: number) {
+  return `$${value.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
 function StatCard({
   title,
   value,
@@ -32,7 +47,7 @@ function StatCard({
   description,
 }: {
   title: string;
-  value: number;
+  value: ReactNode;
   icon: typeof Users;
   description: string;
 }) {
@@ -58,19 +73,14 @@ export function AdminDashboard() {
   const { user } = useAuth();
   const { t } = useTranslation("dashboard");
   const [users, setUsers] = useState<User[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [totals, setTotals] = useState({ users: 0, products: 0 });
+  const [stats, setStats] = useState<StatsDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([usersApi.getAll({ limit: 5 }), productsApi.getAll({ limit: 5 })])
-      .then(([userData, productData]) => {
+    Promise.all([statsApi.getStats(), usersApi.getAll({ limit: 5 })])
+      .then(([statsData, userData]) => {
+        setStats(statsData);
         setUsers(userData.data);
-        setProducts(productData.data);
-        setTotals({
-          users: userData.meta.total,
-          products: productData.meta.total,
-        });
       })
       .catch((error) =>
         toast.error(
@@ -87,13 +97,13 @@ export function AdminDashboard() {
           <Skeleton className="h-8 w-56" />
           <Skeleton className="h-4 w-80" />
         </div>
-        <div className="grid gap-4 sm:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="h-28 w-full" />
           ))}
         </div>
         <div className="grid gap-6 lg:grid-cols-2">
-          {Array.from({ length: 2 }).map((_, i) => (
+          {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-64 w-full rounded-lg" />
           ))}
         </div>
@@ -101,7 +111,31 @@ export function AdminDashboard() {
     );
   }
 
-  const outOfStock = products.filter((p) => p.quantity === 0).length;
+  const statsCards: {
+    key: string;
+    title: string;
+    value: ReactNode;
+    icon: typeof Users;
+  }[] = [
+    { key: "totalUsers", title: t("totalUsers"), value: stats?.usersTotal ?? 0, icon: Users },
+    { key: "totalProducts", title: t("totalProducts"), value: stats?.productsTotal ?? 0, icon: Package },
+    { key: "categories", title: t("categories"), value: stats?.categoriesTotal ?? 0, icon: Tags },
+    { key: "inStock", title: t("inStock"), value: stats?.inStock ?? 0, icon: PackageCheck },
+    { key: "outOfStock", title: t("outOfStock"), value: stats?.outOfStock ?? 0, icon: PackageX },
+    { key: "lowStock", title: t("lowStock"), value: stats?.lowStock ?? 0, icon: AlertTriangle },
+    {
+      key: "inventoryValue",
+      title: t("inventoryValue"),
+      value: stats ? formatMoney(stats.inventoryValue) : "$0.00",
+      icon: DollarSign,
+    },
+    {
+      key: "averagePrice",
+      title: t("averagePrice"),
+      value: stats ? formatMoney(stats.averagePrice) : "$0.00",
+      icon: TrendingUp,
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -110,28 +144,19 @@ export function AdminDashboard() {
         <p className="mt-1 text-sm text-muted-foreground">{t("welcome", { name: user?.name })}</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard
-          title={t("totalUsers")}
-          value={totals.users}
-          icon={Users}
-          description={t("totalUsersDescription")}
-        />
-        <StatCard
-          title={t("totalProducts")}
-          value={totals.products}
-          icon={Package}
-          description={t("totalProductsDescription")}
-        />
-        <StatCard
-          title={t("outOfStock")}
-          value={outOfStock}
-          icon={ShieldCheck}
-          description={t("outOfStockDescription")}
-        />
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {statsCards.map((card) => (
+          <StatCard
+            key={card.key}
+            title={card.title}
+            value={card.value}
+            icon={card.icon}
+            description={t(`${card.key}Description`)}
+          />
+        ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader>
             <CardTitle>{t("recentUsers")}</CardTitle>
@@ -195,6 +220,36 @@ export function AdminDashboard() {
                 </Link>
               ));
             })()}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("latestOrders")}</CardTitle>
+            <CardDescription>{t("latestOrdersDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 text-center">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                <ShoppingCart className="h-5 w-5 text-muted-foreground" />
+              </span>
+              <p className="text-sm font-medium text-muted-foreground">{t("comingSoon")}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("recentActivity")}</CardTitle>
+            <CardDescription>{t("recentActivityDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 text-center">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                <Activity className="h-5 w-5 text-muted-foreground" />
+              </span>
+              <p className="text-sm font-medium text-muted-foreground">{t("comingSoon")}</p>
+            </div>
           </CardContent>
         </Card>
       </div>

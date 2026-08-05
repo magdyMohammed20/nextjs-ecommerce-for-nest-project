@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatarUrl: res.avatarUrl,
       });
       toast.success(i18n.t("toasts.welcomeBack", { name: res.name }));
-      router.replace(res.role === "admin" ? "/dashboard" : "/products");
+      router.replace(res.role === "admin" ? "/dashboard" : "/my-dashboard");
     },
     [router],
   );
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const loaded = await authApi.me();
       setUser(loaded);
       toast.success(i18n.t("toasts.welcomeBack", { name: loaded.name }));
-      router.replace(loaded.role === "admin" ? "/dashboard" : "/products");
+      router.replace(loaded.role === "admin" ? "/dashboard" : "/my-dashboard");
     },
     [router],
   );

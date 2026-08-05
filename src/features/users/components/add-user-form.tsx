@@ -130,7 +130,7 @@ export function AddUserForm() {
                   disabled={!canChangeRole}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder={t("selectRole")} />
                     </SelectTrigger>
                   </FormControl>

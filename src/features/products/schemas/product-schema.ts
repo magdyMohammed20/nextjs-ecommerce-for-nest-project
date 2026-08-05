@@ -14,6 +14,11 @@ export const productSchema = z.object({
     .number({ message: "Quantity must be a number" })
     .int("Quantity must be a whole number")
     .min(0, "Quantity cannot be negative"),
+  categoryId: z
+    .number({ message: "Category must be a number" })
+    .int("Category must be a whole number")
+    .min(1, "Category is invalid")
+    .optional(),
   imageUrl: z
     .string()
     .max(500)

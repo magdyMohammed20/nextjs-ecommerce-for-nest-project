@@ -1,0 +1,33 @@
+{
+  "title": "About ShopWave",
+  "subtitle": "A modern e-commerce platform built for speed, simplicity, and trust.",
+  "mission": {
+    "title": "Our mission",
+    "body": "We set out to make online shopping feel effortless. ShopWave curates premium products across electronics, fashion, home, and more — all in one place, with transparent pricing and fast delivery."
+  },
+  "story": {
+    "title": "Our story",
+    "body": "ShopWave was founded with a simple belief: shopping should be enjoyable, not stressful. We started with a small catalog and big ambitions. Today we serve tens of thousands of happy customers and continue to grow every day."
+  },
+  "values": {
+    "title": "What we stand for",
+    "items": [
+      { "title": "Quality first", "description": "Every product is hand-picked and held to a high standard before it reaches our shelves." },
+      { "title": "Customer focus", "description": "Your satisfaction is the measure of our success. We back every purchase with our 30-day return guarantee." },
+      { "title": "Transparency", "description": "No hidden fees, no dark patterns. What you see is what you pay." },
+      { "title": "Sustainability", "description": "We partner with suppliers who share our commitment to responsible sourcing and packaging." }
+    ]
+  },
+  "team": {
+    "title": "Built by a passionate team",
+    "body": "Behind ShopWave is a small, dedicated team of designers, engineers, and e-commerce enthusiasts who care deeply about the products they ship."
+  },
+  "cta": {
+    "title": "Ready to start shopping?",
+    "action": "Browse the catalog",
+    "action2": "Get in touch"
+  },
+  "nav": {
+    "backHome": "Back to home"
+  }
+}

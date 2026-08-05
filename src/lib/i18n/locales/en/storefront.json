@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "shop": "Shop",
+    "about": "About",
+    "faq": "FAQ",
+    "signIn": "Sign in",
+    "getStarted": "Get started",
+    "profile": "My Profile",
+    "menu": "Open navigation menu"
+  },
+  "searchPlaceholder": "Search products...",
+  "footer": {
+    "tagline": "Curated essentials for modern life.",
+    "rights": "All rights reserved."
+  }
+}

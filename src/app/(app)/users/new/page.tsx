@@ -10,7 +10,7 @@ export default function NewUserPage() {
 
   return (
     <RequireRole role="admin">
-      <div className="mx-auto max-w-4xl space-y-6">
+      <div className="mx-auto max-w-5xl space-y-6">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
             <UserPlus className="h-6 w-6 text-primary" />

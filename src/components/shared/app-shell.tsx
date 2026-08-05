@@ -1,13 +1,19 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { MobileNav } from "./mobile-nav";
+import { PageContainer } from "./page-container";
 import { RoleBadge, UserMenu } from "./user-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isWide =
+    pathname?.startsWith("/dashboard") || pathname?.startsWith("/my-dashboard");
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -23,7 +29,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <UserMenu />
         </header>
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1">
+          <PageContainer size={isWide ? "wide" : "default"}>{children}</PageContainer>
+        </main>
       </div>
     </div>
   );

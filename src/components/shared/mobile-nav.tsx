@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Menu,
   Package,
+  Tags,
   UserRound,
   Users,
   type LucideIcon,
@@ -26,6 +27,7 @@ interface NavItem {
   label: string;
   icon: LucideIcon;
   adminOnly?: boolean;
+  userOnly?: boolean;
 }
 
 export function MobileNav() {
@@ -35,12 +37,18 @@ export function MobileNav() {
 
   const navItems: NavItem[] = [
     { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, adminOnly: true },
+    { href: "/my-dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, userOnly: true },
     { href: "/products", label: t("nav.products"), icon: Package },
+    { href: "/categories", label: t("nav.categories"), icon: Tags, adminOnly: true },
     { href: "/users", label: t("nav.users"), icon: Users, adminOnly: true },
     { href: "/profile", label: t("nav.profile"), icon: UserRound },
   ];
 
-  const items = navItems.filter((item) => !item.adminOnly || isAdmin);
+  const items = navItems.filter((item) => {
+    if (item.adminOnly) return isAdmin;
+    if (item.userOnly) return !isAdmin;
+    return true;
+  });
 
   return (
     <DropdownMenu>

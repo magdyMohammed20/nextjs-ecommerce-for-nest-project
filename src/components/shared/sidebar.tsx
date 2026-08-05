@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   LayoutDashboard,
   Package,
+  Tags,
   Users,
   UserRound,
   type LucideIcon,
@@ -19,6 +20,7 @@ interface NavItem {
   label: string;
   icon: LucideIcon;
   adminOnly?: boolean;
+  userOnly?: boolean;
 }
 
 function SidebarLink({ item }: { item: NavItem }) {
@@ -59,7 +61,9 @@ export function Sidebar() {
 
   const navItems: NavItem[] = [
     { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, adminOnly: true },
+    { href: "/my-dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, userOnly: true },
     { href: "/products", label: t("nav.products"), icon: Package },
+    { href: "/categories", label: t("nav.categories"), icon: Tags, adminOnly: true },
     { href: "/users", label: t("nav.users"), icon: Users, adminOnly: true },
     { href: "/profile", label: t("nav.profile"), icon: UserRound },
   ];
@@ -71,7 +75,11 @@ export function Sidebar() {
       </div>
       <nav className="flex flex-col gap-1 p-3">
         {navItems
-          .filter((item) => !item.adminOnly || isAdmin)
+          .filter((item) => {
+            if (item.adminOnly) return isAdmin;
+            if (item.userOnly) return !isAdmin;
+            return true;
+          })
           .map((item) => (
             <SidebarLink key={item.href} item={item} />
           ))}

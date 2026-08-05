@@ -12,9 +12,9 @@ export function ProductCard({ product }: { product: Product }) {
   const outOfStock = product.quantity === 0;
 
   return (
-    <Link href={`/products/${product.id}`} className="group block">
-      <Card className="overflow-hidden transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
-        <div className="relative">
+    <Link href={`/products/${product.id}`} className="group block h-full">
+      <Card className="flex h-full flex-col overflow-hidden transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
+        <div className="relative shrink-0">
           <ProductImage
             src={product.imageUrl}
             alt={product.name}
@@ -27,13 +27,13 @@ export function ProductCard({ product }: { product: Product }) {
             {outOfStock ? t("outOfStock") : t("inStock", { quantity: product.quantity })}
           </Badge>
         </div>
-        <div className="space-y-2 p-4">
-          <h3 className="line-clamp-1 font-semibold leading-tight">{product.name}</h3>
-          <p className="line-clamp-2 text-sm text-muted-foreground">
+        <div className="flex flex-1 flex-col gap-2.5 px-5 pb-5">
+          <h3 className="line-clamp-1 text-base font-semibold leading-tight">{product.name}</h3>
+          <p className="line-clamp-2 flex-1 text-sm text-muted-foreground">
             {product.description ?? t("noDescription")}
           </p>
           <div className="flex items-center justify-between pt-1">
-            <span className="text-lg font-bold text-primary">
+            <span className="text-xl font-bold text-primary">
               ${Number(product.price).toFixed(2)}
             </span>
             {outOfStock && (

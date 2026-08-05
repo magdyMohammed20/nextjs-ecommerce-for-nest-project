@@ -47,7 +47,7 @@ export function Logo({
     <span className={cn("flex items-center gap-2 font-heading", className)}>
       <span
         className={cn(
-          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-fuchsia-600 text-primary-foreground shadow-sm",
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-cyan-500 text-primary-foreground shadow-sm",
           iconClassName,
         )}
       >

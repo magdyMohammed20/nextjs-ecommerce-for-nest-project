@@ -16,6 +16,12 @@ import enUsers from "./locales/en/users.json";
 import enUserForm from "./locales/en/userForm.json";
 import enProducts from "./locales/en/products.json";
 import enProductForm from "./locales/en/productForm.json";
+import enCategories from "./locales/en/categories.json";
+import enCategoriesAdmin from "./locales/en/categoriesAdmin.json";
+import enAbout from "./locales/en/about.json";
+import enFaq from "./locales/en/faq.json";
+import enStorefront from "./locales/en/storefront.json";
+import enUserDashboard from "./locales/en/userDashboard.json";
 
 import arCommon from "./locales/ar/common.json";
 import arHome from "./locales/ar/home.json";
@@ -30,6 +36,12 @@ import arUsers from "./locales/ar/users.json";
 import arUserForm from "./locales/ar/userForm.json";
 import arProducts from "./locales/ar/products.json";
 import arProductForm from "./locales/ar/productForm.json";
+import arCategories from "./locales/ar/categories.json";
+import arCategoriesAdmin from "./locales/ar/categoriesAdmin.json";
+import arAbout from "./locales/ar/about.json";
+import arFaq from "./locales/ar/faq.json";
+import arStorefront from "./locales/ar/storefront.json";
+import arUserDashboard from "./locales/ar/userDashboard.json";
 
 const resources = {
   en: {
@@ -46,6 +58,12 @@ const resources = {
     userForm: enUserForm,
     products: enProducts,
     productForm: enProductForm,
+    categories: enCategories,
+    categoriesAdmin: enCategoriesAdmin,
+    about: enAbout,
+    faq: enFaq,
+    storefront: enStorefront,
+    userDashboard: enUserDashboard,
   },
   ar: {
     common: arCommon,
@@ -61,6 +79,12 @@ const resources = {
     userForm: arUserForm,
     products: arProducts,
     productForm: arProductForm,
+    categories: arCategories,
+    categoriesAdmin: arCategoriesAdmin,
+    about: arAbout,
+    faq: arFaq,
+    storefront: arStorefront,
+    userDashboard: arUserDashboard,
   },
 } as const;
 

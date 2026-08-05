@@ -1,0 +1,9 @@
+{
+  "title": "الفئات",
+  "allCategories": "جميع الفئات",
+  "filterBy": "فلتر حسب الفئة",
+  "noProducts": "لا توجد منتجات في هذه الفئة.",
+  "toasts": {
+    "failedToLoadCategories": "فشل تحميل الفئات"
+  }
+}

@@ -127,68 +127,70 @@ export function EditUserForm({ user }: EditUserFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="role"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("role")}</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={roleLocked ? user.role : field.value}
-                disabled={roleLocked}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("selectRole")} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="user">{t(`roles.user`, { ns: "common" })}</SelectItem>
-                  <SelectItem value="admin">{t(`roles.admin`, { ns: "common" })}</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-              {isRoot && <p className="text-xs text-muted-foreground">{t("rootAdminRoleLocked")}</p>}
-              {!canChangeRole && <p className="text-xs text-muted-foreground">{t("roleChangeRestricted")}</p>}
-            </FormItem>
-          )}
-        />
+        <div className="grid gap-5 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="role"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("role")}</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={roleLocked ? user.role : field.value}
+                  disabled={roleLocked}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={t("selectRole")} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="user">{t(`roles.user`, { ns: "common" })}</SelectItem>
+                    <SelectItem value="admin">{t(`roles.admin`, { ns: "common" })}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+                {isRoot && <p className="text-xs text-muted-foreground">{t("rootAdminRoleLocked")}</p>}
+                {!canChangeRole && <p className="text-xs text-muted-foreground">{t("roleChangeRestricted")}</p>}
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("status")}</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={statusLocked ? "active" : field.value}
-                disabled={statusLocked}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("selectStatus")} />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="active">
-                    {t(`statuses.active`, { ns: "common" })}
-                  </SelectItem>
-                  <SelectItem value="pending">
-                    {t(`statuses.pending`, { ns: "common" })}
-                  </SelectItem>
-                  <SelectItem value="rejected">
-                    {t(`statuses.rejected`, { ns: "common" })}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-              {isRoot && <p className="text-xs text-muted-foreground">{t("rootAdminStatusLocked")}</p>}
-              {!canChangeRole && <p className="text-xs text-muted-foreground">{t("statusChangeRestricted")}</p>}
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("status")}</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={statusLocked ? "active" : field.value}
+                  disabled={statusLocked}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={t("selectStatus")} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="active">
+                      {t(`statuses.active`, { ns: "common" })}
+                    </SelectItem>
+                    <SelectItem value="pending">
+                      {t(`statuses.pending`, { ns: "common" })}
+                    </SelectItem>
+                    <SelectItem value="rejected">
+                      {t(`statuses.rejected`, { ns: "common" })}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+                {isRoot && <p className="text-xs text-muted-foreground">{t("rootAdminStatusLocked")}</p>}
+                {!canChangeRole && <p className="text-xs text-muted-foreground">{t("statusChangeRestricted")}</p>}
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="flex items-center gap-3">
           <Button type="submit" disabled={isSubmitting}>

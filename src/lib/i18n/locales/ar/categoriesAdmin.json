@@ -1,0 +1,44 @@
+{
+  "title": "التصنيفات",
+  "subtitle": "إدارة تصنيفات المتجر المعروضة في الصفحة الرئيسية وفلترة المنتجات.",
+  "addCategory": "إضافة تصنيف",
+  "table": {
+    "name": "الاسم",
+    "slug": "الرابط المختصر",
+    "sortOrder": "الترتيب",
+    "actions": "إجراءات"
+  },
+  "empty": "لا توجد تصنيفات بعد. أنشئ أول تصنيف للبدء.",
+  "emptySearch": "لا توجد تصنيفات تطابق بحثك.",
+  "searchPlaceholder": "ابحث عن تصنيف...",
+  "show": "عرض",
+  "perPage": "في الصفحة",
+  "newTitle": "تصنيف جديد",
+  "newSubtitle": "أنشئ تصنيفاً لتنظيم منتجاتك.",
+  "editTitle": "تعديل التصنيف",
+  "editSubtitle": "تحديث «{{name}}».",
+  "form": {
+    "name": "الاسم",
+    "namePlaceholder": "مثال: إلكترونيات",
+    "slug": "الرابط المختصر",
+    "slugPlaceholder": "مثال: electronics",
+    "slugAuto": "يُولَّد تلقائياً من الاسم — عدّله للتخصيص.",
+    "sortOrder": "الترتيب",
+    "sortOrderPlaceholder": "الأرقام الأصغر تظهر أولاً"
+  },
+  "createCategory": "إنشاء تصنيف",
+  "updateCategory": "تحديث التصنيف",
+  "cancel": "إلغاء",
+  "categoryNotFound": "التصنيف غير موجود.",
+  "deleteDialog": {
+    "title": "حذف التصنيف",
+    "description": "هل أنت متأكد من حذف «{{name}}»؟ ستُحفظ منتجاته لكن لن تعود مرتبطة به."
+  },
+  "toasts": {
+    "categoryCreated": "تم إنشاء التصنيف بنجاح",
+    "categoryUpdated": "تم تحديث التصنيف بنجاح",
+    "categoryDeleted": "تم حذف التصنيف بنجاح",
+    "failedToLoadCategories": "تعذّر تحميل التصنيفات",
+    "failedToDeleteCategory": "تعذّر حذف التصنيف"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "title": "Categories",
+  "subtitle": "Manage the store categories shown on the home page and product filters.",
+  "addCategory": "Add category",
+  "table": {
+    "name": "Name",
+    "slug": "Slug",
+    "sortOrder": "Sort order",
+    "actions": "Actions"
+  },
+  "empty": "No categories yet. Create your first category to get started.",
+  "emptySearch": "No categories match your search.",
+  "searchPlaceholder": "Search categories...",
+  "show": "Show",
+  "perPage": "per page",
+  "newTitle": "New category",
+  "newSubtitle": "Create a category to organize your products.",
+  "editTitle": "Edit category",
+  "editSubtitle": "Update \"{{name}}\".",
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "e.g. Electronics",
+    "slug": "Slug",
+    "slugPlaceholder": "e.g. electronics",
+    "slugAuto": "Auto-generated from the name — edit to override.",
+    "sortOrder": "Sort order",
+    "sortOrderPlaceholder": "Lower numbers appear first"
+  },
+  "createCategory": "Create category",
+  "updateCategory": "Update category",
+  "cancel": "Cancel",
+  "categoryNotFound": "Category not found.",
+  "deleteDialog": {
+    "title": "Delete category",
+    "description": "Are you sure you want to delete \"{{name}}\"? Its products will be kept but will no longer belong to this category."
+  },
+  "toasts": {
+    "categoryCreated": "Category created successfully",
+    "categoryUpdated": "Category updated successfully",
+    "categoryDeleted": "Category deleted successfully",
+    "failedToLoadCategories": "Failed to load categories",
+    "failedToDeleteCategory": "Failed to delete category"
+  }
+}

@@ -16,8 +16,26 @@ export const productsApi = {
     page = 1,
     limit = 10,
     search = "",
-  }: { page?: number; limit?: number; search?: string } = {}) =>
-    productsControllerFindAll({ page, limit, search }),
+    categoryIds,
+    minPrice,
+    maxPrice,
+  }: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    categoryIds?: number[];
+    minPrice?: number;
+    maxPrice?: number;
+  } = {}) =>
+    productsControllerFindAll({
+      page,
+      limit,
+      search,
+      categories:
+        categoryIds && categoryIds.length > 0 ? categoryIds.join(",") : undefined,
+      minPrice: minPrice !== undefined ? String(minPrice) : undefined,
+      maxPrice: maxPrice !== undefined ? String(maxPrice) : undefined,
+    }),
   getById: (id: number) => productsControllerFindOne(id),
   create: (data: CreateProductPayload) => productsControllerCreate(data),
   update: (id: number, data: UpdateProductPayload) =>

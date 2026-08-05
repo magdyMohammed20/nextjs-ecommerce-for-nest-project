@@ -1,0 +1,28 @@
+{
+  "title": "My Dashboard",
+  "welcome": "Welcome back, {{name}}. Here's a snapshot of your activity.",
+  "comingSoon": "Coming soon",
+  "stats": {
+    "orders": "Total Orders",
+    "ordersDescription": "Orders you've placed",
+    "spent": "Total Spent",
+    "spentDescription": "Across all your orders",
+    "wishlist": "Wishlist",
+    "wishlistDescription": "Items you've saved",
+    "reviews": "Reviews",
+    "reviewsDescription": "Reviews you've written"
+  },
+  "recentOrders": "Recent Orders",
+  "recentOrdersDescription": "Your latest orders will appear here",
+  "wishlistCard": "Wishlist",
+  "wishlistCardDescription": "Your saved items will appear here",
+  "recentlyViewed": "Recently Viewed",
+  "recentlyViewedDescription": "Products you've browsed will appear here",
+  "quickActions": "Quick Actions",
+  "quickActionsDescription": "Things you can do right now",
+  "quickLinks": [
+    { "title": "Browse products", "description": "Explore the catalog" },
+    { "title": "Edit profile", "description": "Update your details" },
+    { "title": "View catalog", "description": "See all categories" }
+  ]
+}

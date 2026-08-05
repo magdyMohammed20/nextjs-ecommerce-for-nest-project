@@ -1,0 +1,9 @@
+{
+  "title": "Categories",
+  "allCategories": "All categories",
+  "filterBy": "Filter by category",
+  "noProducts": "No products in this category.",
+  "toasts": {
+    "failedToLoadCategories": "Failed to load categories"
+  }
+}

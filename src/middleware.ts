@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth/server";
 import { TOKEN_COOKIE } from "@/lib/auth/token";
+import { isPublicBrowsingPath } from "@/lib/auth/paths";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,13 +13,25 @@ export async function middleware(request: NextRequest) {
     pathname === "/" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||
-    pathname.startsWith("/auth/google");
+    pathname.startsWith("/auth/google") ||
+    pathname.startsWith("/about") ||
+    pathname.startsWith("/faq") ||
+    isPublicBrowsingPath(pathname);
 
   if (isPublicPath) {
     if (isAuthenticated) {
-      return NextResponse.redirect(
-        new URL(payload!.role === "admin" ? "/dashboard" : "/products", request.url),
-      );
+      // Only redirect away from auth pages (login/register/google callback).
+      // The home page and browsing pages are public for everyone, logged in or not.
+      const isAuthPage =
+        pathname.startsWith("/login") ||
+        pathname.startsWith("/register") ||
+        pathname.startsWith("/auth/google");
+
+      if (isAuthPage) {
+        return NextResponse.redirect(
+          new URL(payload!.role === "admin" ? "/dashboard" : "/my-dashboard", request.url),
+        );
+      }
     }
     return NextResponse.next();
   }
@@ -32,9 +45,11 @@ export async function middleware(request: NextRequest) {
   const isAdminOnlyPath =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/users") ||
+    pathname.startsWith("/categories") ||
     pathname.startsWith("/products/new") ||
     (pathname.startsWith("/products/") && pathname.endsWith("/edit")) ||
-    (pathname.startsWith("/users/") && pathname.endsWith("/edit"));
+    (pathname.startsWith("/users/") && pathname.endsWith("/edit")) ||
+    (pathname.startsWith("/categories/") && pathname.endsWith("/edit"));
 
   if (isAdminOnlyPath && payload!.role !== "admin") {
     return NextResponse.redirect(new URL("/products", request.url));

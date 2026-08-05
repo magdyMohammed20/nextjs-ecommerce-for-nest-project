@@ -69,15 +69,30 @@ export interface CreateProductDto {
   /** @minimum 0 */
   quantity?: number;
   imageUrl?: string;
+  /**
+     * ID of the category this product belongs to
+     * @minimum 1
+     */
+  categoryId?: number;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  sortOrder?: number;
+  products?: Product[];
 }
 
 export interface Product {
   id: number;
   name: string;
   price: number;
-  description: string;
+  description?: string;
   quantity: number;
-  imageUrl: string;
+  imageUrl?: string;
+  categoryId?: number;
+  category?: Category;
 }
 
 export interface UploadResponseDto {
@@ -102,6 +117,42 @@ export interface MessageDto {
   message: string;
 }
 
+export interface CategoryPageDto {
+  data: Category[];
+  meta: PaginationMetaDto;
+}
+
+export interface CreateCategoryDto {
+  /** @maxLength 100 */
+  name: string;
+  /**
+     * @maxLength 120
+     * @pattern ^[a-z0-9]+(?:-[a-z0-9]+)*$
+     */
+  slug: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+}
+
+export interface UpdateCategoryDto { [key: string]: unknown }
+
+export interface HomeResponseDto {
+  categories: Category[];
+  featuredProducts: Product[];
+  latestProducts: Product[];
+}
+
+export interface StatsDto {
+  usersTotal: number;
+  productsTotal: number;
+  categoriesTotal: number;
+  inStock: number;
+  outOfStock: number;
+  lowStock: number;
+  inventoryValue: number;
+  averagePrice: number;
+}
+
 export type UserControllerUploadAvatarBody = {
   file?: Blob;
 };
@@ -121,10 +172,20 @@ export type ProductsControllerFindAllParams = {
 page: number;
 limit: number;
 search?: string;
+category?: number;
+categories?: string;
+minPrice?: string;
+maxPrice?: string;
 };
 
 export type ProductsControllerUploadBody = {
   file?: Blob;
+};
+
+export type CategoriesControllerFindAllPageParams = {
+page: number;
+limit: number;
+search?: string;
 };
 
 export const getAppControllerGetHelloUrl = () => {
@@ -544,6 +605,161 @@ export const productsControllerRemove = async (id: number, options?: Parameters<
   {
     ...options,
     method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getCategoriesControllerFindAllUrl = () => {
+
+
+
+
+  return `/categories`
+}
+
+export const categoriesControllerFindAll = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<Category[]> => {
+
+  return orvalFetch<Category[]>(getCategoriesControllerFindAllUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCategoriesControllerCreateUrl = () => {
+
+
+
+
+  return `/categories`
+}
+
+export const categoriesControllerCreate = async (createCategoryDto: CreateCategoryDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Category> => {
+
+  return orvalFetch<Category>(getCategoriesControllerCreateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createCategoryDto)
+  }
+);}
+
+
+
+export const getCategoriesControllerFindAllPageUrl = (params: CategoriesControllerFindAllPageParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/categories/paginated?${stringifiedParams}` : `/categories/paginated`
+}
+
+export const categoriesControllerFindAllPage = async (params: CategoriesControllerFindAllPageParams, options?: Parameters<typeof orvalFetch>[1]): Promise<CategoryPageDto> => {
+
+  return orvalFetch<CategoryPageDto>(getCategoriesControllerFindAllPageUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCategoriesControllerUpdateUrl = (id: number,) => {
+
+
+
+
+  return `/categories/${id}`
+}
+
+export const categoriesControllerUpdate = async (id: number,
+    updateCategoryDto: UpdateCategoryDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Category> => {
+
+  return orvalFetch<Category>(getCategoriesControllerUpdateUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateCategoryDto)
+  }
+);}
+
+
+
+export const getCategoriesControllerRemoveUrl = (id: number,) => {
+
+
+
+
+  return `/categories/${id}`
+}
+
+export const categoriesControllerRemove = async (id: number, options?: Parameters<typeof orvalFetch>[1]): Promise<MessageDto> => {
+
+  return orvalFetch<MessageDto>(getCategoriesControllerRemoveUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getHomeControllerGetHomeUrl = () => {
+
+
+
+
+  return `/home`
+}
+
+export const homeControllerGetHome = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<HomeResponseDto> => {
+
+  return orvalFetch<HomeResponseDto>(getHomeControllerGetHomeUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getStatsControllerGetStatsUrl = () => {
+
+
+
+
+  return `/stats`
+}
+
+export const statsControllerGetStats = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<StatsDto> => {
+
+  return orvalFetch<StatsDto>(getStatsControllerGetStatsUrl(),
+  {
+    ...options,
+    method: 'GET'
 
 
   }

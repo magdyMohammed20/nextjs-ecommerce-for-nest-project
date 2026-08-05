@@ -1,0 +1,28 @@
+{
+  "title": "لوحة التحكم الخاصة بي",
+  "welcome": "مرحبًا بعودتك، {{name}}. إليك ملخص نشاطك.",
+  "comingSoon": "قريبًا",
+  "stats": {
+    "orders": "إجمالي الطلبات",
+    "ordersDescription": "الطلبات التي قمت بها",
+    "spent": "إجمالي الإنفاق",
+    "spentDescription": "عبر جميع طلباتك",
+    "wishlist": "قائمة الرغبات",
+    "wishlistDescription": "المنتجات التي حفظتها",
+    "reviews": "التقييمات",
+    "reviewsDescription": "التقييمات التي كتبتها"
+  },
+  "recentOrders": "أحدث الطلبات",
+  "recentOrdersDescription": "ستظهر أحدث طلباتك هنا",
+  "wishlistCard": "قائمة الرغبات",
+  "wishlistCardDescription": "ستظهر منتجاتك المحفوظة هنا",
+  "recentlyViewed": "مُشاهد مؤخرًا",
+  "recentlyViewedDescription": "ستظهر المنتجات التي تصفحتها هنا",
+  "quickActions": "إجراءات سريعة",
+  "quickActionsDescription": "أشياء يمكنك القيام بها الآن",
+  "quickLinks": [
+    { "title": "تصفح المنتجات", "description": "استكشف المتجر" },
+    { "title": "تعديل الملف الشخصي", "description": "حدّث بياناتك" },
+    { "title": "عرض التصنيفات", "description": "شاهد جميع التصنيفات" }
+  ]
+}

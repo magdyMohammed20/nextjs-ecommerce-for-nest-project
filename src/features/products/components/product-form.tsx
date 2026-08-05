@@ -1,18 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { productsApi } from "../api/products-api";
+import { categoriesApi } from "@/features/categories/api/categories-api";
 import {
   productSchema,
   type ProductFormValues,
 } from "../schemas/product-schema";
 import type { Product } from "../types/product-types";
+import type { Category } from "@/features/categories/types/category-types";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,6 +26,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ProductImageInput } from "./product-image-input";
 
 interface ProductFormProps {
@@ -34,15 +43,32 @@ export function ProductForm({ product }: ProductFormProps) {
   const router = useRouter();
   const { t } = useTranslation("productForm");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    let ignore = false;
+    categoriesApi
+      .getAll()
+      .then((data) => {
+        if (!ignore) setCategories(data);
+      })
+      .catch(() => {
+        // Category selector is optional; fall back to an empty list.
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: product
       ? {
           name: product.name,
-          price: product.price,
+          price: Number(product.price),
           description: product.description ?? "",
           quantity: product.quantity,
+          categoryId: product.categoryId ?? undefined,
           imageUrl: product.imageUrl ?? "",
         }
       : {
@@ -50,6 +76,7 @@ export function ProductForm({ product }: ProductFormProps) {
           price: 0,
           description: "",
           quantity: 0,
+          categoryId: undefined,
           imageUrl: "",
         },
   });
@@ -62,11 +89,16 @@ export function ProductForm({ product }: ProductFormProps) {
         price: values.price,
         description: values.description || undefined,
         quantity: values.quantity,
+        categoryId: values.categoryId,
         imageUrl: values.imageUrl || undefined,
       };
 
       if (product) {
-        await productsApi.update(product.id, payload);
+        await productsApi.update(product.id, {
+          ...payload,
+          // Allow clearing the category back to "none".
+          categoryId: values.categoryId ?? null,
+        });
         toast.success(t("toasts.productUpdated", { ns: "common" }));
       } else {
         await productsApi.create(payload);
@@ -152,6 +184,37 @@ export function ProductForm({ product }: ProductFormProps) {
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("category")}</FormLabel>
+                  <Select
+                    onValueChange={(value) =>
+                      field.onChange(value === "none" ? undefined : Number(value))
+                    }
+                    value={field.value ? String(field.value) : "none"}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t("categoryPlaceholder")} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">{t("noCategory")}</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={String(category.id)}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
