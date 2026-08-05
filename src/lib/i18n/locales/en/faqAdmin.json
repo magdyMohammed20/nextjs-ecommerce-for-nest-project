@@ -1,0 +1,57 @@
+{
+  "title": "FAQ",
+  "subtitle": "Manage the questions and answers shown on the public FAQ page.",
+  "addFaq": "Add FAQ",
+  "table": {
+    "question": "Question (EN)",
+    "sortOrder": "Sort order",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "toggleStatus": "Toggle publish status",
+  "empty": "No FAQs yet. Create your first FAQ to get started.",
+  "createFirst": "Create your first FAQ",
+  "newTitle": "New FAQ",
+  "newSubtitle": "Create a question and answer in both English and Arabic.",
+  "editTitle": "Edit FAQ",
+  "editSubtitle": "Update \"{{question}}\".",
+  "faqNotFound": "FAQ not found.",
+  "form": {
+    "questionEn": "Question (English)",
+    "questionEnPlaceholder": "e.g. How do I place an order?",
+    "questionAr": "Question (Arabic)",
+    "questionArPlaceholder": "مثال: كيف أقوم بتقديم طلب؟",
+    "answerEn": "Answer (English)",
+    "answerEnPlaceholder": "e.g. Browse the catalog and proceed to checkout.",
+    "answerAr": "Answer (Arabic)",
+    "answerArPlaceholder": "مثال: تصفّح الكتالوج ثم انتقل إلى إتمام الشراء.",
+    "sortOrder": "Sort order",
+    "sortOrderPlaceholder": "0",
+    "sortOrderHint": "Lower numbers appear first on the public page.",
+    "isActive": "Published",
+    "active": "Active",
+    "inactive": "Inactive",
+    "isActiveHint": "Only active FAQs appear on the public page."
+  },
+  "createFaq": "Create FAQ",
+  "updateFaq": "Update FAQ",
+  "cancel": "Cancel",
+  "deleteDialog": {
+    "title": "Delete FAQ",
+    "description": "Are you sure you want to delete \"{{question}}\"? This cannot be undone."
+  },
+  "toasts": {
+    "faqCreated": "FAQ created successfully",
+    "faqUpdated": "FAQ updated successfully",
+    "faqDeleted": "FAQ deleted successfully",
+    "faqPublished": "FAQ published",
+    "faqUnpublished": "FAQ unpublished",
+    "failedToLoadFaqs": "Failed to load FAQs",
+    "failedToDeleteFaq": "Failed to delete FAQ",
+    "failedToUpdateFaq": "Failed to update FAQ"
+  }
+}

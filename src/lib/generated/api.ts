@@ -136,6 +136,34 @@ export interface CreateCategoryDto {
 
 export interface UpdateCategoryDto { [key: string]: unknown }
 
+export interface Faq {
+  id: number;
+  questionEn: string;
+  questionAr: string;
+  answerEn: string;
+  answerAr: string;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateFaqDto {
+  /** @maxLength 500 */
+  questionEn: string;
+  /** @maxLength 500 */
+  questionAr: string;
+  /** @maxLength 500 */
+  answerEn: string;
+  /** @maxLength 500 */
+  answerAr: string;
+  /** @minimum 0 */
+  sortOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateFaqDto { [key: string]: unknown }
+
 export interface HomeResponseDto {
   categories: Category[];
   featuredProducts: Product[];
@@ -715,6 +743,112 @@ export const getCategoriesControllerRemoveUrl = (id: number,) => {
 export const categoriesControllerRemove = async (id: number, options?: Parameters<typeof orvalFetch>[1]): Promise<MessageDto> => {
 
   return orvalFetch<MessageDto>(getCategoriesControllerRemoveUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getFaqControllerFindActiveUrl = () => {
+
+
+
+
+  return `/faq`
+}
+
+export const faqControllerFindActive = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<Faq[]> => {
+
+  return orvalFetch<Faq[]>(getFaqControllerFindActiveUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getFaqControllerCreateUrl = () => {
+
+
+
+
+  return `/faq`
+}
+
+export const faqControllerCreate = async (createFaqDto: CreateFaqDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Faq> => {
+
+  return orvalFetch<Faq>(getFaqControllerCreateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createFaqDto)
+  }
+);}
+
+
+
+export const getFaqControllerFindAllUrl = () => {
+
+
+
+
+  return `/faq/manage`
+}
+
+export const faqControllerFindAll = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<Faq[]> => {
+
+  return orvalFetch<Faq[]>(getFaqControllerFindAllUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getFaqControllerUpdateUrl = (id: number,) => {
+
+
+
+
+  return `/faq/${id}`
+}
+
+export const faqControllerUpdate = async (id: number,
+    updateFaqDto: UpdateFaqDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Faq> => {
+
+  return orvalFetch<Faq>(getFaqControllerUpdateUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateFaqDto)
+  }
+);}
+
+
+
+export const getFaqControllerRemoveUrl = (id: number,) => {
+
+
+
+
+  return `/faq/${id}`
+}
+
+export const faqControllerRemove = async (id: number, options?: Parameters<typeof orvalFetch>[1]): Promise<MessageDto> => {
+
+  return orvalFetch<MessageDto>(getFaqControllerRemoveUrl(id),
   {
     ...options,
     method: 'DELETE'

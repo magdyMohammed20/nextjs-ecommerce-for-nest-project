@@ -43,6 +43,10 @@
     {
       "title": "View catalog",
       "description": "Browse all products"
+    },
+    {
+      "title": "Manage FAQ",
+      "description": "Edit questions & answers"
     }
   ]
 }

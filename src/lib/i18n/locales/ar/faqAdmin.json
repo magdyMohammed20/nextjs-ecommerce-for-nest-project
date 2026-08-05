@@ -1,0 +1,57 @@
+{
+  "title": "الأسئلة الشائعة",
+  "subtitle": "إدارة الأسئلة والأجوبة المعروضة في صفحة الأسئلة الشائعة العامة.",
+  "addFaq": "إضافة سؤال",
+  "table": {
+    "question": "السؤال (إنجليزي)",
+    "sortOrder": "الترتيب",
+    "status": "الحالة",
+    "actions": "إجراءات"
+  },
+  "status": {
+    "active": "منشور",
+    "inactive": "غير منشور"
+  },
+  "toggleStatus": "تبديل حالة النشر",
+  "empty": "لا توجد أسئلة بعد. أنشئ أول سؤال للبدء.",
+  "createFirst": "أنشئ أول سؤال",
+  "newTitle": "سؤال جديد",
+  "newSubtitle": "أنشئ سؤالاً وجواباً باللغتين الإنجليزية والعربية.",
+  "editTitle": "تعديل السؤال",
+  "editSubtitle": "تحديث «{{question}}».",
+  "faqNotFound": "السؤال غير موجود.",
+  "form": {
+    "questionEn": "السؤال (إنجليزي)",
+    "questionEnPlaceholder": "مثال: How do I place an order?",
+    "questionAr": "السؤال (عربي)",
+    "questionArPlaceholder": "مثال: كيف أقوم بتقديم طلب؟",
+    "answerEn": "الجواب (إنجليزي)",
+    "answerEnPlaceholder": "مثال: Browse the catalog and proceed to checkout.",
+    "answerAr": "الجواب (عربي)",
+    "answerArPlaceholder": "مثال: تصفّح الكتالوج ثم انتقل إلى إتمام الشراء.",
+    "sortOrder": "الترتيب",
+    "sortOrderPlaceholder": "0",
+    "sortOrderHint": "الأرقام الأصغر تظهر أولاً في الصفحة العامة.",
+    "isActive": "منشور",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "isActiveHint": "تظهر الأسئلة النشطة فقط في الصفحة العامة."
+  },
+  "createFaq": "إنشاء سؤال",
+  "updateFaq": "تحديث السؤال",
+  "cancel": "إلغاء",
+  "deleteDialog": {
+    "title": "حذف السؤال",
+    "description": "هل أنت متأكد من حذف «{{question}}»؟ لا يمكن التراجع عن هذا الإجراء."
+  },
+  "toasts": {
+    "faqCreated": "تم إنشاء السؤال بنجاح",
+    "faqUpdated": "تم تحديث السؤال بنجاح",
+    "faqDeleted": "تم حذف السؤال بنجاح",
+    "faqPublished": "تم نشر السؤال",
+    "faqUnpublished": "تم إلغاء نشر السؤال",
+    "failedToLoadFaqs": "تعذّر تحميل الأسئلة الشائعة",
+    "failedToDeleteFaq": "تعذّر حذف السؤال",
+    "failedToUpdateFaq": "تعذّر تحديث السؤال"
+  }
+}

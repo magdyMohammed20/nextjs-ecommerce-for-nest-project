@@ -18,6 +18,7 @@ import enProducts from "./locales/en/products.json";
 import enProductForm from "./locales/en/productForm.json";
 import enCategories from "./locales/en/categories.json";
 import enCategoriesAdmin from "./locales/en/categoriesAdmin.json";
+import enFaqAdmin from "./locales/en/faqAdmin.json";
 import enAbout from "./locales/en/about.json";
 import enFaq from "./locales/en/faq.json";
 import enStorefront from "./locales/en/storefront.json";
@@ -38,6 +39,7 @@ import arProducts from "./locales/ar/products.json";
 import arProductForm from "./locales/ar/productForm.json";
 import arCategories from "./locales/ar/categories.json";
 import arCategoriesAdmin from "./locales/ar/categoriesAdmin.json";
+import arFaqAdmin from "./locales/ar/faqAdmin.json";
 import arAbout from "./locales/ar/about.json";
 import arFaq from "./locales/ar/faq.json";
 import arStorefront from "./locales/ar/storefront.json";
@@ -60,6 +62,7 @@ const resources = {
     productForm: enProductForm,
     categories: enCategories,
     categoriesAdmin: enCategoriesAdmin,
+    faqAdmin: enFaqAdmin,
     about: enAbout,
     faq: enFaq,
     storefront: enStorefront,
@@ -81,6 +84,7 @@ const resources = {
     productForm: arProductForm,
     categories: arCategories,
     categoriesAdmin: arCategoriesAdmin,
+    faqAdmin: arFaqAdmin,
     about: arAbout,
     faq: arFaq,
     storefront: arStorefront,

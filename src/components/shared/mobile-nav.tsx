@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  HelpCircle,
   LayoutDashboard,
   Menu,
   Package,
@@ -40,6 +41,7 @@ export function MobileNav() {
     { href: "/my-dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, userOnly: true },
     { href: "/products", label: t("nav.products"), icon: Package },
     { href: "/categories", label: t("nav.categories"), icon: Tags, adminOnly: true },
+    { href: "/dashboard/faq", label: t("nav.faq"), icon: HelpCircle, adminOnly: true },
     { href: "/users", label: t("nav.users"), icon: Users, adminOnly: true },
     { href: "/profile", label: t("nav.profile"), icon: UserRound },
   ];

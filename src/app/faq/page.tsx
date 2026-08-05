@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, ChevronDown, HelpCircle, MessageCircle } from "lucide-react";
+import { ArrowLeft, HelpCircle, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { FaqList } from "@/features/faq/components/faq-list";
+import { faqApi } from "@/features/faq/api/faq-api";
+import type { Faq } from "@/features/faq/types/faq-types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const container: Variants = {
@@ -72,51 +76,56 @@ function Reveal({
   );
 }
 
-function AccordionItem({
-  question,
-  answer,
-  isOpen,
-  onToggle,
-}: {
-  question: string;
-  answer: string;
-  isOpen: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div className="rounded-2xl border bg-card shadow-sm overflow-hidden">
-      <button
-        onClick={onToggle}
-        className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-        aria-expanded={isOpen}
-      >
-        <span className="font-semibold leading-snug">{question}</span>
-        <ChevronDown
-          className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: easeOut }}
-            className="overflow-hidden"
-          >
-            <p className="px-6 pb-5 text-sm leading-relaxed text-muted-foreground">{answer}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
+function toLocalizedItems(faqs: Faq[], isArabic: boolean) {
+  return faqs.map((faq) => ({
+    question: isArabic ? faq.questionAr : faq.questionEn,
+    answer: isArabic ? faq.answerAr : faq.answerEn,
+  }));
 }
 
 export default function FaqPage() {
-  const { t } = useTranslation("faq");
-  const items = t("items", { returnObjects: true }) as { question: string; answer: string }[];
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const { t, i18n } = useTranslation("faq");
+  const isArabic = i18n.language?.toLowerCase().startsWith("ar") ?? false;
+  const staticItems = useMemo(
+    () => t("items", { returnObjects: true }) as {
+      question: string;
+      answer: string;
+    }[],
+    [t],
+  );
+  const [liveItems, setLiveItems] = useState<{
+    question: string;
+    answer: string;
+  }[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { ref: contactRef, visible: contactVisible } = useReveal(0);
+
+  useEffect(() => {
+    let ignore = false;
+
+    faqApi
+      .getActive()
+      .then((faqs) => {
+        const localized = toLocalizedItems(faqs, isArabic);
+        if (!ignore) {
+          if (localized.length > 0) {
+            setLiveItems(localized);
+          } else {
+            setLiveItems(staticItems);
+          }
+        }
+      })
+      .catch(() => {
+        if (!ignore) setLiveItems(staticItems);
+      })
+      .finally(() => {
+        if (!ignore) setIsLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [isArabic, t, staticItems]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -153,17 +162,16 @@ export default function FaqPage() {
 
         {/* Accordion */}
         <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-          <Reveal margin={-60} className="space-y-3">
-            {items.map((faq, i) => (
-              <motion.div key={i} variants={item}>
-                <AccordionItem
-                  question={faq.question}
-                  answer={faq.answer}
-                  isOpen={openIndex === i}
-                  onToggle={() => setOpenIndex(openIndex === i ? null : i)}
-                />
-              </motion.div>
-            ))}
+          <Reveal margin={-60}>
+            {isLoading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+                ))}
+              </div>
+            ) : (
+              <FaqList items={liveItems ?? staticItems} />
+            )}
           </Reveal>
         </section>
 

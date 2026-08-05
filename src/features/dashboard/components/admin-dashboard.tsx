@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   ArrowUpRight,
   DollarSign,
+  HelpCircle,
   Package,
   PackageCheck,
   PackageX,
@@ -200,6 +201,7 @@ export function AdminDashboard() {
                 { href: "/users/new", icon: Users, ...quickLinkTexts[1] },
                 { href: "/users", icon: ShieldCheck, ...quickLinkTexts[2] },
                 { href: "/products", icon: Package, ...quickLinkTexts[3] },
+                { href: "/dashboard/faq", icon: HelpCircle, ...quickLinkTexts[4] },
               ];
               return quickLinks.map(({ href, icon: Icon, title, description }) => (
                 <Link
