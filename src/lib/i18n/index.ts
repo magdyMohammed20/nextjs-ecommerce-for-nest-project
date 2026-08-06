@@ -23,6 +23,7 @@ import enAbout from "./locales/en/about.json";
 import enFaq from "./locales/en/faq.json";
 import enStorefront from "./locales/en/storefront.json";
 import enUserDashboard from "./locales/en/userDashboard.json";
+import enCart from "./locales/en/cart.json";
 
 import arCommon from "./locales/ar/common.json";
 import arHome from "./locales/ar/home.json";
@@ -44,6 +45,7 @@ import arAbout from "./locales/ar/about.json";
 import arFaq from "./locales/ar/faq.json";
 import arStorefront from "./locales/ar/storefront.json";
 import arUserDashboard from "./locales/ar/userDashboard.json";
+import arCart from "./locales/ar/cart.json";
 
 const resources = {
   en: {
@@ -67,6 +69,7 @@ const resources = {
     faq: enFaq,
     storefront: enStorefront,
     userDashboard: enUserDashboard,
+    cart: enCart,
   },
   ar: {
     common: arCommon,
@@ -89,6 +92,7 @@ const resources = {
     faq: arFaq,
     storefront: arStorefront,
     userDashboard: arUserDashboard,
+    cart: arCart,
   },
 } as const;
 

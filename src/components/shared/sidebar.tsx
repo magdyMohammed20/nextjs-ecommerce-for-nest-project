@@ -6,6 +6,7 @@ import {
   HelpCircle,
   LayoutDashboard,
   Package,
+  ShoppingCart,
   Tags,
   Users,
   UserRound,
@@ -70,6 +71,7 @@ export function Sidebar() {
     { href: "/products", label: t("nav.products"), icon: Package },
     { href: "/categories", label: t("nav.categories"), icon: Tags, adminOnly: true },
     { href: "/dashboard/faq", label: t("nav.faq"), icon: HelpCircle, adminOnly: true },
+    { href: "/dashboard/carts", label: t("nav.carts"), icon: ShoppingCart, adminOnly: true },
     { href: "/users", label: t("nav.users"), icon: Users, adminOnly: true },
     { href: "/profile", label: t("nav.profile"), icon: UserRound },
   ];

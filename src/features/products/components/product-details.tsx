@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { productsApi } from "../api/products-api";
 import type { Product } from "../types/product-types";
 import { useAuth } from "@/features/auth/context/auth-provider";
+import { AddToCartButton } from "@/features/cart/components/add-to-cart-button";
 import { ProductImage } from "./product-image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -240,12 +241,15 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
           </div>
 
           {!isAdmin && (
-            <Button asChild variant="outline" className="mt-auto self-start">
-              <Link href="/products">
-                {t("browseMore")}
-                <ArrowUpRight className="ms-2 h-4 w-4 rtl:-scale-x-100" />
-              </Link>
-            </Button>
+            <>
+              <AddToCartButton productId={product.id} outOfStock={outOfStock} showQuantity />
+              <Button asChild variant="outline" className="mt-auto self-start">
+                <Link href="/products">
+                  {t("browseMore")}
+                  <ArrowUpRight className="ms-2 h-4 w-4 rtl:-scale-x-100" />
+                </Link>
+              </Button>
+            </>
           )}
         </div>
       </div>

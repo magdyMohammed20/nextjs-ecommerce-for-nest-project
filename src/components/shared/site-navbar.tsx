@@ -12,6 +12,7 @@ import { Logo } from "@/components/shared/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserMenu } from "@/components/shared/user-menu";
+import { CartBadge } from "@/features/cart/components/cart-badge";
 import { useAuth } from "@/features/auth/context/auth-provider";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -77,6 +78,7 @@ export function SiteNavbar() {
             </Button>
             <LanguageSwitcher />
             <ThemeToggle />
+            <CartBadge />
             <div className="hidden items-center gap-2 sm:flex">
               {user ? (
                 <UserMenu />

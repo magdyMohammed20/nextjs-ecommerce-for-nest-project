@@ -181,6 +181,61 @@ export interface StatsDto {
   averagePrice: number;
 }
 
+export interface CartItemDto {
+  id: number;
+  productId: number;
+  quantity: number;
+  product: Product;
+}
+
+export interface CartDto {
+  items: CartItemDto[];
+  subtotal: number;
+  total: number;
+  totalItems: number;
+}
+
+export interface CreateCartItemDto {
+  /** @minimum 1 */
+  productId: number;
+  /**
+     * @minimum 1
+     * @maximum 999
+     */
+  quantity?: number;
+}
+
+export interface UpdateCartItemDto {
+  /**
+     * @minimum 1
+     * @maximum 999
+     */
+  quantity: number;
+}
+
+export interface AdminCartItemDto {
+  productId: number;
+  productName: string;
+  price: number;
+  quantity: number;
+  lineTotal: number;
+}
+
+export interface AdminCartDto {
+  userId: number;
+  userName: string;
+  userEmail: string;
+  items: AdminCartItemDto[];
+  subtotal: number;
+  total: number;
+  totalItems: number;
+}
+
+export interface AdminCartPageDto {
+  data: AdminCartDto[];
+  meta: PaginationMetaDto;
+}
+
 export type UserControllerUploadAvatarBody = {
   file?: Blob;
 };
@@ -214,6 +269,11 @@ export type CategoriesControllerFindAllPageParams = {
 page: number;
 limit: number;
 search?: string;
+};
+
+export type AdminCartsControllerFindAllParams = {
+page?: number;
+limit?: number;
 };
 
 export const getAppControllerGetHelloUrl = () => {
@@ -891,6 +951,158 @@ export const getStatsControllerGetStatsUrl = () => {
 export const statsControllerGetStats = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<StatsDto> => {
 
   return orvalFetch<StatsDto>(getStatsControllerGetStatsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCartControllerGetCartUrl = () => {
+
+
+
+
+  return `/cart`
+}
+
+/**
+ * @summary Get the current user’s cart
+ */
+export const cartControllerGetCart = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<CartDto> => {
+
+  return orvalFetch<CartDto>(getCartControllerGetCartUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCartControllerAddItemUrl = () => {
+
+
+
+
+  return `/cart`
+}
+
+/**
+ * @summary Add a product to the cart (upserts quantity)
+ */
+export const cartControllerAddItem = async (createCartItemDto: CreateCartItemDto, options?: Parameters<typeof orvalFetch>[1]): Promise<CartDto> => {
+
+  return orvalFetch<CartDto>(getCartControllerAddItemUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createCartItemDto)
+  }
+);}
+
+
+
+export const getCartControllerClearCartUrl = () => {
+
+
+
+
+  return `/cart`
+}
+
+/**
+ * @summary Clear the current user’s cart
+ */
+export const cartControllerClearCart = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<MessageDto> => {
+
+  return orvalFetch<MessageDto>(getCartControllerClearCartUrl(),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getCartControllerUpdateQuantityUrl = (productId: number,) => {
+
+
+
+
+  return `/cart/${productId}`
+}
+
+/**
+ * @summary Update quantity of a cart item
+ */
+export const cartControllerUpdateQuantity = async (productId: number,
+    updateCartItemDto: UpdateCartItemDto, options?: Parameters<typeof orvalFetch>[1]): Promise<CartDto> => {
+
+  return orvalFetch<CartDto>(getCartControllerUpdateQuantityUrl(productId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateCartItemDto)
+  }
+);}
+
+
+
+export const getCartControllerRemoveItemUrl = (productId: number,) => {
+
+
+
+
+  return `/cart/${productId}`
+}
+
+/**
+ * @summary Remove a product from the cart
+ */
+export const cartControllerRemoveItem = async (productId: number, options?: Parameters<typeof orvalFetch>[1]): Promise<MessageDto> => {
+
+  return orvalFetch<MessageDto>(getCartControllerRemoveItemUrl(productId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getAdminCartsControllerFindAllUrl = (params?: AdminCartsControllerFindAllParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/admin/carts?${stringifiedParams}` : `/admin/carts`
+}
+
+/**
+ * @summary List all carts with items and owning user (admin)
+ */
+export const adminCartsControllerFindAll = async (params?: AdminCartsControllerFindAllParams, options?: Parameters<typeof orvalFetch>[1]): Promise<AdminCartPageDto> => {
+
+  return orvalFetch<AdminCartPageDto>(getAdminCartsControllerFindAllUrl(params),
   {
     ...options,
     method: 'GET'

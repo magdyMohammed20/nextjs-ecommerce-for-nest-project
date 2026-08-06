@@ -19,6 +19,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserMenu } from "@/components/shared/user-menu";
 import { SiteFooter } from "@/components/shared/site-footer";
+import { CartBadge } from "@/features/cart/components/cart-badge";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { homeApi } from "@/features/home/api/home-api";
 import type { HomeResponseDto } from "@/features/home/types/home-types";
@@ -209,8 +210,9 @@ export default function LandingPage() {
             <Button asChild variant="ghost" size="icon" aria-label={t("nav.shop")}>
               <Link href="/products"><Search className="h-4 w-4" /></Link>
             </Button>
-            <LanguageSwitcher /><ThemeToggle />
-            <div className="hidden items-center gap-2 sm:flex">
+             <LanguageSwitcher /><ThemeToggle />
+             <CartBadge />
+             <div className="hidden items-center gap-2 sm:flex">
               {user ? (
                 <UserMenu />
               ) : (

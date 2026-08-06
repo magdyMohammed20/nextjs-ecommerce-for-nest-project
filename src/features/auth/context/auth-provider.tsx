@@ -35,6 +35,13 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+function safeNextPath(): string | null {
+  if (typeof window === "undefined") return null;
+  const next = new URLSearchParams(window.location.search).get("next");
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return null;
+  return next;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatarUrl: res.avatarUrl,
       });
       toast.success(i18n.t("toasts.welcomeBack", { name: res.name }));
-      router.replace(res.role === "admin" ? "/dashboard" : "/my-dashboard");
+      router.replace(safeNextPath() ?? (res.role === "admin" ? "/dashboard" : "/my-dashboard"));
     },
     [router],
   );
@@ -103,7 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const loaded = await authApi.me();
       setUser(loaded);
       toast.success(i18n.t("toasts.welcomeBack", { name: loaded.name }));
-      router.replace(loaded.role === "admin" ? "/dashboard" : "/my-dashboard");
+      router.replace(safeNextPath() ?? (loaded.role === "admin" ? "/dashboard" : "/my-dashboard"));
     },
     [router],
   );

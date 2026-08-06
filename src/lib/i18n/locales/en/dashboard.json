@@ -47,6 +47,10 @@
     {
       "title": "Manage FAQ",
       "description": "Edit questions & answers"
+    },
+    {
+      "title": "View carts",
+      "description": "Recent customer carts"
     }
   ]
 }

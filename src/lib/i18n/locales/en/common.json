@@ -13,6 +13,8 @@
     "products": "Products",
     "categories": "Categories",
     "faq": "FAQ",
+    "carts": "Orders",
+    "cart": "Cart",
     "users": "Users",
     "profile": "My Profile",
     "openMenu": "Open navigation menu"

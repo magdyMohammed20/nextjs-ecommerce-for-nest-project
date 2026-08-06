@@ -8,6 +8,7 @@ import { PageContainer } from "./page-container";
 import { RoleBadge, UserMenu } from "./user-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { CartBadge } from "@/features/cart/components/cart-badge";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -27,6 +28,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="hidden md:block">
             <RoleBadge />
           </div>
+          <CartBadge />
           <UserMenu />
         </header>
         <main className="flex-1">
