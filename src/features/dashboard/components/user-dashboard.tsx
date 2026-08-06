@@ -53,14 +53,16 @@ function ComingSoonCard({
   title,
   description,
   icon: Icon,
+  href,
 }: {
   title: string;
   description: string;
   icon: LucideIcon;
+  href?: string;
 }) {
   const { t } = useTranslation("userDashboard");
-  return (
-    <Card>
+  const content = (
+    <Card className="transition-shadow hover:shadow-md">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
@@ -70,11 +72,19 @@ function ComingSoonCard({
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
             <Icon className="h-5 w-5 text-muted-foreground" />
           </span>
-          <p className="text-sm font-medium text-muted-foreground">{t("comingSoon")}</p>
+          {href ? (
+            <p className="flex items-center gap-1 text-sm font-medium text-primary">
+              {t("viewOrders")}
+              <ArrowUpRight className="h-4 w-4" />
+            </p>
+          ) : (
+            <p className="text-sm font-medium text-muted-foreground">{t("comingSoon")}</p>
+          )}
         </div>
       </CardContent>
     </Card>
   );
+  return href ? <Link href={href}>{content}</Link> : content;
 }
 
 export function UserDashboard() {
@@ -120,6 +130,7 @@ export function UserDashboard() {
           title={t("recentOrders")}
           description={t("recentOrdersDescription")}
           icon={ShoppingCart}
+          href="/my-dashboard/orders"
         />
         <ComingSoonCard
           title={t("wishlistCard")}

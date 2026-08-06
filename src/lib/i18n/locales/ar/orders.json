@@ -1,0 +1,59 @@
+{
+  "title": "الطلبات",
+  "subtitle": "إدارة طلبات المتجر.",
+  "searchPlaceholder": "البحث في الطلبات حسب الاسم أو البريد الإلكتروني...",
+  "allStatuses": "جميع الحالات",
+  "table": {
+    "id": "الطلب",
+    "customer": "العميل",
+    "items": "المنتجات",
+    "total": "الإجمالي",
+    "status": "الحالة",
+    "date": "التاريخ",
+    "actions": "إجراءات"
+  },
+  "statuses": {
+    "pending": "قيد الانتظار",
+    "confirmed": "مؤكَّد",
+    "shipped": "تم الشحن",
+    "delivered": "تم التسليم",
+    "cancelled": "ملغى"
+  },
+  "viewOrder": "عرض الطلب",
+  "cancelOrder": "إلغاء الطلب",
+  "empty": "لا توجد طلبات.",
+  "mine": {
+    "title": "طلباتي",
+    "subtitle": "الطلبات التي قمت بها.",
+    "empty": "لم تقم بأي طلبات بعد.",
+    "emptyAction": "تصفح المنتجات",
+    "placedDate": "تم الطلب في {{date}}",
+    "itemsCount": "{{count}} عناصر",
+    "itemsCount_other": "{{count}} عناصر"
+  },
+  "toasts": {
+    "placed": "تم تأكيد الطلب رقم {{id}} بنجاح",
+    "failedToLoad": "تعذّر تحميل الطلبات",
+    "statusUpdated": "تم تحديث حالة الطلب رقم {{id}}",
+    "statusFailed": "تعذّر تحديث حالة الطلب",
+    "cancelled": "تم إلغاء الطلب رقم {{id}} وإعادة الكمية إلى المخزون",
+    "cancelFailed": "تعذّر إلغاء الطلب",
+    "loadFailed": "تعذّر تحميل تفاصيل الطلب"
+  },
+  "actions": {
+    "cancelling": "جارٍ الإلغاء...",
+    "cancelOrder": "إلغاء الطلب"
+  },
+  "cancelDialog": {
+    "title": "إلغاء الطلب رقم {{id}}؟",
+    "description": "سيؤدي إلغاء الطلب إلى إعادة المنتجات إلى المخزون. لا يمكن التراجع عن هذا الإجراء."
+  },
+  "detail": {
+    "title": "تفاصيل الطلب رقم {{id}}",
+    "status": "الحالة",
+    "total": "الإجمالي",
+    "date": "تاريخ الطلب",
+    "itemsTitle": "المنتجات",
+    "noItems": "لا توجد عناصر في هذا الطلب."
+  }
+}

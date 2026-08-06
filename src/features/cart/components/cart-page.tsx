@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Loader2, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,9 +14,8 @@ import { formatMoney } from "../lib/format";
 
 export function CartPage() {
   const { t } = useTranslation("cart");
-  const { cart, isLoading, updateQuantity, removeItem, clearCart, addItem } = useCart();
+  const { cart, isLoading, updateQuantity, removeItem, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -171,24 +169,8 @@ export function CartPage() {
               <span>{t("total")}</span>
               <span>{formatMoney(Number(cart?.total ?? 0))}</span>
             </div>
-            <Button
-              className="w-full"
-              disabled={addItem.isPending}
-              onClick={() => {
-                if (!isAuthenticated) {
-                  toast(t("mustSignIn"), {
-                    action: {
-                      label: t("signIn"),
-                      onClick: () => {
-                        router.push("/login?next=/cart");
-                      },
-                    },
-                  });
-                }
-              }}
-            >
-              {addItem.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t("checkout")}
+            <Button asChild className="w-full">
+              <Link href="/checkout">{t("checkout")}</Link>
             </Button>
             <Button variant="outline" className="w-full" onClick={handleClear} disabled={clearCart.isPending}>
               {t("clearCart")}

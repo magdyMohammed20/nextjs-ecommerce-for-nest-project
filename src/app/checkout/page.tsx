@@ -1,0 +1,41 @@
+"use client";
+
+import { useTranslation } from "react-i18next";
+import { SiteNavbar } from "@/components/shared/site-navbar";
+import { SiteFooter } from "@/components/shared/site-footer";
+import { PageHero } from "@/components/shared/page-hero";
+import { AccessDenied } from "@/components/shared/access-denied";
+import { useAuth } from "@/features/auth/context/auth-provider";
+import { CheckoutPage } from "@/features/cart/components/checkout-page";
+
+export default function CheckoutPageClient() {
+  const { t } = useTranslation("cart");
+  const { isAdmin, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (isAdmin) {
+    return <AccessDenied />;
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <SiteNavbar />
+      <main className="flex-1">
+        <PageHero>
+          <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6 lg:px-8">
+            <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl">{t("checkoutTitle")}</h1>
+            <div className="mx-auto mt-4 h-1 w-14 rounded-full bg-gradient-to-r from-cyan-300 to-sky-400" />
+            <p className="mt-5 text-white/85">{t("checkoutSubtitle")}</p>
+          </div>
+        </PageHero>
+        <section className="w-full px-4 py-16 sm:px-6 lg:px-8">
+          <CheckoutPage />
+        </section>
+      </main>
+      <SiteFooter />
+    </div>
+  );
+}

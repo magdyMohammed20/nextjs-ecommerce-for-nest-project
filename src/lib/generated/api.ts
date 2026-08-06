@@ -216,6 +216,107 @@ export interface UpdateCartItemDto {
   quantity: number;
 }
 
+export interface CreateOrderItemDto {
+  /** @minimum 1 */
+  productId: number;
+  /** @minimum 1 */
+  quantity: number;
+}
+
+export interface CreateOrderDto {
+  customerName: string;
+  customerEmail: string;
+  /** @minItems 1 */
+  items: CreateOrderItemDto[];
+}
+
+export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus];
+
+
+export const OrderStatus = {
+  pending: 'pending',
+  confirmed: 'confirmed',
+  shipped: 'shipped',
+  delivered: 'delivered',
+  cancelled: 'cancelled',
+} as const;
+
+export interface OrderItem {
+  id: number;
+  orderId: number;
+  /**
+     * Snapshot reference; null when the product has been deleted
+     * @nullable
+     */
+  productId?: number | null;
+  productName: string;
+  unitPrice: number;
+  quantity: number;
+  /** @nullable */
+  product?: Product | null;
+  order: Order;
+}
+
+export interface Order {
+  id: number;
+  customerName: string;
+  customerEmail: string;
+  /**
+     * Set when the customer is a registered user; null for guest checkout
+     * @nullable
+     */
+  userId?: number | null;
+  total: number;
+  status: OrderStatus;
+  items?: OrderItem[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateMyOrderDto {
+  /** @minItems 1 */
+  items: CreateOrderItemDto[];
+}
+
+export interface OrderPageDto {
+  data: Order[];
+  meta: PaginationMetaDto;
+}
+
+export type OrderSummaryDtoStatus = typeof OrderSummaryDtoStatus[keyof typeof OrderSummaryDtoStatus];
+
+
+export const OrderSummaryDtoStatus = {
+  pending: 'pending',
+  confirmed: 'confirmed',
+  shipped: 'shipped',
+  delivered: 'delivered',
+  cancelled: 'cancelled',
+} as const;
+
+export interface OrderSummaryDto {
+  id: number;
+  customerEmail: string;
+  total: number;
+  status: OrderSummaryDtoStatus;
+  createdAt: string;
+}
+
+export type UpdateOrderStatusDtoStatus = typeof UpdateOrderStatusDtoStatus[keyof typeof UpdateOrderStatusDtoStatus];
+
+
+export const UpdateOrderStatusDtoStatus = {
+  pending: 'pending',
+  confirmed: 'confirmed',
+  shipped: 'shipped',
+  delivered: 'delivered',
+  cancelled: 'cancelled',
+} as const;
+
+export interface UpdateOrderStatusDto {
+  status: UpdateOrderStatusDtoStatus;
+}
+
 export type UserControllerUploadAvatarBody = {
   file?: Blob;
 };
@@ -249,6 +350,18 @@ export type CategoriesControllerFindAllPageParams = {
 page: number;
 limit: number;
 search?: string;
+};
+
+export type OrdersControllerFindAllParams = {
+page: number;
+limit: number;
+search?: string;
+status?: string;
+};
+
+export type OrdersControllerFindMineParams = {
+page: number;
+limit: number;
 };
 
 export const getAppControllerGetHelloUrl = () => {
@@ -1052,5 +1165,188 @@ export const cartControllerRemoveItem = async (productId: number, options?: Para
     method: 'DELETE'
 
 
+  }
+);}
+
+
+
+export const getOrdersControllerCreateUrl = () => {
+
+
+
+
+  return `/orders`
+}
+
+/**
+ * @summary Create an order (public checkout)
+ */
+export const ordersControllerCreate = async (createOrderDto: CreateOrderDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Order> => {
+
+  return orvalFetch<Order>(getOrdersControllerCreateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createOrderDto)
+  }
+);}
+
+
+
+export const getOrdersControllerFindAllUrl = (params: OrdersControllerFindAllParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/orders?${stringifiedParams}` : `/orders`
+}
+
+/**
+ * @summary List orders (paginated, admin)
+ */
+export const ordersControllerFindAll = async (params: OrdersControllerFindAllParams, options?: Parameters<typeof orvalFetch>[1]): Promise<OrderPageDto> => {
+
+  return orvalFetch<OrderPageDto>(getOrdersControllerFindAllUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getOrdersControllerCreateMineUrl = () => {
+
+
+
+
+  return `/orders/mine`
+}
+
+/**
+ * @summary Place an order for the authenticated user (checkout)
+ */
+export const ordersControllerCreateMine = async (createMyOrderDto: CreateMyOrderDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Order> => {
+
+  return orvalFetch<Order>(getOrdersControllerCreateMineUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createMyOrderDto)
+  }
+);}
+
+
+
+export const getOrdersControllerFindMineUrl = (params: OrdersControllerFindMineParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/orders/mine?${stringifiedParams}` : `/orders/mine`
+}
+
+/**
+ * @summary List the authenticated user's own orders (paginated)
+ */
+export const ordersControllerFindMine = async (params: OrdersControllerFindMineParams, options?: Parameters<typeof orvalFetch>[1]): Promise<OrderPageDto> => {
+
+  return orvalFetch<OrderPageDto>(getOrdersControllerFindMineUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getOrdersControllerFindLatestUrl = () => {
+
+
+
+
+  return `/orders/latest`
+}
+
+/**
+ * @summary Latest orders for the dashboard card (admin)
+ */
+export const ordersControllerFindLatest = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<OrderSummaryDto[]> => {
+
+  return orvalFetch<OrderSummaryDto[]>(getOrdersControllerFindLatestUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getOrdersControllerFindOneUrl = (id: number,) => {
+
+
+
+
+  return `/orders/${id}`
+}
+
+/**
+ * @summary Order detail with items (admin)
+ */
+export const ordersControllerFindOne = async (id: number, options?: Parameters<typeof orvalFetch>[1]): Promise<Order> => {
+
+  return orvalFetch<Order>(getOrdersControllerFindOneUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getOrdersControllerUpdateStatusUrl = (id: number,) => {
+
+
+
+
+  return `/orders/${id}/status`
+}
+
+/**
+ * @summary Update an order status (admin)
+ */
+export const ordersControllerUpdateStatus = async (id: number,
+    updateOrderStatusDto: UpdateOrderStatusDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Order> => {
+
+  return orvalFetch<Order>(getOrdersControllerUpdateStatusUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateOrderStatusDto)
   }
 );}

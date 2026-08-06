@@ -21,10 +21,15 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { statsApi } from "../api/stats-api";
 import { usersApi } from "@/features/users/api/users-api";
+import { ordersApi } from "@/features/orders/api/orders-api";
+import type { OrderSummary } from "@/features/orders/types/order-types";
+import { OrderStatusBadge } from "@/features/orders/components/order-status-badge";
+import { formatDate } from "@/features/orders/lib/format";
 import type { StatsDto } from "@/lib/generated/api";
 import type { User } from "@/features/users/types/user-types";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -75,7 +80,10 @@ export function AdminDashboard() {
   const { t } = useTranslation("dashboard");
   const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<StatsDto | null>(null);
+  const [latestOrders, setLatestOrders] = useState<OrderSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [ordersError, setOrdersError] = useState(false);
 
   useEffect(() => {
     Promise.all([statsApi.getStats(), usersApi.getAll({ limit: 5 })])
@@ -89,6 +97,33 @@ export function AdminDashboard() {
         ),
       )
       .finally(() => setIsLoading(false));
+  }, [t]);
+
+  useEffect(() => {
+    let ignore = false;
+
+    ordersApi
+      .getLatest()
+      .then((orders) => {
+        if (!ignore) setLatestOrders(orders);
+      })
+      .catch((error) => {
+        if (!ignore) {
+          setOrdersError(true);
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : t("toasts.failedToLoad", { ns: "orders" }),
+          );
+        }
+      })
+      .finally(() => {
+        if (!ignore) setOrdersLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [t]);
 
   if (isLoading) {
@@ -226,17 +261,58 @@ export function AdminDashboard() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>{t("latestOrders")}</CardTitle>
-            <CardDescription>{t("latestOrdersDescription")}</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <div>
+              <CardTitle>{t("latestOrders")}</CardTitle>
+              <CardDescription>{t("latestOrdersDescription")}</CardDescription>
+            </div>
+            <Button asChild size="sm" variant="ghost" className="shrink-0">
+              <Link href="/dashboard/orders">
+                {t("viewAll")}
+                <ArrowUpRight className="ms-1 h-3.5 w-3.5 rtl:-scale-x-100" />
+              </Link>
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 text-center">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                <ShoppingCart className="h-5 w-5 text-muted-foreground" />
-              </span>
-              <p className="text-sm font-medium text-muted-foreground">{t("comingSoon")}</p>
-            </div>
+            {ordersLoading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-8 w-full" />
+                ))}
+              </div>
+            ) : ordersError ? (
+              <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 text-center">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                  <ShoppingCart className="h-5 w-5 text-muted-foreground" />
+                </span>
+                <p className="text-sm font-medium text-muted-foreground">{t("failedToLoad")}</p>
+              </div>
+            ) : latestOrders.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 text-center">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                  <ShoppingCart className="h-5 w-5 text-muted-foreground" />
+                </span>
+                <p className="text-sm font-medium text-muted-foreground">{t("noOrdersYet")}</p>
+              </div>
+            ) : (
+              <ul className="divide-y">
+                {latestOrders.map((order) => (
+                  <li
+                    key={order.id}
+                    className="flex items-center justify-between gap-2 py-2.5"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">#{order.id} {order.customerEmail}</p>
+                      <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span className="text-sm font-medium">{formatMoney(order.total)}</span>
+                      <OrderStatusBadge status={order.status} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
 

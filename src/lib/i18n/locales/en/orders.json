@@ -1,0 +1,59 @@
+{
+  "title": "Orders",
+  "subtitle": "Manage orders placed on the store.",
+  "searchPlaceholder": "Search orders by name or email...",
+  "allStatuses": "All statuses",
+  "table": {
+    "id": "Order",
+    "customer": "Customer",
+    "items": "Items",
+    "total": "Total",
+    "status": "Status",
+    "date": "Date",
+    "actions": "Actions"
+  },
+  "statuses": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "viewOrder": "View order",
+  "cancelOrder": "Cancel order",
+  "empty": "No orders found.",
+  "mine": {
+    "title": "My Orders",
+    "subtitle": "Orders you've placed.",
+    "empty": "You haven't placed any orders yet.",
+    "emptyAction": "Browse products",
+    "placedDate": "Placed on {{date}}",
+    "itemsCount": "{{count}} items",
+    "itemsCount_other": "{{count}} items"
+  },
+  "toasts": {
+    "placed": "Order #{{id}} placed successfully",
+    "failedToLoad": "Failed to load orders",
+    "statusUpdated": "Order #{{id}} status updated",
+    "statusFailed": "Failed to update order status",
+    "cancelled": "Order #{{id}} cancelled and stock restored",
+    "cancelFailed": "Failed to cancel order",
+    "loadFailed": "Failed to load order details"
+  },
+  "actions": {
+    "cancelling": "Cancelling...",
+    "cancelOrder": "Cancel order"
+  },
+  "cancelDialog": {
+    "title": "Cancel order #{{id}}?",
+    "description": "Cancelling restores the items to inventory. This cannot be undone."
+  },
+  "detail": {
+    "title": "Order #{{id}}",
+    "status": "Status",
+    "total": "Total",
+    "date": "Placed",
+    "itemsTitle": "Items",
+    "noItems": "No items on this order."
+  }
+}
