@@ -9,7 +9,7 @@ export function StorefrontFooter() {
 
   return (
     <footer className="border-t bg-muted/40">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 text-center sm:flex-row sm:px-6 sm:text-start lg:px-8">
+      <div className="flex w-full flex-col items-center justify-between gap-4 px-4 py-8 text-center sm:flex-row sm:px-6 sm:text-start lg:px-8">
         <Link href="/" className="flex items-center">
           <Logo />
         </Link>

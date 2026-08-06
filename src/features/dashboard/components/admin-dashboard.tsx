@@ -202,7 +202,6 @@ export function AdminDashboard() {
                 { href: "/users", icon: ShieldCheck, ...quickLinkTexts[2] },
                 { href: "/products", icon: Package, ...quickLinkTexts[3] },
                 { href: "/dashboard/faq", icon: HelpCircle, ...quickLinkTexts[4] },
-                { href: "/dashboard/carts", icon: ShoppingCart, ...quickLinkTexts[5] },
               ];
               return quickLinks.map(({ href, icon: Icon, title, description }) => (
                 <Link

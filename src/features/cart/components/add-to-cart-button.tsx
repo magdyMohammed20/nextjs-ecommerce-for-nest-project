@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, Minus, Plus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/features/auth/context/auth-provider";
+import type { Product } from "@/features/products/types/product-types";
 import { useCart } from "../hooks/use-cart";
 
 export function AddToCartButton({
@@ -14,40 +13,29 @@ export function AddToCartButton({
   outOfStock = false,
   showQuantity = false,
   className,
+  product,
 }: {
   productId: number;
   outOfStock?: boolean;
   showQuantity?: boolean;
   className?: string;
+  product?: Product;
 }) {
   const { t } = useTranslation("cart");
-  const { isAuthenticated } = useAuth();
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [pending, setPending] = useState(false);
 
   async function handleAdd() {
-    if (!isAuthenticated) return;
     setPending(true);
     try {
-      await addItem.mutateAsync({ productId, quantity });
+      await addItem.mutateAsync({ productId, quantity, product });
       toast.success(t("added", { count: quantity }));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("addFailed"));
     } finally {
       setPending(false);
     }
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <Button asChild size={showQuantity ? "lg" : "sm"} className={className}>
-        <Link href="/login?next=/cart">
-          <ShoppingCart className="mr-2 h-4 w-4" />
-          {t("signInToAdd")}
-        </Link>
-      </Button>
-    );
   }
 
   return (

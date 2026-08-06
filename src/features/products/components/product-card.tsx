@@ -14,8 +14,8 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="flex h-full flex-col">
-      <Link href={`/products/${product.id}`} className="group block h-full">
-        <Card className="flex h-full flex-col overflow-hidden transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
+      <Card className="flex h-full flex-col overflow-hidden transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
+        <Link href={`/products/${product.id}`} className="group block h-full">
           <div className="relative shrink-0">
             <ProductImage
               src={product.imageUrl}
@@ -29,12 +29,12 @@ export function ProductCard({ product }: { product: Product }) {
               {outOfStock ? t("outOfStock") : t("inStock", { quantity: product.quantity })}
             </Badge>
           </div>
-          <div className="flex flex-1 flex-col gap-2.5 px-5 pb-5">
+          <div className="flex flex-1 flex-col gap-2.5 px-5 pt-3 pb-1">
             <h3 className="line-clamp-1 text-base font-semibold leading-tight">{product.name}</h3>
             <p className="line-clamp-2 flex-1 text-sm text-muted-foreground">
               {product.description ?? t("noDescription")}
             </p>
-            <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center justify-between">
               <span className="text-xl font-bold text-primary">
                 ${Number(product.price).toFixed(2)}
               </span>
@@ -43,11 +43,16 @@ export function ProductCard({ product }: { product: Product }) {
               )}
             </div>
           </div>
-        </Card>
-      </Link>
-      <div className="p-3 pt-0" onClick={(e) => e.preventDefault()}>
-        <AddToCartButton productId={product.id} outOfStock={outOfStock} />
-      </div>
+        </Link>
+        <div className="px-5 pb-4 pt-2" onClick={(e) => e.preventDefault()}>
+          <AddToCartButton
+            productId={product.id}
+            outOfStock={outOfStock}
+            product={product}
+            className="w-full"
+          />
+        </div>
+      </Card>
     </div>
   );
 }

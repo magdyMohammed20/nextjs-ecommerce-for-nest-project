@@ -22,6 +22,14 @@
   "recentActivity": "النشاط الأخير",
   "recentActivityDescription": "أحدث نشاطات الإدارة والمتجر",
   "comingSoon": "قريباً",
+  "orders": {
+    "title": "الطلبات",
+    "subtitle": "طلبات مقدمة من المستخدمين",
+    "comingSoonTitle": "إدارة الطلبات",
+    "comingSoonDescription": "سيتم إدارة طلبات المستخدمين هنا",
+    "comingSoon": "قريباً",
+    "comingSoonDetails": "ستعرض مرحلة الطلبات الطلبات التي أنشأها المستخدمون، وليس سلات التسوق. سيتم تنفيذ هذا القسم في تحديث مستقبلي."
+  },
   "recentUsers": "أحدث المستخدمين",
   "recentUsersDescription": "أحدث الحسابات المسجّلة",
   "noUsersYet": "لا يوجد مستخدمون بعد.",
@@ -47,10 +55,6 @@
     {
       "title": "إدارة الأسئلة الشائعة",
       "description": "تعديل الأسئلة والأجوبة"
-    },
-    {
-      "title": "عرض سلات الأسعار",
-      "description": "أحدث سلات العملاء"
     }
   ]
 }

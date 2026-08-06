@@ -39,7 +39,7 @@ export function EditCategory({ categoryId }: { categoryId: number }) {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-6">
+      <div className="w-full space-y-6">
         <div className="space-y-2">
           <Skeleton className="h-8 w-44" />
           <Skeleton className="h-4 w-72" />
@@ -65,7 +65,7 @@ export function EditCategory({ categoryId }: { categoryId: number }) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="w-full space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">{t("editTitle")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">

@@ -25,7 +25,7 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t bg-muted/40">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-5">
           <div>
             <Logo />

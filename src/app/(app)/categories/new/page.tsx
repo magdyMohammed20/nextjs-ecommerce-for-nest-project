@@ -10,7 +10,7 @@ export default function NewCategoryPage() {
 
   return (
     <RequireRole role="admin">
-      <div className="mx-auto max-w-3xl space-y-6">
+      <div className="w-full space-y-6">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
             <Tags className="h-6 w-6 text-primary" />

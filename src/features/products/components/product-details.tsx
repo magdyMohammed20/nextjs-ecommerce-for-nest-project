@@ -40,7 +40,7 @@ interface ProductDetailsProps {
 
 function ProductDetailsSkeleton() {
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex items-center justify-between">
         <Skeleton className="h-4 w-28" />
         <Skeleton className="h-9 w-28" />
@@ -138,7 +138,7 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
   const price = Number(product.price).toFixed(2);
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button asChild variant="ghost" size="sm" className="-ml-2 text-muted-foreground">
           <Link href="/products">
@@ -242,7 +242,12 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
 
           {!isAdmin && (
             <>
-              <AddToCartButton productId={product.id} outOfStock={outOfStock} showQuantity />
+              <AddToCartButton
+                productId={product.id}
+                outOfStock={outOfStock}
+                showQuantity
+                product={product}
+              />
               <Button asChild variant="outline" className="mt-auto self-start">
                 <Link href="/products">
                   {t("browseMore")}

@@ -213,29 +213,6 @@ export interface UpdateCartItemDto {
   quantity: number;
 }
 
-export interface AdminCartItemDto {
-  productId: number;
-  productName: string;
-  price: number;
-  quantity: number;
-  lineTotal: number;
-}
-
-export interface AdminCartDto {
-  userId: number;
-  userName: string;
-  userEmail: string;
-  items: AdminCartItemDto[];
-  subtotal: number;
-  total: number;
-  totalItems: number;
-}
-
-export interface AdminCartPageDto {
-  data: AdminCartDto[];
-  meta: PaginationMetaDto;
-}
-
 export type UserControllerUploadAvatarBody = {
   file?: Blob;
 };
@@ -269,11 +246,6 @@ export type CategoriesControllerFindAllPageParams = {
 page: number;
 limit: number;
 search?: string;
-};
-
-export type AdminCartsControllerFindAllParams = {
-page?: number;
-limit?: number;
 };
 
 export const getAppControllerGetHelloUrl = () => {
@@ -1075,37 +1047,6 @@ export const cartControllerRemoveItem = async (productId: number, options?: Para
   {
     ...options,
     method: 'DELETE'
-
-
-  }
-);}
-
-
-
-export const getAdminCartsControllerFindAllUrl = (params?: AdminCartsControllerFindAllParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/admin/carts?${stringifiedParams}` : `/admin/carts`
-}
-
-/**
- * @summary List all carts with items and owning user (admin)
- */
-export const adminCartsControllerFindAll = async (params?: AdminCartsControllerFindAllParams, options?: Parameters<typeof orvalFetch>[1]): Promise<AdminCartPageDto> => {
-
-  return orvalFetch<AdminCartPageDto>(getAdminCartsControllerFindAllUrl(params),
-  {
-    ...options,
-    method: 'GET'
 
 
   }

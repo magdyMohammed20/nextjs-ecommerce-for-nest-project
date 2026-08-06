@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
@@ -8,12 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImage } from "@/features/products/components/product-image";
+import { useAuth } from "@/features/auth/context/auth-provider";
 import { useCart } from "../hooks/use-cart";
 import { formatMoney } from "../lib/format";
 
 export function CartPage() {
   const { t } = useTranslation("cart");
   const { cart, isLoading, updateQuantity, removeItem, clearCart, addItem } = useCart();
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -76,6 +80,15 @@ export function CartPage() {
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
+
+      {!isAuthenticated && items.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3">
+          <p className="text-sm text-muted-foreground">{t("guestNotice")}</p>
+          <Button asChild size="sm">
+            <Link href="/login?next=/cart">{t("signIn")}</Link>
+          </Button>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <div className="space-y-3">
@@ -158,7 +171,22 @@ export function CartPage() {
               <span>{t("total")}</span>
               <span>{formatMoney(Number(cart?.total ?? 0))}</span>
             </div>
-            <Button className="w-full" disabled={addItem.isPending}>
+            <Button
+              className="w-full"
+              disabled={addItem.isPending}
+              onClick={() => {
+                if (!isAuthenticated) {
+                  toast(t("mustSignIn"), {
+                    action: {
+                      label: t("signIn"),
+                      onClick: () => {
+                        router.push("/login?next=/cart");
+                      },
+                    },
+                  });
+                }
+              }}
+            >
               {addItem.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t("checkout")}
             </Button>

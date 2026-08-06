@@ -19,7 +19,7 @@ export default function CartPageClient() {
             <p className="mt-5 text-white/85">{t("subtitle")}</p>
           </div>
         </PageHero>
-        <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+        <section className="w-full px-4 py-16 sm:px-6 lg:px-8">
           <CartPage />
         </section>
       </main>

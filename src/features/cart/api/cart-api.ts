@@ -4,7 +4,6 @@ import {
   cartControllerGetCart,
   cartControllerRemoveItem,
   cartControllerUpdateQuantity,
-  adminCartsControllerFindAll,
 } from "@/lib/generated/api";
 import type {
   CreateCartItemDto,
@@ -18,6 +17,4 @@ export const cartApi = {
     cartControllerUpdateQuantity(productId, data),
   removeItem: (productId: number) => cartControllerRemoveItem(productId),
   clearCart: () => cartControllerClearCart(),
-  adminList: (page = 1, limit = 10) =>
-    adminCartsControllerFindAll({ page, limit }),
 };

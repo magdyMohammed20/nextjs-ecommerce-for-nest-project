@@ -40,7 +40,7 @@ export function EditFaq({ faqId }: { faqId: number }) {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl space-y-6">
+      <div className="w-full space-y-6">
         <div className="space-y-2">
           <Skeleton className="h-8 w-44" />
           <Skeleton className="h-4 w-72" />
@@ -67,7 +67,7 @@ export function EditFaq({ faqId }: { faqId: number }) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="w-full space-y-6">
       <div>
         <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
           <HelpCircle className="h-6 w-6 text-primary" />

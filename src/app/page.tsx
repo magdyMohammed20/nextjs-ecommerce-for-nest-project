@@ -21,8 +21,10 @@ import { UserMenu } from "@/components/shared/user-menu";
 import { SiteFooter } from "@/components/shared/site-footer";
 import { CartBadge } from "@/features/cart/components/cart-badge";
 import { useAuth } from "@/features/auth/context/auth-provider";
+import { useCart } from "@/features/cart/hooks/use-cart";
 import { homeApi } from "@/features/home/api/home-api";
 import type { HomeResponseDto } from "@/features/home/types/home-types";
+import type { Product } from "@/features/products/types/product-types";
 import { ProductImage } from "@/features/products/components/product-image";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -133,7 +135,20 @@ const valueIcons = [Truck, ShieldCheck, RotateCcw, LifeBuoy];
 export default function LandingPage() {
   const { t } = useTranslation("home");
   const { user } = useAuth();
+  const { addItem } = useCart();
   const router = useRouter();
+
+  function handleAddToCart(productId: number | null, product?: Product) {
+    if (!productId) return;
+    addItem.mutate(
+      { productId, quantity: 1, product },
+      {
+        onSuccess: () => toast.success(t("featured.addedToCart")),
+        onError: (err) =>
+          toast.error(err instanceof Error ? err.message : "Could not add to cart"),
+      },
+    );
+  }
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [homeData, setHomeData] = useState<HomeResponseDto | null>(null);
@@ -410,6 +425,7 @@ export default function LandingPage() {
                   typeof p.category === "string" ? p.category : p.category?.name;
                 const imageUrl = isLive ? (p.imageUrl ?? null) : null;
                 const gradient = productGradients[i % productGradients.length];
+                const liveProduct = isLive ? (product as unknown as Product) : undefined;
                 return (
                   <motion.div key={i} variants={item} whileHover={{ y: -8 }} className="h-full">
                     <Link href={isLive ? `/products/${p.id}` : "/products"}
@@ -432,16 +448,23 @@ export default function LandingPage() {
                           <Star className="h-3 w-3 fill-amber-300 text-amber-300" />4.9
                         </span>
                       </div>
-                      <div className="flex flex-1 flex-col space-y-2 px-4 pb-4">
-                        {categoryName && <p className="text-xs uppercase tracking-wide text-muted-foreground">{categoryName}</p>}
-                        <h3 className="line-clamp-1 font-semibold leading-snug">{name}</h3>
-                        <div className="mt-auto flex items-center justify-between pt-1">
+                    <div className="flex flex-1 flex-col px-4 pt-3 pb-3">
+                        {categoryName && <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">{categoryName}</p>}
+                        <h3 className="line-clamp-1 text-base font-semibold leading-tight">{name}</h3>
+                        <div className="mt-2 flex items-center justify-between">
                           <div className="flex items-baseline gap-2">
                             <span className="text-lg font-bold text-primary">${price.toFixed(2)}</span>
                             {oldPrice > 0 && <span className="text-sm text-muted-foreground line-through">${oldPrice.toFixed(2)}</span>}
                           </div>
                           <Button size="sm" className="opacity-90 transition-opacity group-hover:opacity-100"
-                            onClick={(e) => { e.preventDefault(); toast.success(t("featured.addedToCart")); }}>
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleAddToCart(
+                                isLive && typeof p.id === "number" ? p.id : null,
+                                liveProduct,
+                              );
+                            }}>
                             <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />{t("featured.addToCart")}
                           </Button>
                         </div>
@@ -476,10 +499,25 @@ export default function LandingPage() {
                         <Package className="h-16 w-16 text-white/80" />
                       )}
                     </div>
-                    <div className="flex flex-1 flex-col gap-1 px-4 pb-4">
-                      {product.category?.name && <p className="text-xs uppercase tracking-wide text-muted-foreground">{product.category.name}</p>}
-                      <h3 className="line-clamp-1 font-semibold">{product.name}</h3>
-                      <p className="mt-auto text-lg font-bold text-primary">${Number(product.price).toFixed(2)}</p>
+                    <div className="flex flex-1 flex-col px-4 pt-3 pb-3">
+                      {product.category?.name && (
+                        <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">{product.category.name}</p>
+                      )}
+                      <h3 className="line-clamp-1 text-base font-semibold leading-tight">{product.name}</h3>
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className="text-lg font-bold text-primary">${Number(product.price).toFixed(2)}</span>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAddToCart(product.id, product);
+                          }}
+                        >
+                          <ShoppingBag className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </div>
                   </Link>
                 </motion.div>

@@ -34,7 +34,7 @@ export default function ProductsPage() {
   const { t } = useTranslation("products");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
           <Package className="h-6 w-6 text-primary" />

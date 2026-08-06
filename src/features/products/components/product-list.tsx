@@ -317,7 +317,7 @@ export function ProductList({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {isAdmin && (
         <div className="flex items-center justify-end">
           <Button asChild>
@@ -442,7 +442,7 @@ export function ProductList({
             ))}
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="space-y-3">
                 <Skeleton className="aspect-[16/10] w-full rounded-lg" />
@@ -541,7 +541,7 @@ export function ProductList({
           </Table>
         </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {products?.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
