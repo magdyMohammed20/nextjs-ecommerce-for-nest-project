@@ -4,11 +4,15 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/features/auth/context/auth-provider";
 import { useCart } from "../hooks/use-cart";
 
 export function CartBadge() {
   const { t } = useTranslation("common");
   const { totalItems } = useCart();
+  const { isAdmin } = useAuth();
+
+  if (isAdmin) return null;
 
   return (
     <Button

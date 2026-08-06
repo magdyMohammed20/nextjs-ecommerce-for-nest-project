@@ -135,11 +135,11 @@ const productGradients = [
 const valueIcons = [Truck, ShieldCheck, RotateCcw, LifeBuoy];
 export default function LandingPage() {
   const { t } = useTranslation("home");
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { addItem } = useCart();
 
   function handleAddToCart(productId: number | null, product?: Product) {
-    if (!productId) return;
+    if (!productId || isAdmin) return;
     addItem.mutate(
       { productId, quantity: 1, product },
       {
@@ -257,17 +257,19 @@ export default function LandingPage() {
                 <span className="text-lg font-bold text-primary">${price.toFixed(2)}</span>
                 {oldPrice > 0 && <span className="text-sm text-muted-foreground line-through">${oldPrice.toFixed(2)}</span>}
               </div>
-              <Button size="sm" className="opacity-90 transition-opacity group-hover:opacity-100"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleAddToCart(
-                    isLive && typeof p.id === "number" ? p.id : null,
-                    liveProduct,
-                  );
-                }}>
-                <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />{t("featured.addToCart")}
-              </Button>
+              {!isAdmin && (
+                <Button size="sm" className="opacity-90 transition-opacity group-hover:opacity-100"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddToCart(
+                      isLive && typeof p.id === "number" ? p.id : null,
+                      liveProduct,
+                    );
+                  }}>
+                  <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />{t("featured.addToCart")}
+                </Button>
+              )}
             </div>
           </div>
         </Link>

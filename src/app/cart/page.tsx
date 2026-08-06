@@ -4,10 +4,21 @@ import { useTranslation } from "react-i18next";
 import { SiteNavbar } from "@/components/shared/site-navbar";
 import { SiteFooter } from "@/components/shared/site-footer";
 import { PageHero } from "@/components/shared/page-hero";
+import { AccessDenied } from "@/components/shared/access-denied";
+import { useAuth } from "@/features/auth/context/auth-provider";
 import { CartPage } from "@/features/cart/components/cart-page";
 
 export default function CartPageClient() {
   const { t } = useTranslation("cart");
+  const { isAdmin, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (isAdmin) {
+    return <AccessDenied />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col">

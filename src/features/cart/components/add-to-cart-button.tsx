@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Loader2, Minus, Plus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/features/auth/context/auth-provider";
 import type { Product } from "@/features/products/types/product-types";
 import { useCart } from "../hooks/use-cart";
 
@@ -23,8 +24,11 @@ export function AddToCartButton({
 }) {
   const { t } = useTranslation("cart");
   const { addItem } = useCart();
+  const { isAdmin } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [pending, setPending] = useState(false);
+
+  if (isAdmin) return null;
 
   async function handleAdd() {
     setPending(true);
