@@ -131,7 +131,7 @@ export function FaqManager() {
                 <TableHead>{t("table.question")}</TableHead>
                 <TableHead>{t("table.sortOrder")}</TableHead>
                 <TableHead>{t("table.status")}</TableHead>
-                <TableHead className="text-right">{t("table.actions")}</TableHead>
+                <TableHead className="text-end">{t("table.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -148,7 +148,7 @@ export function FaqManager() {
                       {faq.isActive ? t("status.active") : t("status.inactive")}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-end">
                     <div className="flex items-center justify-end gap-3">
                       <Switch
                         checked={faq.isActive}

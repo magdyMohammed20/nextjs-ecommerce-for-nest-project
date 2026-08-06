@@ -17,6 +17,7 @@ export const categorySchema = z.object({
     .number({ message: "Sort order must be a number" })
     .int("Sort order must be a whole number")
     .min(0, "Sort order cannot be negative"),
+  icon: z.string().max(50, "Icon key is too long").optional(),
 });
 
 export type CategoryFormValues = z.infer<typeof categorySchema>;

@@ -24,7 +24,10 @@
     "slugPlaceholder": "مثال: electronics",
     "slugAuto": "يُولَّد تلقائياً من الاسم — عدّله للتخصيص.",
     "sortOrder": "الترتيب",
-    "sortOrderPlaceholder": "الأرقام الأصغر تظهر أولاً"
+    "sortOrderPlaceholder": "الأرقام الأصغر تظهر أولاً",
+    "icon": "الأيقونة",
+    "iconPlaceholder": "اختر أيقونة تظهر بجانب التصنيف في الصفحة الرئيسية.",
+    "noIcon": "بدون أيقونة"
   },
   "createCategory": "إنشاء تصنيف",
   "updateCategory": "تحديث التصنيف",

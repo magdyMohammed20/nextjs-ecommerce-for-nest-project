@@ -6,10 +6,10 @@ import { AnimatePresence, animate, motion, useInView, type Variants } from "fram
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
-  ArrowRight, ArrowUpRight, BadgeCheck, BookOpen, Check,
-  Flame, Footprints, Headphones, Lamp, LifeBuoy, Menu,
+  ArrowRight, ArrowUpRight, BadgeCheck, Check,
+  Flame, Headphones, LifeBuoy, Menu,
   Package, RotateCcw, Search, ShieldCheck,
-  Shirt, ShoppingBag, Sparkles, Star, Truck, X,
+  ShoppingBag, Star, Truck, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
@@ -27,6 +27,7 @@ import { homeApi } from "@/features/home/api/home-api";
 import type { HomeResponseDto } from "@/features/home/types/home-types";
 import type { Product } from "@/features/products/types/product-types";
 import { ProductImage } from "@/features/products/components/product-image";
+import { resolveCategoryIcon } from "@/features/categories/constants/category-icons";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -122,7 +123,6 @@ function StatCounter({ value, suffix }: { value: number; suffix: string }) {
   return <span ref={ref} className="tabular-nums">{display.toLocaleString()}{suffix}</span>;
 }
 
-const categoryIcons = [Headphones, Shirt, Lamp, Sparkles, Footprints, BookOpen];
 const categoryGradients = [
   "from-blue-500/25 to-indigo-500/10", "from-cyan-500/25 to-sky-500/10",
   "from-sky-500/25 to-blue-500/10", "from-indigo-500/25 to-blue-500/10",
@@ -181,11 +181,11 @@ export default function LandingPage() {
   const latestCarousel = liveLatest.length > 4;
 
   function renderCategoryCard(
-    cat: { id: number; name: string } | string,
+    cat: { id: number; name: string; icon?: string | null } | string,
     i: number,
     carousel = false,
   ) {
-    const Icon = categoryIcons[i % categoryIcons.length] ?? Package;
+    const Icon = resolveCategoryIcon(typeof cat === "string" ? undefined : cat.icon, i);
     const catName = typeof cat === "string" ? cat : cat.name;
     const catHref = typeof cat === "string" ? "/products" : `/products?category=${cat.id}`;
     return (

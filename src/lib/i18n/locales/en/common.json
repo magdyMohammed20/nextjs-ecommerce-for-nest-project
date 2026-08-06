@@ -50,6 +50,18 @@
     "title": "403 — Access Denied",
     "description": "You do not have permission to view this page."
   },
+  "errors": {
+    "notFoundStatus": "404",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "Sorry, we couldn't find the page you're looking for. It may have been moved or deleted.",
+    "serverErrorStatus": "500",
+    "serverErrorTitle": "Something went wrong",
+    "serverErrorDescription": "An unexpected error occurred. Please try again, or go back to the home page.",
+    "digest": "Error ID: {{digest}}",
+    "tryAgain": "Try again",
+    "backHome": "Back to home",
+    "backLogin": "Back to login"
+  },
   "toasts": {
     "welcomeBack": "Welcome back, {{name}}",
     "accountCreated": "Account created for {{name}}. Please log in.",

@@ -188,7 +188,7 @@ export function UserList() {
                 <TableHead>{t("table.email")}</TableHead>
                 <TableHead>{t("table.role")}</TableHead>
                 <TableHead>{t("table.status")}</TableHead>
-                <TableHead className="text-right">{t("table.actions")}</TableHead>
+                <TableHead className="text-end">{t("table.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -230,7 +230,7 @@ export function UserList() {
                         {t(`statuses.${user.status}`, { ns: "common" })}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-end">
                       <div className="flex justify-end gap-2">
                         {user.status === "pending" && isRootAdmin(currentUser?.email) && (
                           <>

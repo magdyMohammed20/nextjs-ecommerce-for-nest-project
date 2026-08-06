@@ -81,6 +81,7 @@ export interface Category {
   name: string;
   slug: string;
   sortOrder?: number;
+  icon?: string;
   products?: Product[];
 }
 
@@ -132,6 +133,8 @@ export interface CreateCategoryDto {
   slug: string;
   /** @minimum 0 */
   sortOrder?: number;
+  /** @maxLength 50 */
+  icon?: string;
 }
 
 export interface UpdateCategoryDto { [key: string]: unknown }

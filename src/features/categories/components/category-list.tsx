@@ -6,6 +6,7 @@ import { Hash, Pencil, Tags, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { categoriesApi } from "../api/categories-api";
+import { resolveCategoryIcon } from "../constants/category-icons";
 import type { Category } from "../types/category-types";
 import type { PaginationMeta } from "@/lib/pagination";
 import { Button } from "@/components/ui/button";
@@ -181,13 +182,25 @@ export function CategoryList() {
                 <TableHead>{t("table.name")}</TableHead>
                 <TableHead>{t("table.slug")}</TableHead>
                 <TableHead>{t("table.sortOrder")}</TableHead>
-                <TableHead className="text-right">{t("table.actions")}</TableHead>
+                <TableHead className="text-end">{t("table.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {categories.map((category) => (
                 <TableRow key={category.id} className="hover:bg-muted/40">
-                  <TableCell className="font-medium">{category.name}</TableCell>
+                  <TableCell>
+                    <span className="flex items-center gap-2 font-medium">
+                      {(() => {
+                        const Icon = resolveCategoryIcon(category.icon);
+                        return (
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                            <Icon className="h-4 w-4" />
+                          </span>
+                        );
+                      })()}
+                      {category.name}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className="font-mono">
                       {category.slug}
@@ -199,7 +212,7 @@ export function CategoryList() {
                       {category.sortOrder}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-end">
                     <div className="flex justify-end gap-2">
                       <Button asChild size="sm" variant="outline">
                         <Link href={`/categories/${category.id}/edit`}>

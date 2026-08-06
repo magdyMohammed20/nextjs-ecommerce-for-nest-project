@@ -47,8 +47,20 @@
     "next": "التالي"
   },
   "accessDenied": {
-    "title": "403 — تم رفض الوصول",
+    "title": "403 — الوصول مرفوض",
     "description": "ليست لديك صلاحية لعرض هذه الصفحة."
+  },
+  "errors": {
+    "notFoundStatus": "404",
+    "notFoundTitle": "الصفحة غير موجودة",
+    "notFoundDescription": "عذراً، لم نتمكن من العثور على الصفحة التي تبحث عنها. ربما تم نقلها أو حذفها.",
+    "serverErrorStatus": "500",
+    "serverErrorTitle": "حدث خطأ ما",
+    "serverErrorDescription": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى، أو العودة إلى الصفحة الرئيسية.",
+    "digest": "معرّف الخطأ: {{digest}}",
+    "tryAgain": "إعادة المحاولة",
+    "backHome": "العودة إلى الرئيسية",
+    "backLogin": "العودة إلى تسجيل الدخول"
   },
   "toasts": {
     "welcomeBack": "مرحباً بعودتك، {{name}}",

@@ -24,7 +24,10 @@
     "slugPlaceholder": "e.g. electronics",
     "slugAuto": "Auto-generated from the name — edit to override.",
     "sortOrder": "Sort order",
-    "sortOrderPlaceholder": "Lower numbers appear first"
+    "sortOrderPlaceholder": "Lower numbers appear first",
+    "icon": "Icon",
+    "iconPlaceholder": "Pick an icon shown next to the category on the home page.",
+    "noIcon": "No icon"
   },
   "createCategory": "Create category",
   "updateCategory": "Update category",

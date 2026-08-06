@@ -67,7 +67,7 @@ function FilterSection({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex w-full items-center justify-between gap-2 px-4 py-3 text-left"
+        className="flex w-full items-center justify-between gap-2 px-4 py-3 text-start"
       >
         <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {title}
@@ -489,7 +489,7 @@ export function ProductList({
                 <TableHead>{t("table.price")}</TableHead>
                 <TableHead>{t("table.quantity")}</TableHead>
                 <TableHead>{t("table.description")}</TableHead>
-                <TableHead className="text-right">{t("table.actions")}</TableHead>
+                <TableHead className="text-end">{t("table.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -522,7 +522,7 @@ export function ProductList({
                   <TableCell className="max-w-xs truncate text-muted-foreground">
                     {product.description ?? "—"}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-end">
                     <div className="flex justify-end gap-2">
                       <Button asChild size="sm" variant="outline">
                         <Link href={`/products/${product.id}/edit`}>
