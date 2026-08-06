@@ -2,6 +2,13 @@
 
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import {
+  getServerLanguage,
+  LANGUAGE_COOKIE,
+  type AppLanguage,
+} from "./server-language";
+
+export { getServerLanguage, LANGUAGE_COOKIE, type AppLanguage };
 
 import enCommon from "./locales/en/common.json";
 import enHome from "./locales/en/home.json";
@@ -96,12 +103,20 @@ const resources = {
   },
 } as const;
 
-export type AppLanguage = "en" | "ar";
-
 export const LANGUAGE_KEY = "app-language";
+
+function readCookieLanguage(): AppLanguage | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)app-language=([^;]*)/);
+  const value = match?.[1];
+  if (value === "ar" || value === "en") return value;
+  return null;
+}
 
 export function getInitialLanguage(): AppLanguage {
   if (typeof window === "undefined") return "en";
+  const fromCookie = readCookieLanguage();
+  if (fromCookie) return fromCookie;
   const saved = window.localStorage.getItem(LANGUAGE_KEY);
   if (saved === "ar" || saved === "en") return saved;
   return window.navigator.language.toLowerCase().startsWith("ar") ? "ar" : "en";
@@ -121,7 +136,7 @@ if (typeof window !== "undefined") {
 if (!i18n.isInitialized) {
   void i18n.use(initReactI18next).init({
     resources,
-    lng: "en",
+    lng: getInitialLanguage(),
     fallbackLng: "en",
     supportedLngs: ["en", "ar"],
     defaultNS: "common",
@@ -134,6 +149,7 @@ if (!i18n.isInitialized) {
 
 export async function setAppLanguage(lang: AppLanguage) {
   if (typeof window !== "undefined") {
+    document.cookie = `${LANGUAGE_COOKIE}=${lang}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
     window.localStorage.setItem(LANGUAGE_KEY, lang);
     applyDocumentLanguage(lang);
   }
