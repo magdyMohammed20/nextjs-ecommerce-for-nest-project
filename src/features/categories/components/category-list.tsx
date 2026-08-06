@@ -56,6 +56,7 @@ export function CategoryList() {
     totalPages: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -84,7 +85,7 @@ export function CategoryList() {
     return () => {
       ignore = true;
     };
-  }, [page, limit, search, t]);
+  }, [page, limit, search, refreshKey, t]);
 
   function handlePageChange(nextPage: number) {
     setPage(nextPage);
@@ -115,6 +116,8 @@ export function CategoryList() {
       setCategories((prev) => prev.filter((c) => c.id !== categoryToDelete.id));
       if (lastItemOnPage) {
         setPage(meta.page - 1);
+      } else {
+        setRefreshKey((key) => key + 1);
       }
       toast.success(t("toasts.categoryDeleted"));
       setCategoryToDelete(null);

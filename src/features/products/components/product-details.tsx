@@ -45,9 +45,9 @@ function ProductDetailsSkeleton() {
         <Skeleton className="h-4 w-28" />
         <Skeleton className="h-9 w-28" />
       </div>
-      <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
-        <Skeleton className="aspect-[4/3] w-full rounded-2xl" />
-        <div className="space-y-5">
+      <div className="flex flex-col items-start gap-8 lg:flex-row">
+        <Skeleton className="aspect-[4/3] w-full max-w-md shrink-0 rounded-2xl" />
+        <div className="w-full space-y-5 lg:max-w-2xl">
           <div className="space-y-3">
             <Skeleton className="h-9 w-3/4" />
             <Skeleton className="h-7 w-40" />
@@ -167,8 +167,8 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
         )}
       </div>
 
-      <div className="grid items-start gap-8 lg:grid-cols-[1.1fr_1fr]">
-        <div className="overflow-hidden rounded-2xl border bg-muted/40 shadow-sm">
+      <div className="flex flex-col items-start gap-8 lg:flex-row">
+        <div className="w-full max-w-md shrink-0 overflow-hidden rounded-2xl border bg-muted/40 shadow-sm">
           <ProductImage
             src={product.imageUrl}
             alt={product.name}
@@ -176,7 +176,7 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
           />
         </div>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex w-full flex-col gap-5 lg:max-w-2xl">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">{product.name}</h1>
             <div className="mt-4 flex flex-wrap items-center gap-3">

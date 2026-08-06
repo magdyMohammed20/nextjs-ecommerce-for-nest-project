@@ -65,6 +65,7 @@ export function UserList() {
     totalPages: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -93,7 +94,7 @@ export function UserList() {
     return () => {
       ignore = true;
     };
-  }, [page, search, t]);
+  }, [page, search, refreshKey, t]);
 
   function handlePageChange(nextPage: number) {
     setPage(nextPage);
@@ -121,6 +122,8 @@ export function UserList() {
       setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
       if (lastItemOnPage) {
         setPage(meta.page - 1);
+      } else {
+        setRefreshKey((key) => key + 1);
       }
       toast.success(t("toasts.userDeleted", { ns: "common" }));
       setUserToDelete(null);

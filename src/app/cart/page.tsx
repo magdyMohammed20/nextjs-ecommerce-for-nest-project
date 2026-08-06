@@ -2,6 +2,7 @@
 
 import { useTranslation } from "react-i18next";
 import { SiteNavbar } from "@/components/shared/site-navbar";
+import { SiteFooter } from "@/components/shared/site-footer";
 import { PageHero } from "@/components/shared/page-hero";
 import { CartPage } from "@/features/cart/components/cart-page";
 
@@ -23,7 +24,7 @@ export default function CartPageClient() {
           <CartPage />
         </section>
       </main>
-      <SiteNavbar />
+      <SiteFooter />
     </div>
   );
 }

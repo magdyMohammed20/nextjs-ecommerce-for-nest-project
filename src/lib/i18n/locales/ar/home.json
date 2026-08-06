@@ -19,7 +19,9 @@
     "trustLabel": "من أكثر من 12,000 عميل سعيد",
     "freeShipping": "شحن سريع مجاني",
     "securePay": "دفع آمن",
-    "hotDrop": "إصدار جديد"
+    "hotDrop": "إصدار جديد",
+    "searchPlaceholder": "ابحث عن منتج...",
+    "searchBtn": "بحث"
   },
   "stats": [
     { "value": 1200, "suffix": "+", "label": "منتج في المتجر" },

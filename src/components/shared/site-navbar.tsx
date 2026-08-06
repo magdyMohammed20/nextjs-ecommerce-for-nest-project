@@ -13,6 +13,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserMenu } from "@/components/shared/user-menu";
 import { CartBadge } from "@/features/cart/components/cart-badge";
+import { SearchDropdownPanel } from "@/components/shared/search-dropdown";
 import { useAuth } from "@/features/auth/context/auth-provider";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -22,6 +23,7 @@ export function SiteNavbar() {
   const { user } = useAuth();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const navLinks = [
@@ -71,10 +73,13 @@ export function SiteNavbar() {
             </nav>
           </div>
           <div className="flex items-center gap-1.5">
-            <Button asChild variant="ghost" size="icon" aria-label={t("nav.shop")}>
-              <Link href="/products">
-                <Search className="h-4 w-4" />
-              </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t("searchPlaceholder", { defaultValue: "Search products" })}
+              onClick={() => setSearchOpen((o) => !o)}
+            >
+              <Search className="h-4 w-4" />
             </Button>
             <LanguageSwitcher />
             <ThemeToggle />
@@ -104,6 +109,7 @@ export function SiteNavbar() {
             </Button>
           </div>
         </div>
+        <SearchDropdownPanel open={searchOpen} onClose={() => setSearchOpen(false)} />
         <AnimatePresence>
           {mobileOpen && (
             <motion.nav

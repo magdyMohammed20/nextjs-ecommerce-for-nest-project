@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AnimatePresence, animate, motion, useInView, type Variants } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -13,13 +12,15 @@ import {
   Shirt, ShoppingBag, Sparkles, Star, Truck, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/shared/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserMenu } from "@/components/shared/user-menu";
+import { SearchDropdownPanel } from "@/components/shared/search-dropdown";
 import { SiteFooter } from "@/components/shared/site-footer";
+import { Carousel } from "@/components/shared/carousel";
 import { CartBadge } from "@/features/cart/components/cart-badge";
+import { AddToCartButton } from "@/features/cart/components/add-to-cart-button";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { useCart } from "@/features/cart/hooks/use-cart";
 import { homeApi } from "@/features/home/api/home-api";
@@ -136,7 +137,6 @@ export default function LandingPage() {
   const { t } = useTranslation("home");
   const { user } = useAuth();
   const { addItem } = useCart();
-  const router = useRouter();
 
   function handleAddToCart(productId: number | null, product?: Product) {
     if (!productId) return;
@@ -150,7 +150,7 @@ export default function LandingPage() {
     );
   }
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const [homeData, setHomeData] = useState<HomeResponseDto | null>(null);
   const { ref: viewAllRef, visible: viewAllVisible } = useReveal(0);
 
@@ -171,19 +171,116 @@ export default function LandingPage() {
   const liveFeatured = homeData?.featuredProducts ?? [];
   const liveLatest = homeData?.latestProducts ?? [];
 
+  const categoriesList =
+    liveCategories.length > 0
+      ? liveCategories
+      : staticCategories.map((name, i) => ({ id: i, name, slug: name.toLowerCase() }));
+  const featuredList = liveFeatured.length > 0 ? liveFeatured : featured;
+  const categoryCarousel = categoriesList.length > 6;
+  const featuredCarousel = featuredList.length > 4;
+  const latestCarousel = liveLatest.length > 4;
+
+  function renderCategoryCard(
+    cat: { id: number; name: string } | string,
+    i: number,
+    carousel = false,
+  ) {
+    const Icon = categoryIcons[i % categoryIcons.length] ?? Package;
+    const catName = typeof cat === "string" ? cat : cat.name;
+    const catHref = typeof cat === "string" ? "/products" : `/products?category=${cat.id}`;
+    return (
+      <motion.div
+        key={i}
+        variants={item}
+        whileHover={{ y: -6 }}
+        className={carousel ? "w-40 shrink-0 snap-start sm:w-48" : "h-full"}
+      >
+        <Link href={catHref} className="group flex h-full flex-col items-center justify-center gap-3 rounded-2xl border bg-card p-5 text-center shadow-sm transition-shadow hover:shadow-md">
+          <span className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${categoryGradients[i % categoryGradients.length]}`}>
+            <Icon className="h-5 w-5 text-foreground" />
+          </span>
+          <span className="text-sm font-medium leading-snug">{catName}</span>
+        </Link>
+      </motion.div>
+    );
+  }
+
+  function renderFeaturedCard(product: unknown, i: number, carousel = false) {
+    const isLive = liveFeatured.length > 0;
+    const p = product as {
+      id?: number;
+      name: string;
+      price: number;
+      oldPrice?: number;
+      category?: { name: string } | string | null;
+      imageUrl?: string | null;
+    };
+    const name = p.name;
+    const price = Number(p.price);
+    const oldPrice = isLive ? 0 : (p.oldPrice ?? 0);
+    const categoryName = typeof p.category === "string" ? p.category : p.category?.name;
+    const imageUrl = isLive ? (p.imageUrl ?? null) : null;
+    const gradient = productGradients[i % productGradients.length];
+    const liveProduct = isLive ? (product as unknown as Product) : undefined;
+    return (
+      <motion.div
+        key={i}
+        variants={item}
+        whileHover={{ y: -8 }}
+        className={carousel ? "w-64 shrink-0 snap-start sm:w-72" : "h-full"}
+      >
+        <Link href={isLive ? `/products/${p.id}` : "/products"}
+          className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-shadow hover:shadow-xl">
+          <div className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden ${imageUrl ? "" : `bg-gradient-to-br ${gradient}`}`}>
+            {imageUrl ? (
+              <ProductImage src={imageUrl} alt={name} className="h-full w-full object-cover" />
+            ) : (
+              <>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(255,255,255,0.4),transparent_45%)]" />
+                <Package className="h-16 w-16 text-white/80" />
+              </>
+            )}
+            {oldPrice > 0 && (
+              <span className="absolute left-3 top-3 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm">
+                {t("featured.sale")}
+              </span>
+            )}
+            <span className="absolute bottom-3 right-3 flex items-center gap-1 rounded-full bg-black/25 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
+              <Star className="h-3 w-3 fill-amber-300 text-amber-300" />4.9
+            </span>
+          </div>
+          <div className="flex flex-1 flex-col px-4 pt-3 pb-3">
+            {categoryName && <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">{categoryName}</p>}
+            <h3 className="line-clamp-1 text-base font-semibold leading-tight">{name}</h3>
+            <div className="mt-2 flex items-center justify-between">
+              <div className="flex items-baseline gap-2">
+                <span className="text-lg font-bold text-primary">${price.toFixed(2)}</span>
+                {oldPrice > 0 && <span className="text-sm text-muted-foreground line-through">${oldPrice.toFixed(2)}</span>}
+              </div>
+              <Button size="sm" className="opacity-90 transition-opacity group-hover:opacity-100"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleAddToCart(
+                    isLive && typeof p.id === "number" ? p.id : null,
+                    liveProduct,
+                  );
+                }}>
+                <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />{t("featured.addToCart")}
+              </Button>
+            </div>
+          </div>
+        </Link>
+      </motion.div>
+    );
+  }
+
   const navLinks = [
     { href: "/products", label: t("nav.shop") },
     { href: "#categories", label: t("nav.categories") },
     { href: "#deals", label: t("nav.deals") },
     { href: "#testimonials", label: t("nav.testimonials") },
   ];
-
-  function handleSearch(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-    }
-  }
 
   function handleAnchorNav(e: ReactMouseEvent<HTMLElement>, href: string) {
     if (!href.startsWith("#")) {
@@ -222,8 +319,9 @@ export default function LandingPage() {
             </nav>
           </div>
           <div className="flex items-center gap-1.5">
-            <Button asChild variant="ghost" size="icon" aria-label={t("nav.shop")}>
-              <Link href="/products"><Search className="h-4 w-4" /></Link>
+            <Button variant="ghost" size="icon" aria-label={t("searchPlaceholder", { defaultValue: "Search products" })}
+              onClick={() => setSearchOpen((o) => !o)}>
+              <Search className="h-4 w-4" />
             </Button>
              <LanguageSwitcher /><ThemeToggle />
              <CartBadge />
@@ -244,6 +342,11 @@ export default function LandingPage() {
             </Button>
           </div>
         </div>
+        <SearchDropdownPanel
+          open={searchOpen}
+          onClose={() => setSearchOpen(false)}
+          containerClassName="max-w-7xl"
+        />
         <AnimatePresence>
           {mobileOpen && (
             <motion.nav initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
@@ -300,19 +403,6 @@ export default function LandingPage() {
               <motion.p variants={item} className="mt-6 text-lg leading-relaxed text-muted-foreground">
                 {t("hero.subtitle")}
               </motion.p>
-              {/* Search bar */}
-              <motion.form variants={item} onSubmit={handleSearch} className="mt-7 flex max-w-sm gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={t("hero.searchPlaceholder", { defaultValue: "Search products…" })}
-                    className="pl-9"
-                  />
-                </div>
-                <Button type="submit">{t("hero.searchBtn", { defaultValue: "Search" })}</Button>
-              </motion.form>
               <motion.div variants={item} className="mt-6 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg">
                   <Link href="/register">{t("hero.ctaShop")}<ArrowRight className="ms-2 h-4 w-4 rtl:-scale-x-100" /></Link>
@@ -384,96 +474,30 @@ export default function LandingPage() {
         {/* Categories */}
         <section id="categories" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
           <SectionHeading title={t("categories.title")} subtitle={t("categories.subtitle")} />
-          <Reveal margin={-80} className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-            {(liveCategories.length > 0 ? liveCategories : staticCategories.map((name, i) => ({ id: i, name, slug: name.toLowerCase() }))).map((cat, i) => {
-              const Icon = categoryIcons[i % categoryIcons.length] ?? Package;
-              const catName = typeof cat === "string" ? cat : cat.name;
-              const catHref = typeof cat === "string" ? "/products" : `/products?category=${cat.id}`;
-              return (
-                <motion.div key={i} variants={item} whileHover={{ y: -6 }} className="h-full">
-                  <Link href={catHref} className="group flex h-full flex-col items-center justify-center gap-3 rounded-2xl border bg-card p-5 text-center shadow-sm transition-shadow hover:shadow-md">
-                    <span className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${categoryGradients[i % categoryGradients.length]}`}>
-                      <Icon className="h-5 w-5 text-foreground" />
-                    </span>
-                    <span className="text-sm font-medium leading-snug">{catName}</span>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </Reveal>
+          {categoryCarousel ? (
+            <Reveal margin={-80} className="mt-12">
+              <Carousel>{categoriesList.map((cat, i) => renderCategoryCard(cat, i, true))}</Carousel>
+            </Reveal>
+          ) : (
+            <Reveal margin={-80} className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+              {categoriesList.map((cat, i) => renderCategoryCard(cat, i))}
+            </Reveal>
+          )}
         </section>
 
         {/* Featured products */}
         <section id="deals" className="bg-muted/40 py-20 lg:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading title={t("featured.title")} subtitle={t("featured.subtitle")} />
-            <Reveal margin={-80} className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {(liveFeatured.length > 0 ? liveFeatured : featured).map((product, i) => {
-                const isLive = liveFeatured.length > 0;
-                const p = product as unknown as {
-                  id?: number;
-                  name: string;
-                  price: number;
-                  oldPrice?: number;
-                  category?: { name: string } | string | null;
-                  imageUrl?: string | null;
-                };
-                const name = p.name;
-                const price = Number(p.price);
-                const oldPrice = isLive ? 0 : (p.oldPrice ?? 0);
-                const categoryName =
-                  typeof p.category === "string" ? p.category : p.category?.name;
-                const imageUrl = isLive ? (p.imageUrl ?? null) : null;
-                const gradient = productGradients[i % productGradients.length];
-                const liveProduct = isLive ? (product as unknown as Product) : undefined;
-                return (
-                  <motion.div key={i} variants={item} whileHover={{ y: -8 }} className="h-full">
-                    <Link href={isLive ? `/products/${p.id}` : "/products"}
-                      className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-shadow hover:shadow-xl">
-                      <div className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden ${imageUrl ? "" : `bg-gradient-to-br ${gradient}`}`}>
-                        {imageUrl ? (
-                          <ProductImage src={imageUrl} alt={name} className="h-full w-full object-cover" />
-                        ) : (
-                          <>
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(255,255,255,0.4),transparent_45%)]" />
-                            <Package className="h-16 w-16 text-white/80" />
-                          </>
-                        )}
-                        {oldPrice > 0 && (
-                          <span className="absolute left-3 top-3 rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm">
-                            {t("featured.sale")}
-                          </span>
-                        )}
-                        <span className="absolute bottom-3 right-3 flex items-center gap-1 rounded-full bg-black/25 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
-                          <Star className="h-3 w-3 fill-amber-300 text-amber-300" />4.9
-                        </span>
-                      </div>
-                    <div className="flex flex-1 flex-col px-4 pt-3 pb-3">
-                        {categoryName && <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">{categoryName}</p>}
-                        <h3 className="line-clamp-1 text-base font-semibold leading-tight">{name}</h3>
-                        <div className="mt-2 flex items-center justify-between">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-lg font-bold text-primary">${price.toFixed(2)}</span>
-                            {oldPrice > 0 && <span className="text-sm text-muted-foreground line-through">${oldPrice.toFixed(2)}</span>}
-                          </div>
-                          <Button size="sm" className="opacity-90 transition-opacity group-hover:opacity-100"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleAddToCart(
-                                isLive && typeof p.id === "number" ? p.id : null,
-                                liveProduct,
-                              );
-                            }}>
-                            <ShoppingBag className="mr-1.5 h-3.5 w-3.5" />{t("featured.addToCart")}
-                          </Button>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </Reveal>
+            {featuredCarousel ? (
+              <Reveal margin={-80} className="mt-12">
+                <Carousel>{featuredList.map((product, i) => renderFeaturedCard(product, i, true))}</Carousel>
+              </Reveal>
+            ) : (
+              <Reveal margin={-80} className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {featuredList.map((product, i) => renderFeaturedCard(product, i))}
+              </Reveal>
+            )}
             <motion.div ref={viewAllRef} initial={{ opacity: 0, y: 20 }} animate={{ opacity: viewAllVisible ? 1 : 0, y: viewAllVisible ? 0 : 20 }}
               transition={{ duration: 0.6, ease: easeOut, delay: 0.2 }} className="mt-12 text-center">
               <Button asChild variant="outline" size="lg">
@@ -487,42 +511,69 @@ export default function LandingPage() {
         {liveLatest.length > 0 && (
           <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
             <SectionHeading title={t("latest.title", { defaultValue: "Latest arrivals" })} subtitle={t("latest.subtitle", { defaultValue: "Fresh additions to the catalog" })} />
-            <Reveal margin={-80} className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {liveLatest.slice(0, 8).map((product, i) => (
-                <motion.div key={product.id} variants={item} whileHover={{ y: -8 }} className="h-full">
-                  <Link href={`/products/${product.id}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-shadow hover:shadow-xl">
-                    <div className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden ${product.imageUrl ? "" : `bg-gradient-to-br ${productGradients[i % productGradients.length]}`}`}>
-                      {product.imageUrl ? (
-                        <ProductImage src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
-                      ) : (
-                        <Package className="h-16 w-16 text-white/80" />
-                      )}
-                    </div>
-                    <div className="flex flex-1 flex-col px-4 pt-3 pb-3">
-                      {product.category?.name && (
-                        <p className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">{product.category.name}</p>
-                      )}
-                      <h3 className="line-clamp-1 text-base font-semibold leading-tight">{product.name}</h3>
-                      <div className="mt-2 flex items-center justify-between">
-                        <span className="text-lg font-bold text-primary">${Number(product.price).toFixed(2)}</span>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleAddToCart(product.id, product);
-                          }}
-                        >
-                          <ShoppingBag className="h-3.5 w-3.5" />
-                        </Button>
+            {latestCarousel ? (
+              <Reveal margin={-80} className="mt-12">
+                <Carousel>
+                  {liveLatest.slice(0, 8).map((product, i) => (
+                    <motion.div key={product.id} variants={item} whileHover={{ y: -8 }} className="w-64 shrink-0 snap-start sm:w-72">
+                      <div className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-shadow hover:shadow-xl">
+                        <Link href={`/products/${product.id}`} className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden ${product.imageUrl ? "" : `bg-gradient-to-br ${productGradients[i % productGradients.length]}`}`}>
+                          {product.imageUrl ? (
+                            <ProductImage src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <Package className="h-16 w-16 text-white/80" />
+                          )}
+                        </Link>
+                        <div className="flex flex-1 flex-col px-4 pt-3 pb-3">
+                          {product.category?.name && (
+                            <Link href={`/products?category=${product.category.id}`} className="mb-1 text-xs uppercase tracking-wide text-muted-foreground hover:text-foreground">
+                              {product.category.name}
+                            </Link>
+                          )}
+                          <Link href={`/products/${product.id}`} className="line-clamp-1 text-base font-semibold leading-tight hover:text-primary">
+                            {product.name}
+                          </Link>
+                          <div className="mt-2 flex items-center justify-between gap-2">
+                            <span className="text-lg font-bold text-primary">${Number(product.price).toFixed(2)}</span>
+                            <AddToCartButton productId={product.id} product={product} />
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </Carousel>
+              </Reveal>
+            ) : (
+              <Reveal margin={-80} className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {liveLatest.slice(0, 8).map((product, i) => (
+                  <motion.div key={product.id} variants={item} whileHover={{ y: -8 }} className="h-full">
+                    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition-shadow hover:shadow-xl">
+                      <Link href={`/products/${product.id}`} className={`relative flex aspect-[4/3] items-center justify-center overflow-hidden ${product.imageUrl ? "" : `bg-gradient-to-br ${productGradients[i % productGradients.length]}`}`}>
+                        {product.imageUrl ? (
+                          <ProductImage src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
+                        ) : (
+                          <Package className="h-16 w-16 text-white/80" />
+                        )}
+                      </Link>
+                      <div className="flex flex-1 flex-col px-4 pt-3 pb-3">
+                        {product.category?.name && (
+                          <Link href={`/products?category=${product.category.id}`} className="mb-1 text-xs uppercase tracking-wide text-muted-foreground hover:text-foreground">
+                            {product.category.name}
+                          </Link>
+                        )}
+                        <Link href={`/products/${product.id}`} className="line-clamp-1 text-base font-semibold leading-tight hover:text-primary">
+                          {product.name}
+                        </Link>
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <span className="text-lg font-bold text-primary">${Number(product.price).toFixed(2)}</span>
+                          <AddToCartButton productId={product.id} product={product} />
+                        </div>
                       </div>
                     </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </Reveal>
+                  </motion.div>
+                ))}
+              </Reveal>
+            )}
           </section>
         )}
 

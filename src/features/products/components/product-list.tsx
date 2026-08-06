@@ -156,6 +156,7 @@ export function ProductList({
   });
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -210,6 +211,7 @@ export function ProductList({
     categoryIds,
     debouncedMinPrice,
     debouncedMaxPrice,
+    refreshKey,
     t,
   ]);
 
@@ -304,6 +306,8 @@ export function ProductList({
       setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
       if (lastItemOnPage) {
         setPage(meta.page - 1);
+      } else {
+        setRefreshKey((key) => key + 1);
       }
       toast.success(t("toasts.productDeleted", { ns: "common" }));
       setProductToDelete(null);

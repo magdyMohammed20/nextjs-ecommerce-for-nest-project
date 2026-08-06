@@ -19,7 +19,9 @@
     "trustLabel": "from 12,000+ happy customers",
     "freeShipping": "Free express shipping",
     "securePay": "Secure checkout",
-    "hotDrop": "Hot drop"
+    "hotDrop": "Hot drop",
+    "searchPlaceholder": "Search products…",
+    "searchBtn": "Search"
   },
   "stats": [
     { "value": 1200, "suffix": "+", "label": "Products in store" },
