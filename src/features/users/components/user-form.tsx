@@ -46,6 +46,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
   const statusLocked = !canChangeRole || isRoot;
 
   const form = useForm<EditUserFormValues>({
+    mode: "onTouched",
     resolver: zodResolver(editUserSchema),
     defaultValues: {
       name: user.name,

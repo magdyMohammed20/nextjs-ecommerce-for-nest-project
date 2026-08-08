@@ -1,6 +1,10 @@
 {
   "title": "الطلبات",
   "subtitle": "إدارة طلبات المتجر.",
+  "stats": {
+    "totalOrders": "إجمالي الطلبات",
+    "revenue": "الإيرادات"
+  },
   "searchPlaceholder": "البحث في الطلبات حسب الاسم أو البريد الإلكتروني...",
   "allStatuses": "جميع الحالات",
   "table": {
@@ -19,6 +23,10 @@
     "delivered": "تم التسليم",
     "cancelled": "ملغى"
   },
+  "stepper": {
+    "title": "حالة الطلب",
+    "cancelled": "تم إلغاء هذا الطلب."
+  },
   "viewOrder": "عرض الطلب",
   "cancelOrder": "إلغاء الطلب",
   "empty": "لا توجد طلبات.",
@@ -26,10 +34,26 @@
     "title": "طلباتي",
     "subtitle": "الطلبات التي قمت بها.",
     "empty": "لم تقم بأي طلبات بعد.",
+    "emptyFiltered": "لا توجد طلبات مطابقة للفلاتر.",
     "emptyAction": "تصفح المنتجات",
     "placedDate": "تم الطلب في {{date}}",
     "itemsCount": "{{count}} عناصر",
-    "itemsCount_other": "{{count}} عناصر"
+    "itemsCount_other": "{{count}} عناصر",
+    "searchPlaceholder": "ابحث برقم الطلب أو المنتج...",
+    "sortLabel": "ترتيب حسب",
+    "sortNewest": "الأحدث أولاً",
+    "sortOldest": "الأقدم أولاً",
+    "sortHighest": "الأعلى إجمالاً",
+    "sortLowest": "الأقل إجمالاً",
+    "stats": {
+      "totalOrders": "إجمالي الطلبات",
+      "totalSpent": "إجمالي الإنفاق",
+      "activeOrders": "قيد التنفيذ",
+      "completedOrders": "تم التسليم"
+    },
+    "table": {
+      "placed": "تاريخ الطلب"
+    }
   },
   "toasts": {
     "placed": "تم تأكيد الطلب رقم {{id}} بنجاح",
@@ -54,6 +78,29 @@
     "total": "الإجمالي",
     "date": "تاريخ الطلب",
     "itemsTitle": "المنتجات",
-    "noItems": "لا توجد عناصر في هذا الطلب."
+    "noItems": "لا توجد عناصر في هذا الطلب.",
+    "shipping": "معلومات الشحن",
+    "phone": "الهاتف",
+    "address": "العنوان",
+    "notes": "ملاحظات"
+  },
+  "invoice": {
+    "title": "فاتورة الطلب",
+    "print": "طباعة",
+    "order": "الطلب",
+    "placed": "تاريخ الطلب",
+    "customer": "العميل",
+    "phone": "الهاتف",
+    "address": "عنوان الشحن",
+    "notes": "ملاحظات",
+    "items": "المنتجات",
+    "product": "المنتج",
+    "quantity": "الكمية",
+    "unitPrice": "سعر الوحدة",
+    "lineTotal": "إجمالي السطر",
+    "total": "الإجمالي",
+    "noItems": "لا توجد عناصر في هذا الطلب.",
+    "noAddress": "لا يوجد عنوان شحن.",
+    "footer": "شكراً لطلبك!"
   }
 }

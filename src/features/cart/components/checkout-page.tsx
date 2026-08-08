@@ -2,14 +2,23 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Loader2, PackageCheck, ShoppingCart } from "lucide-react";
+import { Loader2, Lock, PackageCheck, Phone, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImage } from "@/features/products/components/product-image";
 import { useAuth } from "@/features/auth/context/auth-provider";
@@ -17,25 +26,56 @@ import { ordersApi } from "@/features/orders/api/orders-api";
 import type { Order } from "@/features/orders/types/order-types";
 import { useCart } from "../hooks/use-cart";
 import { formatMoney } from "../lib/format";
+import { checkoutSchema, type CheckoutFormValues } from "../schemas/checkout-schema";
 
-const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
+const INITIAL_FORM: CheckoutFormValues = {
+  phone: "",
+  street: "",
+  city: "",
+  state: "",
+  postalCode: "",
+  country: "",
+  notes: "",
+};
 
 export function CheckoutPage() {
   const { t } = useTranslation("cart");
   const { cart, isLoading, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
-  const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [placing, setPlacing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
+
+  const form = useForm<CheckoutFormValues>({
+    mode: "onTouched",
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: INITIAL_FORM,
+  });
 
   if (isLoading) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-9 w-56" />
         <Skeleton className="h-64 w-full rounded-2xl" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-16 text-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
+          <Lock className="h-8 w-8 text-muted-foreground" />
+        </span>
+        <h1 className="text-2xl font-bold">{t("mustSignIn")}</h1>
+        <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+          <Button asChild size="lg">
+            <Link href="/login?next=/checkout">{t("signIn")}</Link>
+          </Button>
+          <Button asChild variant="outline" size="lg">
+            <Link href="/cart">{t("backToCart")}</Link>
+          </Button>
+        </div>
       </div>
     );
   }
@@ -52,19 +92,10 @@ export function CheckoutPage() {
         <p className="text-sm text-muted-foreground">
           {t("successDescription", { id: placedOrder.id })}
         </p>
-        {!isAuthenticated && (
-          <p className="text-sm text-muted-foreground">{t("successGuestNote")}</p>
-        )}
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-          {isAuthenticated ? (
-            <Button asChild size="lg">
-              <Link href="/my-dashboard/orders">{t("viewOrders")}</Link>
-            </Button>
-          ) : (
-            <Button asChild size="lg">
-              <Link href="/login?next=/my-dashboard/orders">{t("signIn")}</Link>
-            </Button>
-          )}
+          <Button asChild size="lg">
+            <Link href="/my-dashboard/orders">{t("viewOrders")}</Link>
+          </Button>
           <Button asChild variant="outline" size="lg">
             <Link href="/products">{t("continueShopping")}</Link>
           </Button>
@@ -92,42 +123,25 @@ export function CheckoutPage() {
     quantity: item.quantity,
   }));
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!isAuthenticated) {
-      if (!name.trim()) {
-        toast.error(t("nameRequired"));
-        return;
-      }
-      if (!email.trim()) {
-        toast.error(t("emailRequired"));
-        return;
-      }
-      if (!EMAIL_PATTERN.test(email)) {
-        toast.error(t("emailInvalid"));
-        return;
-      }
-    }
-
+  function handleSubmit(values: CheckoutFormValues) {
     setPlacing(true);
-    const request = isAuthenticated
-      ? ordersApi.createForUser({ items: orderItems })
-      : ordersApi.create({
-          customerName: name.trim(),
-          customerEmail: email.trim(),
-          items: orderItems,
-        });
-
-    request
+    ordersApi
+      .createForUser({
+        items: orderItems,
+        phone: values.phone.trim(),
+        shippingAddress: {
+          street: values.street.trim(),
+          city: values.city.trim(),
+          state: values.state.trim(),
+          postalCode: values.postalCode.trim(),
+          country: values.country.trim(),
+        },
+        notes: values.notes?.trim() || undefined,
+      })
       .then((order) => {
         clearCart.mutate(undefined);
-        if (isAuthenticated) {
-          toast.success(t("orderPlaced", { id: order.id }));
-          router.push("/my-dashboard/orders");
-        } else {
-          setPlacedOrder(order);
-        }
+        toast.success(t("orderPlaced", { id: order.id }));
+        setPlacedOrder(order);
       })
       .catch((error) => {
         toast.error(
@@ -144,48 +158,125 @@ export function CheckoutPage() {
         <p className="mt-1 text-sm text-muted-foreground">{t("checkoutSubtitle")}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1fr_360px]">
-        <Card className="h-fit">
-          <CardContent className="space-y-4 p-5">
-            <h2 className="text-lg font-semibold">{t("contactTitle")}</h2>
-            {isAuthenticated ? (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-6 lg:grid-cols-[1fr_360px]">
+        <div className="space-y-6">
+          <Card className="h-fit">
+            <CardContent className="space-y-4 p-5">
+              <h2 className="text-lg font-semibold">{t("contactTitle")}</h2>
               <div className="space-y-1 text-sm">
                 <p className="font-medium">{user?.name}</p>
                 <p className="text-muted-foreground">{user?.email}</p>
               </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="checkout-name">{t("name")}</Label>
-                  <Input
-                    id="checkout-name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder={t("namePlaceholder")}
-                    autoComplete="name"
-                    disabled={placing}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="checkout-email">{t("email")}</Label>
-                  <Input
-                    id="checkout-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder={t("emailPlaceholder")}
-                    autoComplete="email"
-                    disabled={placing}
-                  />
-                </div>
-              </>
-            )}
-            <Button type="submit" className="w-full" disabled={placing}>
-              {placing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {placing ? t("placing") : t("placeOrder")}
-            </Button>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+
+          <Card className="h-fit">
+            <CardContent className="space-y-4 p-5">
+              <h2 className="flex items-center gap-2 text-lg font-semibold">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                {t("shippingTitle")}
+              </h2>
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("phone")}</FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder={t("phonePlaceholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="street"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("street")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("streetPlaceholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("city")}</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("state")}</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="postalCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("postalCode")}</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("country")}</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("notes")}</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder={t("notesPlaceholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+        </div>
 
         <Card className="h-fit">
           <CardContent className="space-y-4 p-5">
@@ -218,9 +309,14 @@ export function CheckoutPage() {
               <span>{t("total")}</span>
               <span>{formatMoney(Number(cart?.total ?? 0))}</span>
             </div>
+            <Button type="submit" className="w-full" disabled={placing}>
+              {placing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {placing ? t("placing") : t("placeOrder")}
+            </Button>
           </CardContent>
         </Card>
-      </form>
+        </form>
+      </Form>
     </div>
   );
 }

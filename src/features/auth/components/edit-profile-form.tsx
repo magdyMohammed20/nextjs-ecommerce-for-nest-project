@@ -38,6 +38,7 @@ export function EditProfileForm({ user, onProfileUpdated }: EditProfileFormProps
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<UpdateProfileFormValues>({
+    mode: "onTouched",
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       name: user.name,

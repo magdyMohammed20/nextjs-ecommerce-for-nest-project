@@ -1,6 +1,10 @@
 {
   "title": "Orders",
   "subtitle": "Manage orders placed on the store.",
+  "stats": {
+    "totalOrders": "Total orders",
+    "revenue": "Revenue"
+  },
   "searchPlaceholder": "Search orders by name or email...",
   "allStatuses": "All statuses",
   "table": {
@@ -19,6 +23,10 @@
     "delivered": "Delivered",
     "cancelled": "Cancelled"
   },
+  "stepper": {
+    "title": "Order progress",
+    "cancelled": "This order was cancelled."
+  },
   "viewOrder": "View order",
   "cancelOrder": "Cancel order",
   "empty": "No orders found.",
@@ -26,10 +34,26 @@
     "title": "My Orders",
     "subtitle": "Orders you've placed.",
     "empty": "You haven't placed any orders yet.",
+    "emptyFiltered": "No orders match your filters.",
     "emptyAction": "Browse products",
     "placedDate": "Placed on {{date}}",
     "itemsCount": "{{count}} items",
-    "itemsCount_other": "{{count}} items"
+    "itemsCount_other": "{{count}} items",
+    "searchPlaceholder": "Search by order ID or product...",
+    "sortLabel": "Sort by",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortHighest": "Highest total",
+    "sortLowest": "Lowest total",
+    "stats": {
+      "totalOrders": "Total orders",
+      "totalSpent": "Total spent",
+      "activeOrders": "In progress",
+      "completedOrders": "Delivered"
+    },
+    "table": {
+      "placed": "Placed"
+    }
   },
   "toasts": {
     "placed": "Order #{{id}} placed successfully",
@@ -54,6 +78,29 @@
     "total": "Total",
     "date": "Placed",
     "itemsTitle": "Items",
-    "noItems": "No items on this order."
+    "noItems": "No items on this order.",
+    "shipping": "Shipping information",
+    "phone": "Phone",
+    "address": "Address",
+    "notes": "Notes"
+  },
+  "invoice": {
+    "title": "Order invoice",
+    "print": "Print",
+    "order": "Order",
+    "placed": "Placed",
+    "customer": "Customer",
+    "phone": "Phone",
+    "address": "Shipping address",
+    "notes": "Notes",
+    "items": "Items",
+    "product": "Product",
+    "quantity": "Qty",
+    "unitPrice": "Unit price",
+    "lineTotal": "Line total",
+    "total": "Total",
+    "noItems": "No items on this order.",
+    "noAddress": "No shipping address.",
+    "footer": "Thank you for your order!"
   }
 }

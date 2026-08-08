@@ -3,12 +3,21 @@
   "welcome": "Welcome back, {{name}}. Here's an overview of your store.",
   "totalUsers": "Total Users",
   "totalUsersDescription": "Registered accounts",
+  "activeUsers": "{{count}} online",
   "totalProducts": "Total Products",
   "totalProductsDescription": "In your catalog",
   "outOfStock": "Out of Stock",
   "outOfStockDescription": "Products with 0 quantity",
   "categories": "Categories",
   "categoriesDescription": "Product categories in your store",
+  "totalOrders": "Total Orders",
+  "totalOrdersDescription": "Orders placed on the store",
+  "pendingOrders": "Pending Orders",
+  "pendingOrdersDescription": "Orders awaiting processing",
+  "totalRevenue": "Total Revenue",
+  "totalRevenueDescription": "Revenue from all orders",
+  "averageOrderValue": "Avg. Order Value",
+  "averageOrderValueDescription": "Mean order total",
   "inStock": "In Stock",
   "inStockDescription": "Products with available quantity",
   "lowStock": "Low Stock",
@@ -42,6 +51,14 @@
     {
       "title": "Manage users",
       "description": "Edit roles & access"
+    },
+    {
+      "title": "Manage categories",
+      "description": "Organize product categories"
+    },
+    {
+      "title": "View orders",
+      "description": "Track and update orders"
     },
     {
       "title": "View catalog",

@@ -25,4 +25,6 @@ export const usersApi = {
     }),
   remove: (id: number) =>
     apiFetch<{ message: string }>(`/user/${id}`, { method: "DELETE" }),
+  heartbeat: () =>
+    apiFetch<{ online: boolean }>("/user/heartbeat", { method: "POST" }),
 };

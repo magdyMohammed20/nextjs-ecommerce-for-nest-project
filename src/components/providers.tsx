@@ -35,7 +35,7 @@ export function Providers({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AuthProvider>
             {children}
-            <Toaster position="top-right" richColors />
+            <Toaster richColors />
           </AuthProvider>
         </ThemeProvider>
       </I18nextProvider>

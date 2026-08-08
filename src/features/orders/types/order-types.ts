@@ -22,13 +22,26 @@ export interface OrderItem {
   quantity: number;
 }
 
+export interface ShippingAddress {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
 export interface Order {
   id: number;
   customerName: string;
   customerEmail: string;
   userId: number | null;
+  customerLastActiveAt?: string | null;
+  customerIsOnline?: boolean;
   total: number;
   status: OrderStatus;
+  phone: string | null;
+  shippingAddress: ShippingAddress | null;
+  notes: string | null;
   items?: OrderItem[];
   createdAt: string;
   updatedAt: string;
@@ -43,14 +56,30 @@ export interface OrderSummary {
   createdAt: string;
 }
 
-export interface CreateOrderPayload {
-  customerName: string;
-  customerEmail: string;
-  items: { productId: number; quantity: number }[];
-}
-
 export interface CreateMyOrderPayload {
   items: { productId: number; quantity: number }[];
+  phone: string;
+  shippingAddress: ShippingAddress;
+  notes?: string;
+}
+
+/** Compact shape returned by GET /orders/mine/stats. */
+export interface OrderStats {
+  totalOrders: number;
+  totalSpent: number;
+  activeOrders: number;
+  completedOrders: number;
+}
+
+/** Shape returned by GET /orders/stats (admin). */
+export interface OrderAdminStats {
+  totalOrders: number;
+  totalRevenue: number;
+  pending: number;
+  confirmed: number;
+  shipped: number;
+  delivered: number;
+  cancelled: number;
 }
 
 export interface UpdateOrderStatusPayload {

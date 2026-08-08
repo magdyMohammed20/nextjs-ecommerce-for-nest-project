@@ -34,6 +34,7 @@ export function FaqForm({ faq }: FaqFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FaqFormValues>({
+    mode: "onTouched",
     resolver: zodResolver(faqSchema),
     defaultValues: faq
       ? {

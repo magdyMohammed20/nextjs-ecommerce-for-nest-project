@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -12,8 +13,14 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/features/auth/context/auth-provider";
+import { ordersApi } from "@/features/orders/api/orders-api";
+import type { OrderSummary } from "@/features/orders/types/order-types";
+import { OrderStatusBadge } from "@/features/orders/components/order-status-badge";
+import { formatDate } from "@/features/orders/lib/format";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -21,6 +28,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { StatCardBackdrop } from "@/components/shared/stat-card-backdrop";
+
+function formatMoney(value: number) {
+  return `$${value.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
 
 function StatCard({
   title,
@@ -32,7 +48,8 @@ function StatCard({
   icon: LucideIcon;
 }) {
   return (
-    <Card className="transition-shadow hover:shadow-md">
+    <Card className="relative transition-shadow hover:shadow-md">
+      <StatCardBackdrop />
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
@@ -53,15 +70,13 @@ function ComingSoonCard({
   title,
   description,
   icon: Icon,
-  href,
 }: {
   title: string;
   description: string;
   icon: LucideIcon;
-  href?: string;
 }) {
   const { t } = useTranslation("userDashboard");
-  const content = (
+  return (
     <Card className="transition-shadow hover:shadow-md">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
@@ -72,19 +87,103 @@ function ComingSoonCard({
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
             <Icon className="h-5 w-5 text-muted-foreground" />
           </span>
-          {href ? (
-            <p className="flex items-center gap-1 text-sm font-medium text-primary">
-              {t("viewOrders")}
-              <ArrowUpRight className="h-4 w-4" />
-            </p>
-          ) : (
-            <p className="text-sm font-medium text-muted-foreground">{t("comingSoon")}</p>
-          )}
+          <p className="text-sm font-medium text-muted-foreground">{t("comingSoon")}</p>
         </div>
       </CardContent>
     </Card>
   );
-  return href ? <Link href={href}>{content}</Link> : content;
+}
+
+function RecentOrdersCard() {
+  const { t } = useTranslation("userDashboard");
+  const [orders, setOrders] = useState<OrderSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    let ignore = false;
+
+    ordersApi
+      .getMine({ page: 1, limit: 5 })
+      .then((data) => {
+        if (!ignore) setOrders(data.data);
+      })
+      .catch((error) => {
+        if (!ignore) {
+          setHasError(true);
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : t("failedToLoad", { ns: "userDashboard" }),
+          );
+        }
+      })
+      .finally(() => {
+        if (!ignore) setIsLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [t]);
+
+  return (
+    <Card className="transition-shadow hover:shadow-md">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <div>
+          <CardTitle>{t("recentOrders")}</CardTitle>
+          <CardDescription>{t("recentOrdersDescription")}</CardDescription>
+        </div>
+        <Button asChild size="sm" variant="ghost" className="shrink-0">
+          <Link href="/my-dashboard/orders">
+            {t("viewOrders")}
+            <ArrowUpRight className="ms-1 h-3.5 w-3.5 rtl:-scale-x-100" />
+          </Link>
+        </Button>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-8 w-full" />
+            ))}
+          </div>
+        ) : hasError ? (
+          <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 text-center">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <ShoppingCart className="h-5 w-5 text-muted-foreground" />
+            </span>
+            <p className="text-sm font-medium text-muted-foreground">{t("failedToLoad")}</p>
+          </div>
+        ) : orders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 text-center">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <ShoppingCart className="h-5 w-5 text-muted-foreground" />
+            </span>
+            <p className="text-sm font-medium text-muted-foreground">{t("noOrdersYet")}</p>
+          </div>
+        ) : (
+          <ul className="divide-y">
+            {orders.map((order) => (
+              <li
+                key={order.id}
+                className="flex items-center justify-between gap-2 py-2.5"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">#{order.id}</p>
+                  <p className="text-xs text-muted-foreground">{formatDate(order.createdAt)}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className="text-sm font-medium">{formatMoney(order.total)}</span>
+                  <OrderStatusBadge status={order.status} iconOnly />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
 export function UserDashboard() {
@@ -126,12 +225,7 @@ export function UserDashboard() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <ComingSoonCard
-          title={t("recentOrders")}
-          description={t("recentOrdersDescription")}
-          icon={ShoppingCart}
-          href="/my-dashboard/orders"
-        />
+        <RecentOrdersCard />
         <ComingSoonCard
           title={t("wishlistCard")}
           description={t("wishlistCardDescription")}

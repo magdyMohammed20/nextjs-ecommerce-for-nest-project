@@ -13,7 +13,7 @@
     "reviewsDescription": "التقييمات التي كتبتها"
   },
   "recentOrders": "أحدث الطلبات",
-  "recentOrdersDescription": "ستظهر أحدث طلباتك هنا",
+  "recentOrdersDescription": "أحدث طلباتك",
   "viewOrders": "عرض طلباتي",
   "wishlistCard": "قائمة الرغبات",
   "wishlistCardDescription": "ستظهر منتجاتك المحفوظة هنا",
@@ -22,8 +22,19 @@
   "quickActions": "إجراءات سريعة",
   "quickActionsDescription": "أشياء يمكنك القيام بها الآن",
   "quickLinks": [
-    { "title": "تصفح المنتجات", "description": "استكشف المتجر" },
-    { "title": "تعديل الملف الشخصي", "description": "حدّث بياناتك" },
-    { "title": "عرض التصنيفات", "description": "شاهد جميع التصنيفات" }
-  ]
+    {
+      "title": "تصفح المنتجات",
+      "description": "استكشف المتجر"
+    },
+    {
+      "title": "تعديل الملف الشخصي",
+      "description": "حدّث بياناتك"
+    },
+    {
+      "title": "عرض التصنيفات",
+      "description": "شاهد جميع التصنيفات"
+    }
+  ],
+  "noOrdersYet": "لا توجد طلبات بعد.",
+  "failedToLoad": "تعذّر تحميل الطلبات."
 }

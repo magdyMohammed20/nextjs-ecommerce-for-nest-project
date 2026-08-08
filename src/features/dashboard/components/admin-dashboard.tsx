@@ -6,11 +6,13 @@ import {
   Activity,
   AlertTriangle,
   ArrowUpRight,
+  Clock,
   DollarSign,
   HelpCircle,
   Package,
   PackageCheck,
   PackageX,
+  Receipt,
   ShieldCheck,
   ShoppingCart,
   Tags,
@@ -38,6 +40,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StatCardBackdrop } from "@/components/shared/stat-card-backdrop";
 
 function formatMoney(value: number) {
   return `$${value.toLocaleString(undefined, {
@@ -51,14 +54,17 @@ function StatCard({
   value,
   icon: Icon,
   description,
+  extra,
 }: {
   title: string;
   value: ReactNode;
   icon: typeof Users;
   description: string;
+  extra?: ReactNode;
 }) {
   return (
-    <Card className="transition-shadow hover:shadow-md">
+    <Card className="relative transition-shadow hover:shadow-md">
+      <StatCardBackdrop />
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
@@ -70,8 +76,21 @@ function StatCard({
       <CardContent>
         <div className="text-3xl font-bold tracking-tight">{value}</div>
         <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+        {extra}
       </CardContent>
     </Card>
+  );
+}
+
+function ActiveUsersIndicator({ label }: { label: string }) {
+  return (
+    <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+      </span>
+      {label}
+    </div>
   );
 }
 
@@ -98,6 +117,28 @@ export function AdminDashboard() {
       )
       .finally(() => setIsLoading(false));
   }, [t]);
+
+  // Poll stats so the online-users counter updates as people sign in/out.
+  useEffect(() => {
+    let ignore = false;
+
+    const poll = () => {
+      statsApi
+        .getStats()
+        .then((latest) => {
+          if (!ignore) setStats(latest);
+        })
+        .catch(() => undefined);
+    };
+
+    poll();
+    const id = setInterval(poll, 30_000);
+
+    return () => {
+      ignore = true;
+      clearInterval(id);
+    };
+  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -152,10 +193,33 @@ export function AdminDashboard() {
     title: string;
     value: ReactNode;
     icon: typeof Users;
+    extra?: ReactNode;
   }[] = [
-    { key: "totalUsers", title: t("totalUsers"), value: stats?.usersTotal ?? 0, icon: Users },
+    {
+      key: "totalUsers",
+      title: t("totalUsers"),
+      value: stats?.usersTotal ?? 0,
+      icon: Users,
+      extra: (
+        <ActiveUsersIndicator label={t("activeUsers", { count: stats?.onlineUsers ?? 0 })} />
+      ),
+    },
     { key: "totalProducts", title: t("totalProducts"), value: stats?.productsTotal ?? 0, icon: Package },
     { key: "categories", title: t("categories"), value: stats?.categoriesTotal ?? 0, icon: Tags },
+    { key: "totalOrders", title: t("totalOrders"), value: stats?.totalOrders ?? 0, icon: ShoppingCart },
+    { key: "pendingOrders", title: t("pendingOrders"), value: stats?.pendingOrders ?? 0, icon: Clock },
+    {
+      key: "totalRevenue",
+      title: t("totalRevenue"),
+      value: stats ? formatMoney(stats.totalRevenue) : "$0.00",
+      icon: DollarSign,
+    },
+    {
+      key: "averageOrderValue",
+      title: t("averageOrderValue"),
+      value: stats ? formatMoney(stats.averageOrderValue) : "$0.00",
+      icon: TrendingUp,
+    },
     { key: "inStock", title: t("inStock"), value: stats?.inStock ?? 0, icon: PackageCheck },
     { key: "outOfStock", title: t("outOfStock"), value: stats?.outOfStock ?? 0, icon: PackageX },
     { key: "lowStock", title: t("lowStock"), value: stats?.lowStock ?? 0, icon: AlertTriangle },
@@ -188,6 +252,7 @@ export function AdminDashboard() {
             value={card.value}
             icon={card.icon}
             description={t(`${card.key}Description`)}
+            extra={card.extra}
           />
         ))}
       </div>
@@ -221,39 +286,35 @@ export function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardHeader>
             <CardTitle>{t("quickActions")}</CardTitle>
             <CardDescription>{t("quickActionsDescription")}</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-3 sm:grid-cols-1">
+          <CardContent className="grid flex-1 grid-cols-2 auto-rows-fr gap-2">
             {(() => {
               const quickLinkTexts = t("quickLinks", {
                 returnObjects: true,
-              }) as { title: string; description: string }[];
+              }) as { title: string }[];
               const quickLinks = [
                 { href: "/products/new", icon: Package, ...quickLinkTexts[0] },
                 { href: "/users/new", icon: Users, ...quickLinkTexts[1] },
                 { href: "/users", icon: ShieldCheck, ...quickLinkTexts[2] },
-                { href: "/products", icon: Package, ...quickLinkTexts[3] },
-                { href: "/dashboard/faq", icon: HelpCircle, ...quickLinkTexts[4] },
+                { href: "/categories", icon: Tags, ...quickLinkTexts[3] },
+                { href: "/dashboard/orders", icon: Receipt, ...quickLinkTexts[4] },
+                { href: "/products", icon: Package, ...quickLinkTexts[5] },
+                { href: "/dashboard/faq", icon: HelpCircle, ...quickLinkTexts[6] },
               ];
-              return quickLinks.map(({ href, icon: Icon, title, description }) => (
+              return quickLinks.map(({ href, icon: Icon, title }) => (
                 <Link
                   key={href}
                   href={href}
-                  className="group flex items-center gap-3 rounded-xl border bg-background p-3 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+                  className="group flex min-h-0 flex-col items-center justify-center gap-1.5 rounded-xl border bg-background p-2 text-center transition-colors hover:border-primary/40 hover:bg-primary/10"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                    <Icon className="h-4.5 w-4.5" />
+                  <Icon className="h-5 w-5 text-primary" />
+                  <span className="line-clamp-2 text-xs leading-tight text-foreground transition-colors group-hover:text-primary">
+                    {title}
                   </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm font-medium">{title}</span>
-                    <span className="block truncate text-xs text-muted-foreground">
-                      {description}
-                    </span>
-                  </span>
-                  <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5 rtl:group-hover:-translate-y-0.5" />
                 </Link>
               ));
             })()}
@@ -307,7 +368,7 @@ export function AdminDashboard() {
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                       <span className="text-sm font-medium">{formatMoney(order.total)}</span>
-                      <OrderStatusBadge status={order.status} />
+                      <OrderStatusBadge status={order.status} iconOnly />
                     </div>
                   </li>
                 ))}

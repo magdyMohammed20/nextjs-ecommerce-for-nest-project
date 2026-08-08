@@ -13,7 +13,7 @@
     "reviewsDescription": "Reviews you've written"
   },
   "recentOrders": "Recent Orders",
-  "recentOrdersDescription": "Your latest orders will appear here",
+  "recentOrdersDescription": "Your most recent orders",
   "viewOrders": "View my orders",
   "wishlistCard": "Wishlist",
   "wishlistCardDescription": "Your saved items will appear here",
@@ -22,8 +22,19 @@
   "quickActions": "Quick Actions",
   "quickActionsDescription": "Things you can do right now",
   "quickLinks": [
-    { "title": "Browse products", "description": "Explore the catalog" },
-    { "title": "Edit profile", "description": "Update your details" },
-    { "title": "View catalog", "description": "See all categories" }
-  ]
+    {
+      "title": "Browse products",
+      "description": "Explore the catalog"
+    },
+    {
+      "title": "Edit profile",
+      "description": "Update your details"
+    },
+    {
+      "title": "View catalog",
+      "description": "See all categories"
+    }
+  ],
+  "noOrdersYet": "No orders yet.",
+  "failedToLoad": "Failed to load orders."
 }

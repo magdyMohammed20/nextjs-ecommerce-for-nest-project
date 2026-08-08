@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
+  ChevronsLeft,
+  ChevronsRight,
   HelpCircle,
   LayoutDashboard,
   Package,
@@ -15,7 +18,15 @@ import {
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/shared/logo";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAuth } from "@/features/auth/context/auth-provider";
+
+const COLLAPSED_KEY = "sidebar-collapsed";
 
 interface NavItem {
   href: string;
@@ -27,43 +38,85 @@ interface NavItem {
   exact?: boolean;
 }
 
-function SidebarLink({ item }: { item: NavItem }) {
+function SidebarLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const pathname = usePathname();
   const active = item.exact
     ? pathname === item.href
     : pathname === item.href || pathname.startsWith(`${item.href}/`);
   const Icon = item.icon;
+  const isRtl =
+    typeof document !== "undefined" && document.documentElement.dir === "rtl";
 
-  return (
+  const link = (
     <Link
       href={item.href}
       className={cn(
         "group relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all",
-        active
-          ? "bg-primary/10 text-primary"
-          : "text-muted-foreground hover:bg-accent hover:text-foreground",
+        collapsed
+          ? "justify-center px-0"
+          : active
+            ? "bg-primary/10 text-primary"
+            : "text-muted-foreground hover:bg-accent hover:text-foreground",
       )}
     >
       <span
         className={cn(
-          "absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-primary transition-opacity",
-          active ? "opacity-100" : "opacity-0",
+          "absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-primary transition-opacity rtl:right-0 rtl:left-auto rtl:rounded-l-full",
+          !collapsed && (active ? "opacity-100" : "opacity-0"),
+          collapsed && "hidden",
         )}
       />
-      <Icon
-        className={cn(
-          "h-4 w-4 transition-colors",
-          active ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
-        )}
-      />
-      {item.label}
+      {collapsed ? (
+        <span
+          className={cn(
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-md transition-colors",
+            active
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "bg-muted text-muted-foreground group-hover:bg-accent group-hover:text-foreground",
+          )}
+        >
+          <Icon className="h-5 w-5" />
+        </span>
+      ) : (
+        <Icon
+          className={cn(
+            "h-4 w-4 shrink-0 transition-colors",
+            active ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
+          )}
+        />
+      )}
+      {!collapsed && item.label}
     </Link>
   );
+
+  if (collapsed) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{link}</TooltipTrigger>
+        <TooltipContent side={isRtl ? "left" : "right"}>
+          {item.label}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return link;
 }
 
 export function Sidebar() {
   const { isAdmin } = useAuth();
   const { t } = useTranslation("common");
+  const [collapsed, setCollapsed] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.localStorage.getItem(COLLAPSED_KEY) === "1",
+  );
+
+  function toggleCollapsed() {
+    const next = !collapsed;
+    setCollapsed(next);
+    window.localStorage.setItem(COLLAPSED_KEY, next ? "1" : "0");
+  }
 
   const navItems: NavItem[] = [
     { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard, adminOnly: true, exact: true },
@@ -78,11 +131,41 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="hidden w-64 shrink-0 border-r bg-muted/40 md:block">
-      <div className="flex h-14 items-center gap-2.5 border-b px-6">
-        <Logo iconClassName="h-8 w-8" textClassName="text-base" />
+    <aside
+      suppressHydrationWarning
+      className={cn(
+        "hidden shrink-0 flex-col border-r bg-muted/40 transition-[width] duration-300 md:flex h-screen sticky top-0 overflow-hidden",
+        collapsed ? "w-20" : "w-64",
+      )}
+    >
+      <div
+        className={cn(
+          "shrink-0 border-b",
+          collapsed
+            ? "flex flex-col items-center gap-2 px-0 py-3"
+            : "flex h-14 items-center justify-between gap-2.5 px-4",
+        )}
+      >
+        <Logo
+          iconClassName="h-8 w-8"
+          textClassName="text-base"
+          showText={!collapsed}
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="shrink-0 text-muted-foreground hover:text-foreground"
+          onClick={toggleCollapsed}
+          title={collapsed ? t("nav.expandSidebar") : t("nav.collapseSidebar")}
+        >
+          {collapsed ? (
+            <ChevronsRight className="h-4 w-4 rtl:rotate-180" />
+          ) : (
+            <ChevronsLeft className="h-4 w-4 rtl:rotate-180" />
+          )}
+        </Button>
       </div>
-      <nav className="flex flex-col gap-1 p-3">
+      <nav className={cn("flex flex-1 flex-col gap-1 overflow-y-auto p-3", collapsed && "items-center px-2")}>
         {navItems
           .filter((item) => {
             if (item.adminOnly) return isAdmin;
@@ -90,7 +173,7 @@ export function Sidebar() {
             return true;
           })
           .map((item) => (
-            <SidebarLink key={item.href} item={item} />
+            <SidebarLink key={item.href} item={item} collapsed={collapsed} />
           ))}
       </nav>
     </aside>

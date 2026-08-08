@@ -25,6 +25,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
+import { PresenceDot } from "@/components/shared/presence-dot";
+import { formatDateTime } from "@/features/orders/lib/format";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -188,6 +190,8 @@ export function UserList() {
                 <TableHead>{t("table.email")}</TableHead>
                 <TableHead>{t("table.role")}</TableHead>
                 <TableHead>{t("table.status")}</TableHead>
+                <TableHead>{t("table.online")}</TableHead>
+                <TableHead>{t("table.lastActive")}</TableHead>
                 <TableHead className="text-end">{t("table.actions")}</TableHead>
               </TableRow>
             </TableHeader>
@@ -229,6 +233,14 @@ export function UserList() {
                         })()}
                         {t(`statuses.${user.status}`, { ns: "common" })}
                       </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <PresenceDot isOnline={user.isOnline} lastActiveAt={user.lastActiveAt} />
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {user.lastActiveAt
+                        ? formatDateTime(user.lastActiveAt)
+                        : "—"}
                     </TableCell>
                     <TableCell className="text-end">
                       <div className="flex justify-end gap-2">

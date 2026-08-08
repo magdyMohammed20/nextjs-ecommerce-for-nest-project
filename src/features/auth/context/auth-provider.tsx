@@ -19,6 +19,7 @@ import {
 } from "../types/auth-types";
 import { clearToken, getToken, setToken } from "@/lib/auth/client";
 import { decodeToken } from "@/lib/auth/token";
+import { mergeGuestCart } from "@/features/cart/lib/guest-cart";
 import i18n from "@/lib/i18n";
 
 interface AuthContextValue {
@@ -40,6 +41,25 @@ function safeNextPath(): string | null {
   const next = new URLSearchParams(window.location.search).get("next");
   if (!next || !next.startsWith("/") || next.startsWith("//")) return null;
   return next;
+}
+
+function resolveAuthTarget(role: AuthUser["role"]): string {
+  return safeNextPath() ?? (role === "admin" ? "/dashboard" : "/my-dashboard");
+}
+
+function navigateAfterAuth(
+  router: ReturnType<typeof useRouter>,
+  target: string,
+): void {
+  router.replace(target);
+  // Defensive fallback: if the client router fails to leave /login (stale
+  // tab, cached bundle, middleware race), force a full navigation so the
+  // login always completes and lands on the target page.
+  window.setTimeout(() => {
+    if (window.location.pathname.startsWith("/login")) {
+      window.location.assign(target);
+    }
+  }, 3000);
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -90,7 +110,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatarUrl: res.avatarUrl,
       });
       toast.success(i18n.t("toasts.welcomeBack", { name: res.name }));
-      router.replace(safeNextPath() ?? (res.role === "admin" ? "/dashboard" : "/my-dashboard"));
+      // Merge before navigating so the landing page's cart fetch already sees
+      // the guest items (avoids an empty-cart flash / stale fetch race).
+      await mergeGuestCart();
+      navigateAfterAuth(router, resolveAuthTarget(res.role));
     },
     [router],
   );
@@ -110,19 +133,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const loaded = await authApi.me();
       setUser(loaded);
       toast.success(i18n.t("toasts.welcomeBack", { name: loaded.name }));
-      router.replace(safeNextPath() ?? (loaded.role === "admin" ? "/dashboard" : "/my-dashboard"));
+      await mergeGuestCart();
+      navigateAfterAuth(router, resolveAuthTarget(loaded.role));
     },
     [router],
   );
 
   const logout = useCallback(async () => {
-    clearToken();
-    setUser(null);
     try {
       await authApi.logout();
     } catch {
-      // token already removed locally
+      // token is cleared locally regardless
     }
+    clearToken();
+    setUser(null);
     router.replace("/login");
   }, [router]);
 

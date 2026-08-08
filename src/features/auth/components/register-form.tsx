@@ -29,6 +29,7 @@ export function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<RegisterFormValues>({
+    mode: "onTouched",
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",

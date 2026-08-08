@@ -7,6 +7,8 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   avatarUrl?: string | null;
+  lastActiveAt?: string | null;
+  isOnline?: boolean;
 }
 
 export interface UpdateUserPayload {

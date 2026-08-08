@@ -3,12 +3,21 @@
   "welcome": "مرحباً بعودتك، {{name}}. إليك نظرة عامة على متجرك.",
   "totalUsers": "إجمالي المستخدمين",
   "totalUsersDescription": "الحسابات المسجّلة",
+  "activeUsers": "{{count}} متصل",
   "totalProducts": "إجمالي المنتجات",
   "totalProductsDescription": "في كتالوجك",
   "outOfStock": "نفد المخزون",
   "outOfStockDescription": "منتجات بكمية صفر",
   "categories": "التصنيفات",
   "categoriesDescription": "تصنيفات المنتجات في متجرك",
+  "totalOrders": "إجمالي الطلبات",
+  "totalOrdersDescription": "الطلبات المقدّمة على المتجر",
+  "pendingOrders": "طلبات قيد الانتظار",
+  "pendingOrdersDescription": "الطلبات بانتظار المعالجة",
+  "totalRevenue": "إجمالي الإيرادات",
+  "totalRevenueDescription": "الإيرادات من جميع الطلبات",
+  "averageOrderValue": "متوسط قيمة الطلب",
+  "averageOrderValueDescription": "متوسط إجمالي الطلبات",
   "inStock": "متوفر",
   "inStockDescription": "منتجات بكمية متاحة",
   "lowStock": "مخزون منخفض",
@@ -42,6 +51,14 @@
     {
       "title": "إدارة المستخدمين",
       "description": "تعديل الأدوار والصلاحيات"
+    },
+    {
+      "title": "إدارة التصنيفات",
+      "description": "تنظيم تصنيفات المنتجات"
+    },
+    {
+      "title": "عرض الطلبات",
+      "description": "تتبّع الطلبات وتحديثها"
     },
     {
       "title": "عرض الكتالوج",

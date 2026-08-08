@@ -1,15 +1,27 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
-const Toaster = ({ ...props }: ToasterProps) => {
+const Toaster = ({ position, ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
+  const [dir, setDir] = useState<"ltr" | "rtl">("ltr")
+
+  useEffect(() => {
+    const html = document.documentElement
+    const update = () => setDir(html.dir === "rtl" ? "rtl" : "ltr")
+    update()
+    const observer = new MutationObserver(update)
+    observer.observe(html, { attributes: true, attributeFilter: ["dir"] })
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
+      position={position ?? (dir === "rtl" ? "bottom-left" : "bottom-right")}
       className="toaster group"
       icons={{
         success: (

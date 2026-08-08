@@ -11,6 +11,7 @@ import {
   clearGuestCart,
   getGuestCartSnapshot,
   guestCartToDto,
+  mergeGuestCart,
   removeFromGuestCart,
   subscribeGuestCart,
   updateGuestQuantity,
@@ -44,29 +45,11 @@ export function useCart() {
   }, [queryClient]);
 
   // Merge any guest cart into the server cart once the user signs in.
+  // Fallback retry: merges any leftover guest cart and refreshes the server
+  // cart. The authoritative merge runs inside login() before navigation.
   useEffect(() => {
     if (!isAuthenticated) return;
-    const guest = getGuestCartSnapshot();
-    if (guest.length === 0) return;
-
-    let cancelled = false;
-    Promise.all(
-      guest.map((item) =>
-        cartApi.addItem({ productId: item.productId, quantity: item.quantity }),
-      ),
-    )
-      .then(() => {
-        if (cancelled) return;
-        clearGuestCart();
-        invalidate();
-      })
-      .catch(() => {
-        // Keep the guest cart so nothing is lost; it can be retried on next login.
-      });
-
-    return () => {
-      cancelled = true;
-    };
+    mergeGuestCart().finally(() => invalidate());
   }, [isAuthenticated, invalidate]);
 
   const data = isAuthenticated ? serverQuery.data : guestCartToDto(guestItems);

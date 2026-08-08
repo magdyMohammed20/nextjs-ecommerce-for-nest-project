@@ -1,4 +1,5 @@
 import type { CartDto, CartItemDto, Product } from "@/lib/generated/api";
+import { cartApi } from "../api/cart-api";
 
 export interface GuestCartItem {
   productId: number;
@@ -120,4 +121,33 @@ export function removeFromGuestCart(productId: number): GuestCartItem[] {
 
 export function clearGuestCart(): GuestCartItem[] {
   return commit([]);
+}
+
+let mergeInFlight: Promise<boolean> | null = null;
+
+/**
+ * Push the guest cart into the server cart and clear it on success.
+ * Module-level, so StrictMode double-effects and multiple callers can never
+ * trigger duplicate POSTs; if the guest cart is already gone it is a no-op.
+ */
+export function mergeGuestCart(): Promise<boolean> {
+  const guest = snapshot();
+  if (guest.length === 0) return Promise.resolve(false);
+  if (mergeInFlight) return mergeInFlight;
+
+  mergeInFlight = Promise.all(
+    guest.map((item) =>
+      cartApi.addItem({ productId: item.productId, quantity: item.quantity }),
+    ),
+  )
+    .then(() => {
+      clearGuestCart();
+      return true;
+    })
+    .catch(() => false)
+    .finally(() => {
+      mergeInFlight = null;
+    });
+
+  return mergeInFlight;
 }

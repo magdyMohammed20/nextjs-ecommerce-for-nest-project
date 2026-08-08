@@ -8,6 +8,8 @@
     "email": "Email",
     "role": "Role",
     "status": "Status",
+    "online": "Online",
+    "lastActive": "Last Active",
     "actions": "Actions"
   },
   "approve": "Approve account",

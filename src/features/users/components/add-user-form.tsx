@@ -38,6 +38,7 @@ export function AddUserForm() {
   const canChangeRole = isRootAdmin(currentUser?.email);
 
   const form = useForm<CreateUserFormValues>({
+    mode: "onTouched",
     resolver: zodResolver(createUserSchema),
     defaultValues: {
       name: "",

@@ -51,6 +51,7 @@ export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<LoginFormValues>({
+    mode: "onTouched",
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });

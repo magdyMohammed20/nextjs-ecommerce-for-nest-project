@@ -175,11 +175,16 @@ export interface HomeResponseDto {
 
 export interface StatsDto {
   usersTotal: number;
+  onlineUsers: number;
   productsTotal: number;
   categoriesTotal: number;
   inStock: number;
   outOfStock: number;
   lowStock: number;
+  totalOrders: number;
+  pendingOrders: number;
+  totalRevenue: number;
+  averageOrderValue: number;
   inventoryValue: number;
   averagePrice: number;
 }
@@ -223,9 +228,7 @@ export interface CreateOrderItemDto {
   quantity: number;
 }
 
-export interface CreateOrderDto {
-  customerName: string;
-  customerEmail: string;
+export interface CreateMyOrderDto {
   /** @minItems 1 */
   items: CreateOrderItemDto[];
 }
@@ -273,11 +276,6 @@ export interface Order {
   updatedAt?: string;
 }
 
-export interface CreateMyOrderDto {
-  /** @minItems 1 */
-  items: CreateOrderItemDto[];
-}
-
 export interface OrderPageDto {
   data: Order[];
   meta: PaginationMetaDto;
@@ -300,6 +298,16 @@ export interface OrderSummaryDto {
   total: number;
   status: OrderSummaryDtoStatus;
   createdAt: string;
+}
+
+export interface OrderAdminStatsDto {
+  totalOrders: number;
+  totalRevenue: number;
+  pending: number;
+  confirmed: number;
+  shipped: number;
+  delivered: number;
+  cancelled: number;
 }
 
 export type UpdateOrderStatusDtoStatus = typeof UpdateOrderStatusDtoStatus[keyof typeof UpdateOrderStatusDtoStatus];
@@ -352,16 +360,16 @@ limit: number;
 search?: string;
 };
 
+export type OrdersControllerFindMineParams = {
+page: number;
+limit: number;
+};
+
 export type OrdersControllerFindAllParams = {
 page: number;
 limit: number;
 search?: string;
 status?: string;
-};
-
-export type OrdersControllerFindMineParams = {
-page: number;
-limit: number;
 };
 
 export const getAppControllerGetHelloUrl = () => {
@@ -1170,61 +1178,6 @@ export const cartControllerRemoveItem = async (productId: number, options?: Para
 
 
 
-export const getOrdersControllerCreateUrl = () => {
-
-
-
-
-  return `/orders`
-}
-
-/**
- * @summary Create an order (public checkout)
- */
-export const ordersControllerCreate = async (createOrderDto: CreateOrderDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Order> => {
-
-  return orvalFetch<Order>(getOrdersControllerCreateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createOrderDto)
-  }
-);}
-
-
-
-export const getOrdersControllerFindAllUrl = (params: OrdersControllerFindAllParams,) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : String(value))
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0 ? `/orders?${stringifiedParams}` : `/orders`
-}
-
-/**
- * @summary List orders (paginated, admin)
- */
-export const ordersControllerFindAll = async (params: OrdersControllerFindAllParams, options?: Parameters<typeof orvalFetch>[1]): Promise<OrderPageDto> => {
-
-  return orvalFetch<OrderPageDto>(getOrdersControllerFindAllUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
 export const getOrdersControllerCreateMineUrl = () => {
 
 
@@ -1280,6 +1233,37 @@ export const ordersControllerFindMine = async (params: OrdersControllerFindMineP
 
 
 
+export const getOrdersControllerFindAllUrl = (params: OrdersControllerFindAllParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/orders?${stringifiedParams}` : `/orders`
+}
+
+/**
+ * @summary List orders (paginated, admin)
+ */
+export const ordersControllerFindAll = async (params: OrdersControllerFindAllParams, options?: Parameters<typeof orvalFetch>[1]): Promise<OrderPageDto> => {
+
+  return orvalFetch<OrderPageDto>(getOrdersControllerFindAllUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getOrdersControllerFindLatestUrl = () => {
 
 
@@ -1294,6 +1278,29 @@ export const getOrdersControllerFindLatestUrl = () => {
 export const ordersControllerFindLatest = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<OrderSummaryDto[]> => {
 
   return orvalFetch<OrderSummaryDto[]>(getOrdersControllerFindLatestUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getOrdersControllerGetAdminStatsUrl = () => {
+
+
+
+  return `/orders/stats`
+}
+
+/**
+ * @summary Order statistics (admin)
+ */
+export const ordersControllerGetAdminStats = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<OrderAdminStatsDto> => {
+
+  return orvalFetch<OrderAdminStatsDto>(getOrdersControllerGetAdminStatsUrl(),
   {
     ...options,
     method: 'GET'

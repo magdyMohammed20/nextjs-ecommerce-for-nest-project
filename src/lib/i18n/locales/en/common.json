@@ -17,7 +17,9 @@
     "cart": "Cart",
     "users": "Users",
     "profile": "My Profile",
-    "openMenu": "Open navigation menu"
+    "openMenu": "Open navigation menu",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar"
   },
   "roles": {
     "admin": "Admin",
@@ -27,6 +29,10 @@
     "pending": "Pending",
     "active": "Active",
     "rejected": "Rejected"
+  },
+  "presence": {
+    "online": "Online",
+    "offline": "Offline"
   },
   "actions": {
     "save": "Save changes",

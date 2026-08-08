@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Eye, Receipt, XCircle } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Eye, Printer, Receipt, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { ordersApi } from "../api/orders-api";
 import type { Order, OrderStatus } from "../types/order-types";
 import { formatDate, formatMoney } from "../lib/format";
+import { printOrderInvoice } from "../lib/invoice";
 import { OrderStatusSelect } from "./order-status-select";
 import { OrderDetailDialog } from "./order-detail-dialog";
 import type { PaginationMeta } from "@/lib/pagination";
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/shared/pagination";
+import { PresenceDot } from "@/components/shared/presence-dot";
 import { SearchInput } from "@/components/shared/search-input";
 import {
   Select,
@@ -43,7 +45,11 @@ import { ORDER_STATUSES } from "../types/order-types";
 
 const LIMIT = 10;
 
-export function OrdersTable() {
+export function OrdersTable({
+  onStatusChange,
+}: {
+  onStatusChange?: () => void;
+}) {
   const { t } = useTranslation("orders");
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -63,16 +69,21 @@ export function OrdersTable() {
   const [orderToCancel, setOrderToCancel] = useState<Order | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
-  useEffect(() => {
+  const loadOrders = useCallback(() => {
     let ignore = false;
 
     ordersApi
       .getAll({ page, limit: LIMIT, search, status: status || undefined })
       .then((res) => {
-        if (!ignore) {
-          setOrders(res.data);
-          setMeta(res.meta);
+        if (ignore) return;
+        // The last item on a filtered page may no longer match the filter,
+        // leaving an empty page — fall back to the last valid page.
+        if (res.data.length === 0 && page > 1) {
+          setPage(Math.max(1, res.meta.totalPages));
+          return;
         }
+        setOrders(res.data);
+        setMeta(res.meta);
       })
       .catch((error) => {
         if (!ignore) {
@@ -89,6 +100,8 @@ export function OrdersTable() {
       ignore = true;
     };
   }, [page, search, status, t]);
+
+  useEffect(() => loadOrders(), [loadOrders]);
 
   function handlePageChange(nextPage: number) {
     setPage(nextPage);
@@ -111,6 +124,8 @@ export function OrdersTable() {
         prev.map((o) => (o.id === order.id ? { ...o, ...updated } : o)),
       );
       toast.success(t("toasts.statusUpdated", { id: order.id }));
+      loadOrders();
+      onStatusChange?.();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : t("toasts.statusFailed"),
@@ -132,6 +147,8 @@ export function OrdersTable() {
       );
       toast.success(t("toasts.cancelled", { id: orderToCancel.id }));
       setOrderToCancel(null);
+      loadOrders();
+      onStatusChange?.();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : t("toasts.cancelFailed"),
@@ -148,6 +165,39 @@ export function OrdersTable() {
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("toasts.loadFailed"));
     }
+  }
+
+  function handleInvoice(order: Order) {
+    const dir =
+      typeof document !== "undefined" &&
+      document.documentElement.dir === "rtl"
+        ? "rtl"
+        : "ltr";
+    printOrderInvoice(
+      order,
+      {
+        brand: t("appName", { ns: "common" }),
+        title: t("invoice.title"),
+        print: t("invoice.print"),
+        order: t("invoice.order"),
+        placed: t("invoice.placed"),
+        customer: t("invoice.customer"),
+        phone: t("invoice.phone"),
+        address: t("invoice.address"),
+        notes: t("invoice.notes"),
+        status: t(`statuses.${order.status}`),
+        items: t("invoice.items"),
+        product: t("invoice.product"),
+        quantity: t("invoice.quantity"),
+        unitPrice: t("invoice.unitPrice"),
+        lineTotal: t("invoice.lineTotal"),
+        total: t("invoice.total"),
+        noItems: t("invoice.noItems"),
+        noAddress: t("invoice.noAddress"),
+        footer: t("invoice.footer"),
+      },
+      dir,
+    );
   }
 
   return (
@@ -224,11 +274,17 @@ export function OrdersTable() {
                       #{order.id}
                     </TableCell>
                     <TableCell>
-                      <div>
-                        <p className="font-medium">{order.customerName}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {order.customerEmail}
-                        </p>
+                      <div className="flex items-center gap-2">
+                        <PresenceDot
+                          isOnline={order.customerIsOnline}
+                          lastActiveAt={order.customerLastActiveAt}
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{order.customerName}</p>
+                          <p className="truncate text-xs text-muted-foreground">
+                            {order.customerEmail}
+                          </p>
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
@@ -259,6 +315,15 @@ export function OrdersTable() {
                         >
                           <Eye className="h-3.5 w-3.5" />
                           <span className="sr-only">{t("viewOrder")}</span>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          title={t("invoice.title")}
+                          onClick={() => handleInvoice(order)}
+                        >
+                          <Printer className="h-3.5 w-3.5" />
+                          <span className="sr-only">{t("invoice.title")}</span>
                         </Button>
                         {canCancel && (
                           <Button

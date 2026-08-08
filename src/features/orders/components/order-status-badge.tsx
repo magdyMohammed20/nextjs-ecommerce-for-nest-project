@@ -10,6 +10,11 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { OrderStatus } from "../types/order-types";
 
 const statusStyles: Record<OrderStatus, string> = {
@@ -32,9 +37,33 @@ const statusIcons: Record<OrderStatus, LucideIcon> = {
   cancelled: X,
 };
 
-export function OrderStatusBadge({ status }: { status: OrderStatus }) {
+export function OrderStatusBadge({
+  status,
+  iconOnly = false,
+}: {
+  status: OrderStatus;
+  iconOnly?: boolean;
+}) {
   const { t } = useTranslation("orders");
   const StatusIcon = statusIcons[status];
+
+  if (iconOnly) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            className={`inline-flex h-7 w-7 shrink-0 cursor-default items-center justify-center rounded-lg border ${statusStyles[status]}`}
+          >
+            <StatusIcon className="h-4 w-4" />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top">
+          {t(`statuses.${status}`)}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
   return (
     <Badge variant="outline" className={statusStyles[status]}>
       <StatusIcon className="mr-1 h-3 w-3 rtl:ml-1 rtl:mr-0" />

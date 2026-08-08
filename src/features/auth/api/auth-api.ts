@@ -31,10 +31,7 @@ export const authApi = {
       body: JSON.stringify(data),
     }),
   logout: () =>
-    apiFetch<{ message: string }>("/user/logout", {
-      method: "POST",
-      skipAuth: true,
-    }),
+    apiFetch<{ message: string }>("/user/logout", { method: "POST" }),
   me: () => apiFetch<AuthUser>("/user/me", { method: "GET" }),
   updateMe: (data: UpdateProfilePayload) =>
     apiFetch<AuthUser>("/user/me", {

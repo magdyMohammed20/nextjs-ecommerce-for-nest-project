@@ -8,7 +8,7 @@
     "english": "English",
     "arabic": "العربية"
   },
-"nav": {
+  "nav": {
     "dashboard": "لوحة التحكم",
     "products": "المنتجات",
     "categories": "التصنيفات",
@@ -17,7 +17,9 @@
     "cart": "سلة التسوق",
     "users": "المستخدمين",
     "profile": "ملفي الشخصي",
-    "openMenu": "فتح قائمة التنقل"
+    "openMenu": "فتح قائمة التنقل",
+    "collapseSidebar": "طي الشريط الجانبي",
+    "expandSidebar": "توسيع الشريط الجانبي"
   },
   "roles": {
     "admin": "مشرف",
@@ -27,6 +29,10 @@
     "pending": "قيد الانتظار",
     "active": "نشط",
     "rejected": "مرفوض"
+  },
+  "presence": {
+    "online": "متصل",
+    "offline": "غير متصل"
   },
   "actions": {
     "save": "حفظ التغييرات",
