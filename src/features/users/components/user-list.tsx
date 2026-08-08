@@ -25,6 +25,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
+import { AnimatedResults } from "@/components/shared/animated-results";
 import { PresenceDot } from "@/components/shared/presence-dot";
 import { formatDateTime } from "@/features/orders/lib/format";
 import {
@@ -168,20 +169,21 @@ export function UserList() {
         className="w-full sm:w-80"
       />
 
-      {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
-          ))}
-        </div>
-      ) : users.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
-          <div className="rounded-full bg-muted p-4">
-            <UserIcon className="h-8 w-8 text-muted-foreground" />
+      <AnimatedResults signature={`${search}|${page}`}>
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-14 w-full" />
+            ))}
           </div>
-          <p className="text-sm text-muted-foreground">{t("empty")}</p>
-        </div>
-      ) : (
+        ) : users.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
+            <div className="rounded-full bg-muted p-4">
+              <UserIcon className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">{t("empty")}</p>
+          </div>
+        ) : (
         <div className="rounded-lg border">
           <Table>
             <TableHeader>
@@ -293,13 +295,14 @@ export function UserList() {
         </div>
       )}
 
-      <Pagination
-        page={meta?.page}
-        totalPages={meta.totalPages}
-        total={meta.total}
-        limit={meta.limit}
-        onPageChange={handlePageChange}
-      />
+        <Pagination
+          page={meta?.page}
+          totalPages={meta.totalPages}
+          total={meta.total}
+          limit={meta.limit}
+          onPageChange={handlePageChange}
+        />
+      </AnimatedResults>
 
       <AlertDialog
         open={Boolean(userToDelete)}

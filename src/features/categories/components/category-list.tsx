@@ -22,6 +22,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
+import { AnimatedResults } from "@/components/shared/animated-results";
 import {
   Select,
   SelectContent,
@@ -159,22 +160,23 @@ export function CategoryList() {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
-          ))}
-        </div>
-      ) : categories.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
-          <div className="rounded-full bg-muted p-4">
-            <Tags className="h-8 w-8 text-muted-foreground" />
+      <AnimatedResults signature={`${search}|${limit}|${page}`}>
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-14 w-full" />
+            ))}
           </div>
-          <p className="text-sm text-muted-foreground">
-            {search ? t("emptySearch") : t("empty")}
-          </p>
-        </div>
-      ) : (
+        ) : categories.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
+            <div className="rounded-full bg-muted p-4">
+              <Tags className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {search ? t("emptySearch") : t("empty")}
+            </p>
+          </div>
+        ) : (
         <div className="rounded-lg border">
           <Table>
             <TableHeader>
@@ -236,13 +238,14 @@ export function CategoryList() {
         </div>
       )}
 
-      <Pagination
-        page={meta.page}
-        totalPages={meta.totalPages}
-        total={meta.total}
-        limit={meta.limit}
-        onPageChange={handlePageChange}
-      />
+        <Pagination
+          page={meta.page}
+          totalPages={meta.totalPages}
+          total={meta.total}
+          limit={meta.limit}
+          onPageChange={handlePageChange}
+        />
+      </AnimatedResults>
 
       <AlertDialog
         open={Boolean(categoryToDelete)}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { motion, type Variants } from "framer-motion";
 import { Check, ChevronDown, Package, Pencil, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -50,6 +51,16 @@ const PAGE_SIZE_OPTIONS = [6, 8, 10, 12, 16, 24];
 const DEFAULT_LIMIT = 8;
 const PRICE_MIN = 0;
 const PRICE_MAX = 500;
+
+const GRID_CONTAINER: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.05, delayChildren: 0.02 } },
+};
+
+const GRID_ITEM: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.28, ease: "easeOut" } },
+};
 
 function FilterSection({
   title,
@@ -555,11 +566,18 @@ export function ProductList({
           </Table>
         </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <motion.div
+            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+            variants={GRID_CONTAINER}
+            initial="hidden"
+            animate="show"
+          >
             {products?.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <motion.div key={product.id} variants={GRID_ITEM}>
+                <ProductCard product={product} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
         </div>
       )}

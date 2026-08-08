@@ -26,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
+import { AnimatedResults } from "@/components/shared/animated-results";
 import {
   Select,
   SelectContent,
@@ -467,47 +468,48 @@ export function AdminSubmissionsList() {
         </div>
       )}
 
-      {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: LIMIT }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
-          ))}
-        </div>
-      ) : products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
-          <div className="rounded-full bg-muted p-4">
-            <Package className="h-8 w-8 text-muted-foreground" />
+      <AnimatedResults signature={`${search}|${status}|${sortKey}|${page}`}>
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: LIMIT }).map((_, i) => (
+              <Skeleton key={i} className="h-14 w-full" />
+            ))}
           </div>
-          <p className="text-sm text-muted-foreground">
-            {search || status
-              ? t("submissions.emptyFiltered")
-              : t("submissions.empty")}
-          </p>
-        </div>
-      ) : (
-        <>
-          <div className="rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableHead className="w-10">
-                    <TableCheckbox
-                      checked={allOnPageSelected}
-                      onChange={toggleAllOnPage}
-                      label={t("submissions.table.selectAll")}
-                    />
-                  </TableHead>
-                  <TableHead>{t("submissions.table.product")}</TableHead>
-                  <TableHead>{t("submissions.table.owner")}</TableHead>
-                  <TableHead>{t("submissions.table.price")}</TableHead>
-                  <TableHead>{t("submissions.table.status")}</TableHead>
-                  <TableHead>{t("submissions.table.rejectionNote")}</TableHead>
-                  <TableHead>{t("submissions.table.submitted")}</TableHead>
-                  <TableHead className="text-end">
-                    {t("submissions.table.actions")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
+        ) : products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
+            <div className="rounded-full bg-muted p-4">
+              <Package className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {search || status
+                ? t("submissions.emptyFiltered")
+                : t("submissions.empty")}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="rounded-lg border">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="w-10">
+                      <TableCheckbox
+                        checked={allOnPageSelected}
+                        onChange={toggleAllOnPage}
+                        label={t("submissions.table.selectAll")}
+                      />
+                    </TableHead>
+                    <TableHead>{t("submissions.table.product")}</TableHead>
+                    <TableHead>{t("submissions.table.owner")}</TableHead>
+                    <TableHead>{t("submissions.table.price")}</TableHead>
+                    <TableHead>{t("submissions.table.status")}</TableHead>
+                    <TableHead>{t("submissions.table.rejectionNote")}</TableHead>
+                    <TableHead>{t("submissions.table.submitted")}</TableHead>
+                    <TableHead className="text-end">
+                      {t("submissions.table.actions")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
               <TableBody>
                 {products.map((product) => {
                   const canModerate = product.status === "pending";
@@ -661,6 +663,7 @@ export function AdminSubmissionsList() {
           />
         </>
       )}
+      </AnimatedResults>
 
       <Dialog
         open={Boolean(reviewing)}

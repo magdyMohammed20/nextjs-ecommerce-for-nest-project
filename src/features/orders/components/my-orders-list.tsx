@@ -26,6 +26,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
+import { AnimatedResults } from "@/components/shared/animated-results";
 import {
   Select,
   SelectContent,
@@ -315,27 +316,28 @@ export function MyOrdersList() {
         </Select>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 w-full rounded-2xl" />
-          ))}
-        </div>
-      ) : orders.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
-          <div className="rounded-full bg-muted p-4">
-            <Receipt className="h-8 w-8 text-muted-foreground" />
+      <AnimatedResults signature={`${search}|${status}|${sortValue}|${page}`}>
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 w-full rounded-2xl" />
+            ))}
           </div>
-          <p className="text-sm text-muted-foreground">
-            {hasFilters ? t("mine.emptyFiltered") : t("mine.empty")}
-          </p>
-          {!hasFilters && (
-            <Button asChild size="sm" className="mt-1">
-              <Link href="/products">{t("mine.emptyAction")}</Link>
-            </Button>
-          )}
-        </div>
-      ) : (
+        ) : orders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
+            <div className="rounded-full bg-muted p-4">
+              <Receipt className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {hasFilters ? t("mine.emptyFiltered") : t("mine.empty")}
+            </p>
+            {!hasFilters && (
+              <Button asChild size="sm" className="mt-1">
+                <Link href="/products">{t("mine.emptyAction")}</Link>
+              </Button>
+            )}
+          </div>
+        ) : (
         <div className="rounded-lg border">
           <Table>
             <TableHeader>
@@ -414,13 +416,14 @@ export function MyOrdersList() {
         </div>
       )}
 
-      <Pagination
-        page={meta?.page}
-        totalPages={meta.totalPages}
-        total={meta.total}
-        limit={meta.limit}
-        onPageChange={handlePageChange}
-      />
+        <Pagination
+          page={meta?.page}
+          totalPages={meta.totalPages}
+          total={meta.total}
+          limit={meta.limit}
+          onPageChange={handlePageChange}
+        />
+      </AnimatedResults>
 
       <OrderDetailDialog
         order={orderToView}

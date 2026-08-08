@@ -13,6 +13,7 @@ import type { PaginationMeta } from "@/lib/pagination";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pagination } from "@/components/shared/pagination";
+import { AnimatedResults } from "@/components/shared/animated-results";
 import {
   Table,
   TableBody,
@@ -127,30 +128,31 @@ export function MySubmissionsList() {
         )}
       </div>
 
-      {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: LIMIT }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
-          ))}
-        </div>
-      ) : products.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
-          <div className="rounded-full bg-muted p-4">
-            <PackageCheck className="h-8 w-8 text-muted-foreground" />
+      <AnimatedResults signature={`${status}|${page}`}>
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: LIMIT }).map((_, i) => (
+              <Skeleton key={i} className="h-14 w-full" />
+            ))}
           </div>
-          <p className="text-sm text-muted-foreground">
-            {hasFilter ? t("mine.emptyFiltered") : t("mine.empty")}
-          </p>
-          {!hasFilter && (
-            <Button asChild size="sm" variant="outline" className="mt-1">
-              <Link href="/products/submit">
-                <Plus className="mr-2 h-4 w-4" />
-                {t("mine.submitProduct")}
-              </Link>
-            </Button>
-          )}
-        </div>
-      ) : (
+        ) : products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
+            <div className="rounded-full bg-muted p-4">
+              <PackageCheck className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {hasFilter ? t("mine.emptyFiltered") : t("mine.empty")}
+            </p>
+            {!hasFilter && (
+              <Button asChild size="sm" variant="outline" className="mt-1">
+                <Link href="/products/submit">
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("mine.submitProduct")}
+                </Link>
+              </Button>
+            )}
+          </div>
+        ) : (
         <>
           <div className="rounded-lg border">
             <Table>
@@ -215,6 +217,7 @@ export function MySubmissionsList() {
           />
         </>
       )}
+      </AnimatedResults>
     </div>
   );
 }
