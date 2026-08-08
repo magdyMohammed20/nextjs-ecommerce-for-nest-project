@@ -3,7 +3,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
-  Activity,
   AlertTriangle,
   ArrowUpRight,
   Clock,
@@ -22,6 +21,9 @@ import {
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { statsApi } from "../api/stats-api";
+import { activityApi } from "@/features/activity/api/activity-api";
+import { ActivityFeed } from "@/features/activity/components/activity-feed";
+import type { ActivitySummaryDto } from "@/features/activity/types/activity-types";
 import { usersApi } from "@/features/users/api/users-api";
 import { ordersApi } from "@/features/orders/api/orders-api";
 import type { OrderSummary } from "@/features/orders/types/order-types";
@@ -100,6 +102,9 @@ export function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([]);
   const [stats, setStats] = useState<StatsDto | null>(null);
   const [latestOrders, setLatestOrders] = useState<OrderSummary[]>([]);
+  const [activity, setActivity] = useState<ActivitySummaryDto[]>([]);
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [activityError, setActivityError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [ordersError, setOrdersError] = useState(false);
@@ -117,6 +122,26 @@ export function AdminDashboard() {
       )
       .finally(() => setIsLoading(false));
   }, [t]);
+
+  useEffect(() => {
+    let ignore = false;
+
+    activityApi
+      .getLatest(8)
+      .then((entries) => {
+        if (!ignore) setActivity(entries);
+      })
+      .catch(() => {
+        if (!ignore) setActivityError(true);
+      })
+      .finally(() => {
+        if (!ignore) setActivityLoading(false);
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   // Poll stats so the online-users counter updates as people sign in/out.
   useEffect(() => {
@@ -383,12 +408,11 @@ export function AdminDashboard() {
             <CardDescription>{t("recentActivityDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-10 text-center">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                <Activity className="h-5 w-5 text-muted-foreground" />
-              </span>
-              <p className="text-sm font-medium text-muted-foreground">{t("comingSoon")}</p>
-            </div>
+            <ActivityFeed
+              items={activity}
+              isLoading={activityLoading}
+              hasError={activityError}
+            />
           </CardContent>
         </Card>
       </div>

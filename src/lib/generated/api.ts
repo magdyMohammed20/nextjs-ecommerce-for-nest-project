@@ -58,6 +58,20 @@ export interface UpdateUserStatusDto {
   status: UpdateUserStatusDtoStatus;
 }
 
+export interface ActivitySummaryDto {
+  id: number;
+  action: string;
+  /** @nullable */
+  actorName?: string | null;
+  /** @nullable */
+  actorRole?: string | null;
+  /** @nullable */
+  targetType?: string | null;
+  /** @nullable */
+  targetId?: number | null;
+  createdAt: string;
+}
+
 export interface CreateProductDto {
   name: string;
   /**
@@ -110,6 +124,11 @@ export interface PaginationMetaDto {
 export interface ProductPageDto {
   data: Product[];
   meta: PaginationMetaDto;
+}
+
+export interface OrderUsageDto {
+  orderCount: number;
+  itemCount: number;
 }
 
 export interface UpdateProductDto { [key: string]: unknown }
@@ -228,10 +247,33 @@ export interface CreateOrderItemDto {
   quantity: number;
 }
 
+export interface ShippingAddressDto {
+  /** @maxLength 200 */
+  street: string;
+  /** @maxLength 100 */
+  city: string;
+  /** @maxLength 100 */
+  state: string;
+  /** @maxLength 20 */
+  postalCode: string;
+  /** @maxLength 100 */
+  country: string;
+}
+
 export interface CreateMyOrderDto {
   /** @minItems 1 */
   items: CreateOrderItemDto[];
+  /** @maxLength 30 */
+  phone: string;
+  shippingAddress: ShippingAddressDto;
+  /** @maxLength 500 */
+  notes?: string;
 }
+
+/**
+ * @nullable
+ */
+export type OrderShippingAddress = { [key: string]: unknown } | null;
 
 export type OrderStatus = typeof OrderStatus[keyof typeof OrderStatus];
 
@@ -270,6 +312,12 @@ export interface Order {
      */
   userId?: number | null;
   total: number;
+  /** @nullable */
+  phone?: string | null;
+  /** @nullable */
+  shippingAddress?: OrderShippingAddress;
+  /** @nullable */
+  notes?: string | null;
   status: OrderStatus;
   items?: OrderItem[];
   createdAt?: string;
@@ -298,6 +346,13 @@ export interface OrderSummaryDto {
   total: number;
   status: OrderSummaryDtoStatus;
   createdAt: string;
+}
+
+export interface OrderStatsDto {
+  totalOrders: number;
+  totalSpent: number;
+  activeOrders: number;
+  completedOrders: number;
 }
 
 export interface OrderAdminStatsDto {
@@ -340,6 +395,10 @@ export type UserControllerLoginBody = {
   password: string;
 };
 
+export type ActivityControllerFindLatestParams = {
+limit: number;
+};
+
 export type ProductsControllerFindAllParams = {
 page: number;
 limit: number;
@@ -361,9 +420,41 @@ search?: string;
 };
 
 export type OrdersControllerFindMineParams = {
-page: number;
-limit: number;
+page?: number;
+limit?: number;
+status?: OrdersControllerFindMineStatus;
+search?: string;
+sortBy?: OrdersControllerFindMineSortBy;
+sortOrder?: OrdersControllerFindMineSortOrder;
 };
+
+export type OrdersControllerFindMineStatus = typeof OrdersControllerFindMineStatus[keyof typeof OrdersControllerFindMineStatus];
+
+
+export const OrdersControllerFindMineStatus = {
+  pending: 'pending',
+  confirmed: 'confirmed',
+  shipped: 'shipped',
+  delivered: 'delivered',
+  cancelled: 'cancelled',
+} as const;
+
+export type OrdersControllerFindMineSortBy = typeof OrdersControllerFindMineSortBy[keyof typeof OrdersControllerFindMineSortBy];
+
+
+export const OrdersControllerFindMineSortBy = {
+  id: 'id',
+  createdAt: 'createdAt',
+  total: 'total',
+} as const;
+
+export type OrdersControllerFindMineSortOrder = typeof OrdersControllerFindMineSortOrder[keyof typeof OrdersControllerFindMineSortOrder];
+
+
+export const OrdersControllerFindMineSortOrder = {
+  ASC: 'ASC',
+  DESC: 'DESC',
+} as const;
 
 export type OrdersControllerFindAllParams = {
 page: number;
@@ -572,6 +663,27 @@ export const userControllerUpdateMe = async (updateUserDto: UpdateUserDto, optio
 
 
 
+export const getUserControllerHeartbeatUrl = () => {
+
+
+
+
+  return `/user/heartbeat`
+}
+
+export const userControllerHeartbeat = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<void> => {
+
+  return orvalFetch<void>(getUserControllerHeartbeatUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
 export const getUserControllerFindOneUrl = (id: number,) => {
 
 
@@ -658,6 +770,37 @@ export const userControllerUpdateStatus = async (id: number,
 
 
 
+export const getActivityControllerFindLatestUrl = (params: ActivityControllerFindLatestParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/activity/latest?${stringifiedParams}` : `/activity/latest`
+}
+
+/**
+ * @summary Latest activity entries for the admin dashboard feed
+ */
+export const activityControllerFindLatest = async (params: ActivityControllerFindLatestParams, options?: Parameters<typeof orvalFetch>[1]): Promise<ActivitySummaryDto[]> => {
+
+  return orvalFetch<ActivitySummaryDto[]>(getActivityControllerFindLatestUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getProductsControllerCreateUrl = () => {
 
 
@@ -727,6 +870,27 @@ if(productsControllerUploadBody.file !== undefined) {
     method: 'POST'
     ,
     body: formData
+  }
+);}
+
+
+
+export const getProductsControllerGetOrderUsageUrl = (id: number,) => {
+
+
+
+
+  return `/products/${id}/usage`
+}
+
+export const productsControllerGetOrderUsage = async (id: number, options?: Parameters<typeof orvalFetch>[1]): Promise<OrderUsageDto> => {
+
+  return orvalFetch<OrderUsageDto>(getProductsControllerGetOrderUsageUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 
@@ -1202,7 +1366,7 @@ export const ordersControllerCreateMine = async (createMyOrderDto: CreateMyOrder
 
 
 
-export const getOrdersControllerFindMineUrl = (params: OrdersControllerFindMineParams,) => {
+export const getOrdersControllerFindMineUrl = (params?: OrdersControllerFindMineParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -1220,7 +1384,7 @@ export const getOrdersControllerFindMineUrl = (params: OrdersControllerFindMineP
 /**
  * @summary List the authenticated user's own orders (paginated)
  */
-export const ordersControllerFindMine = async (params: OrdersControllerFindMineParams, options?: Parameters<typeof orvalFetch>[1]): Promise<OrderPageDto> => {
+export const ordersControllerFindMine = async (params?: OrdersControllerFindMineParams, options?: Parameters<typeof orvalFetch>[1]): Promise<OrderPageDto> => {
 
   return orvalFetch<OrderPageDto>(getOrdersControllerFindMineUrl(params),
   {
@@ -1288,7 +1452,56 @@ export const ordersControllerFindLatest = async ( options?: Parameters<typeof or
 
 
 
+export const getOrdersControllerGetMineStatsUrl = () => {
+
+
+
+
+  return `/orders/mine/stats`
+}
+
+/**
+ * @summary Order statistics for the authenticated user
+ */
+export const ordersControllerGetMineStats = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<OrderStatsDto> => {
+
+  return orvalFetch<OrderStatsDto>(getOrdersControllerGetMineStatsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getOrdersControllerCancelMineUrl = (id: number,) => {
+
+
+
+
+  return `/orders/mine/${id}/cancel`
+}
+
+/**
+ * @summary Cancel one of the authenticated user's own orders
+ */
+export const ordersControllerCancelMine = async (id: number, options?: Parameters<typeof orvalFetch>[1]): Promise<Order> => {
+
+  return orvalFetch<Order>(getOrdersControllerCancelMineUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
 export const getOrdersControllerGetAdminStatsUrl = () => {
+
 
 
 

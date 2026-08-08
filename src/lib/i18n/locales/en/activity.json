@@ -1,0 +1,33 @@
+{
+  "recentActivity": "Recent Activity",
+  "recentActivityDescription": "Recent admin and store activity",
+  "noActivity": "No activity yet.",
+  "failedToLoad": "Failed to load activity.",
+  "actions": {
+    "userCreated": "created a user",
+    "userUpdated": "updated a user",
+    "userRoleChanged": "changed a user's role",
+    "userStatusChanged": "changed a user's status",
+    "userDeleted": "deleted a user",
+    "productCreated": "created a product",
+    "productUpdated": "updated a product",
+    "productDeleted": "deleted a product",
+    "categoryCreated": "created a category",
+    "categoryUpdated": "updated a category",
+    "categoryDeleted": "deleted a category",
+    "orderCreated": "placed an order",
+    "orderStatusChanged": "changed an order status",
+    "unknown": "performed an action"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo_one": "{{count}} minute ago",
+    "minutesAgo_other": "{{count}} minutes ago",
+    "hoursAgo_one": "{{count}} hour ago",
+    "hoursAgo_other": "{{count}} hours ago",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago",
+    "weeksAgo_one": "{{count}} week ago",
+    "weeksAgo_other": "{{count}} weeks ago"
+  }
+}

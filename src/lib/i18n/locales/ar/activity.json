@@ -1,0 +1,33 @@
+{
+  "recentActivity": "النشاط الأخير",
+  "recentActivityDescription": "أحدث نشاطات الإدارة والمتجر",
+  "noActivity": "لا يوجد نشاط بعد.",
+  "failedToLoad": "تعذر تحميل النشاط.",
+  "actions": {
+    "userCreated": "أنشأ مستخدماً",
+    "userUpdated": "حدّث مستخدماً",
+    "userRoleChanged": "غيّر دور مستخدم",
+    "userStatusChanged": "غيّر حالة مستخدم",
+    "userDeleted": "حذف مستخدماً",
+    "productCreated": "أنشأ منتجاً",
+    "productUpdated": "حدّث منتجاً",
+    "productDeleted": "حذف منتجاً",
+    "categoryCreated": "أنشأ تصنيفاً",
+    "categoryUpdated": "حدّث تصنيفاً",
+    "categoryDeleted": "حذف تصنيفاً",
+    "orderCreated": "قدّم طلباً",
+    "orderStatusChanged": "غيّر حالة طلب",
+    "unknown": "نفّذ إجراءً"
+  },
+  "time": {
+    "justNow": "الآن",
+    "minutesAgo_one": "منذ {{count}} دقيقة",
+    "minutesAgo_other": "منذ {{count}} دقيقة",
+    "hoursAgo_one": "منذ {{count}} ساعة",
+    "hoursAgo_other": "منذ {{count}} ساعات",
+    "daysAgo_one": "منذ {{count}} يوم",
+    "daysAgo_other": "منذ {{count}} أيام",
+    "weeksAgo_one": "منذ {{count}} أسبوع",
+    "weeksAgo_other": "منذ {{count}} أسابيع"
+  }
+}
