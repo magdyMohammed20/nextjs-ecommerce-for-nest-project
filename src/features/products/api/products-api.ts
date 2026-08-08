@@ -6,10 +6,16 @@ import {
   productsControllerUpdate,
   productsControllerUpload,
 } from "@/lib/generated/api";
+import { apiFetch } from "@/lib/api-client";
 import type {
   CreateProductPayload,
   UpdateProductPayload,
 } from "../types/product-types";
+
+export interface ProductOrderUsage {
+  orderCount: number;
+  itemCount: number;
+}
 
 export const productsApi = {
   getAll: ({
@@ -42,4 +48,6 @@ export const productsApi = {
     productsControllerUpdate(id, data),
   remove: (id: number) => productsControllerRemove(id),
   uploadImage: (file: File) => productsControllerUpload({ file }),
+  getUsage: (id: number) =>
+    apiFetch<ProductOrderUsage>(`/products/${id}/usage`),
 };

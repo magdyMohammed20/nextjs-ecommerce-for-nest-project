@@ -69,7 +69,17 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteUsage, setDeleteUsage] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  function openDeleteDialog() {
+    setDeleteOpen(true);
+    setDeleteUsage(null);
+    productsApi
+      .getUsage(productId)
+      .then((usage) => setDeleteUsage(usage.orderCount))
+      .catch(() => setDeleteUsage(0));
+  }
 
   useEffect(() => {
     let ignore = false;
@@ -158,7 +168,7 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
             <Button
               variant="outline"
               className="text-destructive hover:text-destructive"
-              onClick={() => setDeleteOpen(true)}
+              onClick={() => openDeleteDialog()}
             >
               <Trash2 className="mr-2 h-4 w-4" />
               {t("delete")}
@@ -263,8 +273,15 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("deleteDialog.title")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("deleteDialog.description", { name: product.name })}
+            <AlertDialogDescription className="space-y-2">
+              <span>
+                {t("deleteDialog.description", { name: product.name })}
+              </span>
+              {typeof deleteUsage === "number" && deleteUsage > 0 && (
+                <span className="block rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-amber-800 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                  {t("deleteDialog.usedInOrders", { count: deleteUsage })}
+                </span>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

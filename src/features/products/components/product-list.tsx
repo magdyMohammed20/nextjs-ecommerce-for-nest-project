@@ -158,7 +158,17 @@ export function ProductList({
   const [hasLoaded, setHasLoaded] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [deleteUsage, setDeleteUsage] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  function openDeleteDialog(product: Product) {
+    setProductToDelete(product);
+    setDeleteUsage(null);
+    productsApi
+      .getUsage(product.id)
+      .then((usage) => setDeleteUsage(usage.orderCount))
+      .catch(() => setDeleteUsage(0));
+  }
 
   // Load categories once on mount
   useEffect(() => {
@@ -533,7 +543,7 @@ export function ProductList({
                         size="sm"
                         variant="outline"
                         className="text-destructive hover:text-destructive"
-                        onClick={() => setProductToDelete(product)}
+                        onClick={() => openDeleteDialog(product)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
@@ -571,8 +581,15 @@ export function ProductList({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("deleteDialog.title")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t("deleteDialog.description", { name: productToDelete?.name })}
+            <AlertDialogDescription className="space-y-2">
+              <span>
+                {t("deleteDialog.description", { name: productToDelete?.name })}
+              </span>
+              {typeof deleteUsage === "number" && deleteUsage > 0 && (
+                <span className="block rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-amber-800 dark:border-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                  {t("deleteDialog.usedInOrders", { count: deleteUsage })}
+                </span>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

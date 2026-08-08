@@ -40,6 +40,7 @@
   "browseMore": "Browse more products",
   "deleteDialog": {
     "title": "Delete product?",
-    "description": "This will permanently delete \"{{name}}\". This action cannot be undone."
+    "description": "This will permanently delete \"{{name}}\". This action cannot be undone.",
+    "usedInOrders": "This product appears in {{count}} order(s). Order history will be kept, but the link to this product will be removed."
   }
 }
