@@ -1,7 +1,6 @@
 {
   "title": "My Dashboard",
   "welcome": "Welcome back, {{name}}. Here's a snapshot of your activity.",
-  "comingSoon": "Coming soon",
   "stats": {
     "orders": "Total Orders",
     "ordersDescription": "Orders you've placed",
@@ -16,9 +15,9 @@
   "recentOrdersDescription": "Your most recent orders",
   "viewOrders": "View my orders",
   "wishlistCard": "Wishlist",
-  "wishlistCardDescription": "Your saved items will appear here",
+  "wishlistCardDescription": "Products you've saved",
   "recentlyViewed": "Recently Viewed",
-  "recentlyViewedDescription": "Products you've browsed will appear here",
+  "recentlyViewedDescription": "Products you've browsed",
   "quickActions": "Quick Actions",
   "quickActionsDescription": "Things you can do right now",
   "quickLinks": [
@@ -36,5 +35,11 @@
     }
   ],
   "noOrdersYet": "No orders yet.",
-  "failedToLoad": "Failed to load orders."
+  "noSavedItems": "No saved items yet.",
+  "noRecentlyViewed": "Products you view will appear here.",
+  "noReviewsYet": "No reviews yet.",
+  "failedToLoad": "Failed to load orders.",
+  "failedToLoadStats": "Failed to load your stats.",
+  "failedToLoadWishlist": "Failed to load your wishlist.",
+  "failedToLoadReviews": "Failed to load your reviews."
 }

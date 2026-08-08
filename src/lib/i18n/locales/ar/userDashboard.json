@@ -1,7 +1,6 @@
 {
   "title": "لوحة التحكم الخاصة بي",
   "welcome": "مرحبًا بعودتك، {{name}}. إليك ملخص نشاطك.",
-  "comingSoon": "قريبًا",
   "stats": {
     "orders": "إجمالي الطلبات",
     "ordersDescription": "الطلبات التي قمت بها",
@@ -16,9 +15,9 @@
   "recentOrdersDescription": "أحدث طلباتك",
   "viewOrders": "عرض طلباتي",
   "wishlistCard": "قائمة الرغبات",
-  "wishlistCardDescription": "ستظهر منتجاتك المحفوظة هنا",
+  "wishlistCardDescription": "المنتجات التي حفظتها",
   "recentlyViewed": "مُشاهد مؤخرًا",
-  "recentlyViewedDescription": "ستظهر المنتجات التي تصفحتها هنا",
+  "recentlyViewedDescription": "المنتجات التي تصفحتها",
   "quickActions": "إجراءات سريعة",
   "quickActionsDescription": "أشياء يمكنك القيام بها الآن",
   "quickLinks": [
@@ -36,5 +35,11 @@
     }
   ],
   "noOrdersYet": "لا توجد طلبات بعد.",
-  "failedToLoad": "تعذّر تحميل الطلبات."
+  "noSavedItems": "لا توجد منتجات محفوظة بعد.",
+  "noRecentlyViewed": "ستظهر المنتجات التي تتصفحها هنا.",
+  "noReviewsYet": "لا توجد تقييمات بعد.",
+  "failedToLoad": "تعذّر تحميل الطلبات.",
+  "failedToLoadStats": "تعذّر تحميل إحصائياتك.",
+  "failedToLoadWishlist": "تعذّر تحميل قائمة رغباتك.",
+  "failedToLoadReviews": "تعذّر تحميل تقييماتك."
 }

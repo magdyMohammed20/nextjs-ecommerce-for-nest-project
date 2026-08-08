@@ -380,6 +380,54 @@ export interface UpdateOrderStatusDto {
   status: UpdateOrderStatusDtoStatus;
 }
 
+export interface WishlistItem {
+  id: number;
+  userId: number;
+  productId: number;
+  product?: Product;
+  createdAt?: string;
+}
+
+export interface WishlistPageDto {
+  data: WishlistItem[];
+  meta: PaginationMetaDto;
+}
+
+export interface AddWishlistItemDto {
+  /** @minimum 1 */
+  productId: number;
+}
+
+export interface ProductReview {
+  id: number;
+  userId: number;
+  productId: number;
+  /**
+     * @minimum 1
+     * @maximum 5
+     */
+  rating: number;
+  /** @nullable */
+  comment?: string | null;
+  product?: Product;
+  createdAt?: string;
+}
+
+export interface ReviewPageDto {
+  data: ProductReview[];
+  meta: PaginationMetaDto;
+}
+
+export interface CreateReviewDto {
+  /**
+     * @minimum 1
+     * @maximum 5
+     */
+  rating: number;
+  /** @maxLength 1000 */
+  comment?: string;
+}
+
 export type UserControllerUploadAvatarBody = {
   file?: Blob;
 };
@@ -461,6 +509,16 @@ page: number;
 limit: number;
 search?: string;
 status?: string;
+};
+
+export type WishlistControllerFindMineParams = {
+page: number;
+limit: number;
+};
+
+export type ReviewsControllerFindMineParams = {
+page: number;
+limit: number;
 };
 
 export const getAppControllerGetHelloUrl = () => {
@@ -1568,5 +1626,164 @@ export const ordersControllerUpdateStatus = async (id: number,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(updateOrderStatusDto)
+  }
+);}
+
+
+
+export const getWishlistControllerFindMineUrl = (params: WishlistControllerFindMineParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/wishlist?${stringifiedParams}` : `/wishlist`
+}
+
+/**
+ * @summary List the authenticated user's wishlist (paginated)
+ */
+export const wishlistControllerFindMine = async (params: WishlistControllerFindMineParams, options?: Parameters<typeof orvalFetch>[1]): Promise<WishlistPageDto> => {
+
+  return orvalFetch<WishlistPageDto>(getWishlistControllerFindMineUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getWishlistControllerAddUrl = () => {
+
+
+
+
+  return `/wishlist`
+}
+
+/**
+ * @summary Add a product to my wishlist (idempotent)
+ */
+export const wishlistControllerAdd = async (addWishlistItemDto: AddWishlistItemDto, options?: Parameters<typeof orvalFetch>[1]): Promise<WishlistItem> => {
+
+  return orvalFetch<WishlistItem>(getWishlistControllerAddUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(addWishlistItemDto)
+  }
+);}
+
+
+
+export const getWishlistControllerRemoveUrl = (productId: number,) => {
+
+
+
+
+  return `/wishlist/${productId}`
+}
+
+/**
+ * @summary Remove a product from my wishlist
+ */
+export const wishlistControllerRemove = async (productId: number, options?: Parameters<typeof orvalFetch>[1]): Promise<MessageDto> => {
+
+  return orvalFetch<MessageDto>(getWishlistControllerRemoveUrl(productId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getReviewsControllerFindMineUrl = (params: ReviewsControllerFindMineParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/reviews/mine?${stringifiedParams}` : `/reviews/mine`
+}
+
+/**
+ * @summary List the authenticated user's reviews (paginated)
+ */
+export const reviewsControllerFindMine = async (params: ReviewsControllerFindMineParams, options?: Parameters<typeof orvalFetch>[1]): Promise<ReviewPageDto> => {
+
+  return orvalFetch<ReviewPageDto>(getReviewsControllerFindMineUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getReviewsControllerUpsertUrl = (productId: number,) => {
+
+
+
+
+  return `/reviews/${productId}`
+}
+
+/**
+ * @summary Create or update my review for a product (one per user)
+ */
+export const reviewsControllerUpsert = async (productId: number,
+    createReviewDto: CreateReviewDto, options?: Parameters<typeof orvalFetch>[1]): Promise<ProductReview> => {
+
+  return orvalFetch<ProductReview>(getReviewsControllerUpsertUrl(productId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createReviewDto)
+  }
+);}
+
+
+
+export const getReviewsControllerRemoveUrl = (productId: number,) => {
+
+
+
+
+  return `/reviews/${productId}`
+}
+
+/**
+ * @summary Delete my review for a product
+ */
+export const reviewsControllerRemove = async (productId: number, options?: Parameters<typeof orvalFetch>[1]): Promise<MessageDto> => {
+
+  return orvalFetch<MessageDto>(getReviewsControllerRemoveUrl(productId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
   }
 );}

@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { productsApi } from "../api/products-api";
 import type { Product } from "../types/product-types";
+import { recordRecentlyViewed } from "../lib/recently-viewed";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { AddToCartButton } from "@/features/cart/components/add-to-cart-button";
 import { ProductImage } from "./product-image";
@@ -90,6 +91,12 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
         if (!ignore) {
           setProduct(loaded);
           setIsLoading(false);
+          recordRecentlyViewed({
+            id: loaded.id,
+            name: loaded.name,
+            imageUrl: loaded.imageUrl ?? null,
+            price: Number(loaded.price),
+          });
         }
       })
       .catch(() => {
