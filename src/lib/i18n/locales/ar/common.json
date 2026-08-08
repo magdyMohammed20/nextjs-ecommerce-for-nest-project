@@ -17,6 +17,8 @@
     "cart": "سلة التسوق",
     "users": "المستخدمين",
     "profile": "ملفي الشخصي",
+    "mySubmissions": "منشوراتي",
+    "submissions": "المنشورات",
     "openMenu": "فتح قائمة التنقل",
     "collapseSidebar": "طي الشريط الجانبي",
     "expandSidebar": "توسيع الشريط الجانبي"
@@ -81,6 +83,8 @@
     "productCreated": "تم إنشاء المنتج بنجاح",
     "productUpdated": "تم تحديث المنتج بنجاح",
     "productDeleted": "تم حذف المنتج بنجاح",
+    "productSubmitted": "تم إرسال منتجك للمراجعة.",
+    "submittedForApproval": "تم إرسال منتجك للمراجعة.",
     "avatarUploaded": "تم رفع الصورة بنجاح",
     "imageUploaded": "تم رفع الصورة بنجاح",
     "invalidImageType": "يرجى اختيار ملف صورة (jpeg، png، webp، gif)",

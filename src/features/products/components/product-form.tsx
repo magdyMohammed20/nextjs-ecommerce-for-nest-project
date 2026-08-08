@@ -37,9 +37,15 @@ import { ProductImageInput } from "./product-image-input";
 
 interface ProductFormProps {
   product?: Product;
+  /**
+   * "create" — admin publishes a new product (default).
+   * "submit" — any user submits a product for admin approval (status=pending).
+   * "edit"   — implied when `product` is passed; admin updates an existing product.
+   */
+  mode?: "create" | "edit" | "submit";
 }
 
-export function ProductForm({ product }: ProductFormProps) {
+export function ProductForm({ product, mode = "create" }: ProductFormProps) {
   const router = useRouter();
   const { t } = useTranslation("productForm");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -94,18 +100,22 @@ export function ProductForm({ product }: ProductFormProps) {
         imageUrl: values.imageUrl || undefined,
       };
 
-      if (product) {
+      if (mode === "submit") {
+         await productsApi.submit(payload);
+        toast.success(t("toasts.submittedForApproval", { ns: "common" }));
+        router.push("/products/mine");
+      } else if (product) {
         await productsApi.update(product.id, {
           ...payload,
-          // Allow clearing the category back to "none".
           categoryId: values.categoryId ?? null,
         });
         toast.success(t("toasts.productUpdated", { ns: "common" }));
+        router.push("/products");
       } else {
         await productsApi.create(payload);
         toast.success(t("toasts.productCreated", { ns: "common" }));
+        router.push("/products");
       }
-      router.push("/products");
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : t("toasts.somethingWentWrong", { ns: "common" }),
@@ -236,9 +246,18 @@ export function ProductForm({ product }: ProductFormProps) {
             />
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
+              {mode === "submit" && (
+                <div className="text-xs text-muted-foreground">
+                  {t("pendingBanner")}
+                </div>
+              )}
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {product ? t("updateProduct") : t("createProduct")}
+                {mode === "submit"
+                  ? t("submitProduct")
+                  : product
+                    ? t("updateProduct")
+                    : t("createProduct")}
               </Button>
               <Button
                 type="button"

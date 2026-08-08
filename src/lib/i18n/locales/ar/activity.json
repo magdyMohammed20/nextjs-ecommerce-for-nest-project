@@ -11,6 +11,7 @@
     "userDeleted": "حذف مستخدماً",
     "productCreated": "أنشأ منتجاً",
     "productUpdated": "حدّث منتجاً",
+    "productStatusChanged": "غيّر حالة منتج",
     "productDeleted": "حذف منتجاً",
     "categoryCreated": "أنشأ تصنيفاً",
     "categoryUpdated": "حدّث تصنيفاً",

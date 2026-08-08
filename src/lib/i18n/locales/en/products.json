@@ -16,6 +16,7 @@
     "price": "Price",
     "quantity": "Quantity",
     "description": "Description",
+    "status": "Status",
     "actions": "Actions"
   },
   "empty": "No products found.",
@@ -42,5 +43,30 @@
     "title": "Delete product?",
     "description": "This will permanently delete \"{{name}}\". This action cannot be undone.",
     "usedInOrders": "This product appears in {{count}} order(s). Order history will be kept, but the link to this product will be removed."
+  },
+  "mine": {
+    "title": "My Submissions",
+    "subtitle": "Track the status of products you have submitted.",
+    "titleSingular": "Submission",
+    "empty": "You haven't submitted any products yet.",
+    "emptyFiltered": "No submissions match your filters.",
+    "submitProduct": "Submit a product",
+    "table": {
+      "product": "Product",
+      "price": "Price",
+      "status": "Status",
+      "rejectionNote": "Rejection Note",
+      "submitted": "Submitted"
+    },
+    "filter": {
+      "all": "All",
+      "pending": "Pending",
+      "active": "Approved",
+      "rejected": "Rejected"
+    },
+    "actions": {
+      "clear": "Clear filters",
+      "view": "View"
+    }
   }
 }

@@ -8,6 +8,7 @@ import {
   DollarSign,
   Heart,
   Package,
+  PackageCheck,
   ShoppingCart,
   Star,
   UserRound,
@@ -401,8 +402,10 @@ export function UserDashboard() {
   }) as { title: string; description: string }[];
   const quickLinks = [
     { href: "/products", icon: Package, ...quickLinkTexts[0] },
-    { href: "/profile", icon: UserRound, ...quickLinkTexts[1] },
-    { href: "/products", icon: ShoppingCart, ...quickLinkTexts[2] },
+    { href: "/products/submit", icon: PackageCheck, ...quickLinkTexts[1] },
+    { href: "/profile", icon: UserRound, ...quickLinkTexts[2] },
+    { href: "/products", icon: ShoppingCart, ...quickLinkTexts[3] },
+    { href: "/products/mine", icon: PackageCheck, ...quickLinkTexts[4] },
   ];
 
   return (

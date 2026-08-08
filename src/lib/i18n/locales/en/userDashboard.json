@@ -21,9 +21,13 @@
   "quickActions": "Quick Actions",
   "quickActionsDescription": "Things you can do right now",
   "quickLinks": [
-    {
+     {
       "title": "Browse products",
       "description": "Explore the catalog"
+    },
+    {
+      "title": "Submit a product",
+      "description": "Add a new listing for review"
     },
     {
       "title": "Edit profile",
@@ -32,6 +36,10 @@
     {
       "title": "View catalog",
       "description": "See all categories"
+    },
+    {
+      "title": "My Submissions",
+      "description": "Track your product submissions"
     }
   ],
   "noOrdersYet": "No orders yet.",

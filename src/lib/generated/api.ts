@@ -90,6 +90,15 @@ export interface CreateProductDto {
   categoryId?: number;
 }
 
+export type ProductStatus = typeof ProductStatus[keyof typeof ProductStatus];
+
+
+export const ProductStatus = {
+  pending: 'pending',
+  active: 'active',
+  rejected: 'rejected',
+} as const;
+
 export interface Category {
   id: number;
   name: string;
@@ -108,10 +117,45 @@ export interface Product {
   imageUrl?: string;
   categoryId?: number;
   category?: Category;
+  status: ProductStatus;
+  /**
+     * Owner of a user-submitted product; null for admin-created products
+     * @nullable
+     */
+  userId?: number | null;
+  /** @nullable */
+  rejectionNote?: string | null;
+  /**
+     * Owner display name, resolved from `userId` for admin views. Never
+     * persisted; populated on read so admins can see who submitted a product.
+     * @nullable
+     */
+  ownerName?: string | null;
+  /**
+     * Owner email, resolved from `userId` for admin views. Never persisted.
+     * @nullable
+     */
+  ownerEmail?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface UploadResponseDto {
-  url: string;
+export interface SubmitProductDto {
+  name: string;
+  /**
+     * @minimum 0.01
+     * @maximum 500
+     */
+  price: number;
+  description?: string;
+  /** @minimum 0 */
+  quantity?: number;
+  imageUrl?: string;
+  /**
+     * ID of the category this product belongs to
+     * @minimum 1
+     */
+  categoryId?: number;
 }
 
 export interface PaginationMetaDto {
@@ -126,9 +170,28 @@ export interface ProductPageDto {
   meta: PaginationMetaDto;
 }
 
+export interface UploadResponseDto {
+  url: string;
+}
+
 export interface OrderUsageDto {
   orderCount: number;
   itemCount: number;
+}
+
+export type UpdateProductStatusDtoStatus = typeof UpdateProductStatusDtoStatus[keyof typeof UpdateProductStatusDtoStatus];
+
+
+export const UpdateProductStatusDtoStatus = {
+  pending: 'pending',
+  active: 'active',
+  rejected: 'rejected',
+} as const;
+
+export interface UpdateProductStatusDto {
+  status: UpdateProductStatusDtoStatus;
+  /** @maxLength 255 */
+  rejectionNote?: string;
 }
 
 export interface UpdateProductDto { [key: string]: unknown }
@@ -455,6 +518,15 @@ category?: number;
 categories?: string;
 minPrice?: string;
 maxPrice?: string;
+status?: string;
+sortBy?: string;
+sortOrder?: string;
+};
+
+export type ProductsControllerFindMineParams = {
+page: number;
+limit: number;
+status?: string;
 };
 
 export type ProductsControllerUploadBody = {
@@ -908,6 +980,61 @@ export const productsControllerFindAll = async (params: ProductsControllerFindAl
 
 
 
+export const getProductsControllerSubmitUrl = () => {
+
+
+
+
+  return `/products/submit`
+}
+
+/**
+ * @summary Submit a product for moderation (authenticated users; enters status=pending)
+ */
+export const productsControllerSubmit = async (submitProductDto: SubmitProductDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Product> => {
+
+  return orvalFetch<Product>(getProductsControllerSubmitUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(submitProductDto)
+  }
+);}
+
+
+
+export const getProductsControllerFindMineUrl = (params: ProductsControllerFindMineParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/products/mine?${stringifiedParams}` : `/products/mine`
+}
+
+/**
+ * @summary List the authenticated user's submitted products
+ */
+export const productsControllerFindMine = async (params: ProductsControllerFindMineParams, options?: Parameters<typeof orvalFetch>[1]): Promise<ProductPageDto> => {
+
+  return orvalFetch<ProductPageDto>(getProductsControllerFindMineUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getProductsControllerUploadUrl = () => {
 
 
@@ -1013,6 +1140,31 @@ export const productsControllerRemove = async (id: number, options?: Parameters<
     method: 'DELETE'
 
 
+  }
+);}
+
+
+
+export const getProductsControllerUpdateStatusUrl = (id: number,) => {
+
+
+
+
+  return `/products/${id}/status`
+}
+
+/**
+ * @summary Update a product status (approve/reject a submission)
+ */
+export const productsControllerUpdateStatus = async (id: number,
+    updateProductStatusDto: UpdateProductStatusDto, options?: Parameters<typeof orvalFetch>[1]): Promise<Product> => {
+
+  return orvalFetch<Product>(getProductsControllerUpdateStatusUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateProductStatusDto)
   }
 );}
 

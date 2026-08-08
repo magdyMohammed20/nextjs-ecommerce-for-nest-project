@@ -11,6 +11,7 @@
     "userDeleted": "deleted a user",
     "productCreated": "created a product",
     "productUpdated": "updated a product",
+    "productStatusChanged": "changed a product's status",
     "productDeleted": "deleted a product",
     "categoryCreated": "created a category",
     "categoryUpdated": "updated a category",

@@ -14,6 +14,9 @@
   "totalOrdersDescription": "الطلبات المقدّمة على المتجر",
   "pendingOrders": "طلبات قيد الانتظار",
   "pendingOrdersDescription": "الطلبات بانتظار المعالجة",
+  "pendingSubmissions": "منشورات قيد المراجعة",
+  "pendingSubmissionsDescription": "منتجات بانتظار مراجعتك",
+  "reviewNow": "راجع الآن",
   "totalRevenue": "إجمالي الإيرادات",
   "totalRevenueDescription": "الإيرادات من جميع الطلبات",
   "averageOrderValue": "متوسط قيمة الطلب",
@@ -66,6 +69,91 @@
     {
       "title": "إدارة الأسئلة الشائعة",
       "description": "تعديل الأسئلة والأجوبة"
+    },
+    {
+      "title": "مراجعة المنشورات",
+      "description": "موافقة أو رفض منتجات"
     }
-  ]
+  ],
+  "submissions": {
+    "title": "المنشورات",
+    "subtitle": "مراجعة وإدارة المنتجات التي قدمها المستخدمون.",
+    "searchPlaceholder": "ابحث في المنشورات...",
+    "empty": "لا توجد منشورات منتجات بعد.",
+    "emptyFiltered": "لا توجد منشورات تطابق فلاترك.",
+    "failedToLoad": "تعذّر تحميل المنشورات.",
+    "filter": {
+      "all": "جميع الحالات"
+    },
+    "approve": "موافقة",
+    "approved": "تمت الموافقة على المنشور.",
+    "reject": "رفض",
+    "rejected": "تم رفض المنشور.",
+    "reopen": "إعادة فتح",
+    "reopened": "تمت إعادة فتح المنشور للمراجعة.",
+    "confirmReject": "تأكيد الرفض",
+    "viewDetails": "عرض التفاصيل",
+    "preview": "عرض في المتجر",
+    "sort": {
+      "label": "ترتيب حسب",
+      "newest": "الأحدث أولاً",
+      "oldest": "الأقدم أولاً",
+      "priceAsc": "السعر: من الأقل إلى الأعلى",
+      "priceDesc": "السعر: من الأعلى إلى الأقل"
+    },
+    "bulk": {
+      "selected_one": "تم تحديد {{count}}",
+      "selected_other": "تم تحديد {{count}}",
+      "approveSelected": "الموافقة على المحدد",
+      "rejectSelected": "رفض المحدد",
+      "approved_one": "تمت الموافقة على منشور واحد.",
+      "approved_other": "تمت الموافقة على {{count}} منشورات.",
+      "rejected_one": "تم رفض منشور واحد.",
+      "rejected_other": "تم رفض {{count}} منشورات.",
+      "failed_one": "فشل إجراء واحد.",
+      "failed_other": "فشل {{count}} إجراءات.",
+      "rejectTitle_one": "رفض منشور واحد؟",
+      "rejectTitle_other": "رفض {{count}} منشورات؟",
+      "rejectDescription": "سيتم وضع علامة رفض على المنشورات المحددة مع الملاحظة أدناه.",
+      "rejectConfirm": "تأكيد الرفض"
+    },
+    "presets": {
+      "duplicate": "منتج مكرر",
+      "description": "وصف المنتج غير كافٍ",
+      "image": "صورة المنتج ضعيفة أو مفقودة",
+      "content": "محتوى غير لائق أو مضلل",
+      "price": "سعر غير صحيح"
+    },
+    "audit": {
+      "title": "سجل المراجعة",
+      "subtitle": "من وافق أو رفض المنشورات ومتى",
+      "empty": "لا توجد قرارات مراجعة بعد."
+    },
+    "detailsTitle": "تفاصيل المنشور",
+    "details": {
+      "category": "الفئة",
+      "quantity": "الكمية",
+      "owner": "قدمه",
+      "anonymousOwner": "المستخدم رقم {{id}}",
+      "description": "الوصف",
+      "noDescription": "لا يوجد وصف."
+    },
+    "table": {
+      "product": "المنتج",
+      "owner": "قدمه",
+      "price": "السعر",
+      "status": "الحالة",
+      "rejectionNote": "ملاحظة الرفض",
+      "submitted": "تاريخ الإرسال",
+      "actions": "إجراءات",
+      "selectAll": "تحديد الكل في الصفحة",
+      "select": "تحديد المنشور"
+    },
+    "rejectDialog": {
+      "title": "رفض المنشور؟",
+      "description": "أضف ملاحظة توضح سبب رفض هذا المنتج.",
+      "noteLabel": "ملاحظة الرفض",
+      "notePlaceholder": "مثلاً: وصف غير مكتمل، فئة خاطئة..."
+    }
+  }
 }

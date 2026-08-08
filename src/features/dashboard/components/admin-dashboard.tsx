@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { statsApi } from "../api/stats-api";
+import { productsApi } from "@/features/products/api/products-api";
 import { activityApi } from "@/features/activity/api/activity-api";
 import { ActivityFeed } from "@/features/activity/components/activity-feed";
 import type { ActivitySummaryDto } from "@/features/activity/types/activity-types";
@@ -103,6 +104,7 @@ export function AdminDashboard() {
   const [stats, setStats] = useState<StatsDto | null>(null);
   const [latestOrders, setLatestOrders] = useState<OrderSummary[]>([]);
   const [activity, setActivity] = useState<ActivitySummaryDto[]>([]);
+  const [pendingSubmissions, setPendingSubmissions] = useState<number>(0);
   const [activityLoading, setActivityLoading] = useState(true);
   const [activityError, setActivityError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -110,10 +112,15 @@ export function AdminDashboard() {
   const [ordersError, setOrdersError] = useState(false);
 
   useEffect(() => {
-    Promise.all([statsApi.getStats(), usersApi.getAll({ limit: 5 })])
-      .then(([statsData, userData]) => {
+    Promise.all([
+      statsApi.getStats(),
+      usersApi.getAll({ limit: 5 }),
+      productsApi.getAll({ status: "pending", limit: 1 }),
+    ])
+      .then(([statsData, userData, pendingData]) => {
         setStats(statsData);
         setUsers(userData.data);
+        setPendingSubmissions(pendingData.meta.total);
       })
       .catch((error) =>
         toast.error(
@@ -152,6 +159,12 @@ export function AdminDashboard() {
         .getStats()
         .then((latest) => {
           if (!ignore) setStats(latest);
+        })
+        .catch(() => undefined);
+      productsApi
+        .getAll({ status: "pending", limit: 1 })
+        .then((res) => {
+          if (!ignore) setPendingSubmissions(res.meta.total);
         })
         .catch(() => undefined);
     };
@@ -233,6 +246,21 @@ export function AdminDashboard() {
     { key: "categories", title: t("categories"), value: stats?.categoriesTotal ?? 0, icon: Tags },
     { key: "totalOrders", title: t("totalOrders"), value: stats?.totalOrders ?? 0, icon: ShoppingCart },
     { key: "pendingOrders", title: t("pendingOrders"), value: stats?.pendingOrders ?? 0, icon: Clock },
+    {
+      key: "pendingSubmissions",
+      title: t("pendingSubmissions"),
+      value: pendingSubmissions,
+      icon: PackageCheck,
+      extra: pendingSubmissions > 0 && (
+        <Link
+          href="/dashboard/products/submissions"
+          className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+        >
+          {t("reviewNow")}
+          <ArrowUpRight className="h-3 w-3 rtl:-scale-x-100" />
+        </Link>
+      ),
+    },
     {
       key: "totalRevenue",
       title: t("totalRevenue"),
@@ -329,6 +357,11 @@ export function AdminDashboard() {
                 { href: "/dashboard/orders", icon: Receipt, ...quickLinkTexts[4] },
                 { href: "/products", icon: Package, ...quickLinkTexts[5] },
                 { href: "/dashboard/faq", icon: HelpCircle, ...quickLinkTexts[6] },
+                {
+                  href: "/dashboard/products/submissions",
+                  icon: PackageCheck,
+                  ...quickLinkTexts[7],
+                },
               ];
               return quickLinks.map(({ href, icon: Icon, title }) => (
                 <Link

@@ -17,6 +17,8 @@
     "cart": "Cart",
     "users": "Users",
     "profile": "My Profile",
+    "mySubmissions": "My Submissions",
+    "submissions": "Submissions",
     "openMenu": "Open navigation menu",
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar"
@@ -81,6 +83,8 @@
     "productCreated": "Product created successfully",
     "productUpdated": "Product updated successfully",
     "productDeleted": "Product deleted successfully",
+    "productSubmitted": "Your product has been submitted for review.",
+    "submittedForApproval": "Your product has been submitted for review.",
     "avatarUploaded": "Photo uploaded successfully",
     "imageUploaded": "Image uploaded successfully",
     "invalidImageType": "Please select an image file (jpeg, png, webp, gif)",

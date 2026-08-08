@@ -14,6 +14,9 @@
   "totalOrdersDescription": "Orders placed on the store",
   "pendingOrders": "Pending Orders",
   "pendingOrdersDescription": "Orders awaiting processing",
+  "pendingSubmissions": "Pending Submissions",
+  "pendingSubmissionsDescription": "Products awaiting your review",
+  "reviewNow": "Review now",
   "totalRevenue": "Total Revenue",
   "totalRevenueDescription": "Revenue from all orders",
   "averageOrderValue": "Avg. Order Value",
@@ -66,6 +69,91 @@
     {
       "title": "Manage FAQ",
       "description": "Edit questions & answers"
+    },
+    {
+      "title": "Review submissions",
+      "description": "Approve or reject products"
     }
-  ]
+  ],
+  "submissions": {
+    "title": "Submissions",
+    "subtitle": "Review and moderate products submitted by users.",
+    "searchPlaceholder": "Search submissions...",
+    "empty": "No product submissions yet.",
+    "emptyFiltered": "No submissions match your filters.",
+    "failedToLoad": "Failed to load submissions.",
+    "filter": {
+      "all": "All statuses"
+    },
+    "approve": "Approve",
+    "approved": "Submission approved.",
+    "reject": "Reject",
+    "rejected": "Submission rejected.",
+    "reopen": "Reopen",
+    "reopened": "Submission reopened for review.",
+    "confirmReject": "Confirm rejection",
+    "viewDetails": "View details",
+    "preview": "View on storefront",
+    "sort": {
+      "label": "Sort by",
+      "newest": "Newest first",
+      "oldest": "Oldest first",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low"
+    },
+    "bulk": {
+      "selected_one": "{{count}} selected",
+      "selected_other": "{{count}} selected",
+      "approveSelected": "Approve selected",
+      "rejectSelected": "Reject selected",
+      "approved_one": "{{count}} submission approved.",
+      "approved_other": "{{count}} submissions approved.",
+      "rejected_one": "{{count}} submission rejected.",
+      "rejected_other": "{{count}} submissions rejected.",
+      "failed_one": "{{count}} action failed.",
+      "failed_other": "{{count}} actions failed.",
+      "rejectTitle_one": "Reject {{count}} submission?",
+      "rejectTitle_other": "Reject {{count}} submissions?",
+      "rejectDescription": "Selected submissions will be marked rejected with the note below.",
+      "rejectConfirm": "Confirm rejection"
+    },
+    "presets": {
+      "duplicate": "Duplicate of an existing product",
+      "description": "Insufficient product description",
+      "image": "Poor or missing product image",
+      "content": "Inappropriate or misleading content",
+      "price": "Incorrect price"
+    },
+    "audit": {
+      "title": "Moderation history",
+      "subtitle": "Who approved or rejected submissions and when",
+      "empty": "No moderation decisions yet."
+    },
+    "detailsTitle": "Submission details",
+    "details": {
+      "category": "Category",
+      "quantity": "Quantity",
+      "owner": "Submitted by",
+      "anonymousOwner": "User #{{id}}",
+      "description": "Description",
+      "noDescription": "No description provided."
+    },
+    "table": {
+      "product": "Product",
+      "owner": "Submitted by",
+      "price": "Price",
+      "status": "Status",
+      "rejectionNote": "Rejection Note",
+      "submitted": "Submitted",
+      "actions": "Actions",
+      "selectAll": "Select all on page",
+      "select": "Select submission"
+    },
+    "rejectDialog": {
+      "title": "Reject submission?",
+      "description": "Add a note explaining why this product was rejected.",
+      "noteLabel": "Rejection note",
+      "notePlaceholder": "e.g. Incomplete description, wrong category..."
+    }
+  }
 }

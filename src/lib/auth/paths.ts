@@ -4,6 +4,8 @@ export function isPublicBrowsingPath(pathname: string): boolean {
     pathname === "/cart" ||
     (pathname.startsWith("/products/") &&
       !pathname.endsWith("/edit") &&
-      pathname !== "/products/new")
+      pathname !== "/products/new" &&
+      pathname !== "/products/submit" &&
+      pathname !== "/products/submissions")
   );
 }
