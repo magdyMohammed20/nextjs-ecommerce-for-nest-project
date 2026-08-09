@@ -129,10 +129,12 @@ export interface Product {
      * Owner display name, resolved from `userId` for admin views. Never
      * persisted; populated on read so admins can see who submitted a product.
      * @nullable
+     * @nullable
      */
   ownerName?: string | null;
   /**
      * Owner email, resolved from `userId` for admin views. Never persisted.
+     * @nullable
      * @nullable
      */
   ownerEmail?: string | null;
@@ -491,6 +493,132 @@ export interface CreateReviewDto {
   comment?: string;
 }
 
+export interface CreateContactMessageDto {
+  /** @maxLength 100 */
+  name: string;
+  /** @maxLength 255 */
+  email: string;
+  /** @maxLength 200 */
+  subject: string;
+  /** @maxLength 2000 */
+  message: string;
+}
+
+export type UserRole = typeof UserRole[keyof typeof UserRole];
+
+
+export const UserRole = {
+  admin: 'admin',
+  user: 'user',
+} as const;
+
+export type UserStatus = typeof UserStatus[keyof typeof UserStatus];
+
+
+export const UserStatus = {
+  pending: 'pending',
+  active: 'active',
+  rejected: 'rejected',
+} as const;
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  status: UserStatus;
+  /** @nullable */
+  avatarUrl: string | null;
+  /** @nullable */
+  lastActiveAt: string | null;
+  isOnline: boolean;
+}
+
+export interface ContactMessage {
+  id: number;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  /** Whether the admin has read this message */
+  read: boolean;
+  /**
+     * When the admin marked this message as read; null while unread
+     * @nullable
+     */
+  readAt?: string | null;
+  /**
+     * Sending user, when the message came from a registered account
+     * @nullable
+     */
+  userId?: number | null;
+  /**
+     * When the admin emailed a reply; null if not replied yet
+     * @nullable
+     */
+  repliedAt?: string | null;
+  /**
+     * Subject used on the emailed reply
+     * @nullable
+     */
+  replySubject?: string | null;
+  /**
+     * Body of the emailed reply
+     * @nullable
+     */
+  replyBody?: string | null;
+  user?: User;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ContactMessagePageDto {
+  data: ContactMessage[];
+  meta: PaginationMetaDto;
+}
+
+export interface UnreadCountDto {
+  unread: number;
+}
+
+export interface UpdatedCountDto {
+  updated: number;
+}
+
+export interface ContactDeleteDto {
+  message: string;
+}
+
+export interface ReplyToContactDto {
+  /**
+     * Reply subject. Defaults to "Re: <original subject>" when omitted.
+     * @maxLength 200
+     */
+  subject?: string;
+  /**
+     * Reply body sent to the message sender
+     * @maxLength 5000
+     */
+  body: string;
+}
+
+export type ContactReplyDtoMode = typeof ContactReplyDtoMode[keyof typeof ContactReplyDtoMode];
+
+
+export const ContactReplyDtoMode = {
+  sent: 'sent',
+  preview: 'preview',
+} as const;
+
+export interface ContactReplyDto {
+  mode: ContactReplyDtoMode;
+  /** Human-readable result of sending the reply */
+  message: string;
+  /** The updated contact message id */
+  id: number;
+}
+
 export type UserControllerUploadAvatarBody = {
   file?: Blob;
 };
@@ -590,6 +718,17 @@ limit: number;
 
 export type ReviewsControllerFindMineParams = {
 page: number;
+limit: number;
+};
+
+export type ContactControllerFindAllParams = {
+page: number;
+limit: number;
+read?: boolean;
+search?: string;
+};
+
+export type ContactControllerFindLatestParams = {
 limit: number;
 };
 
@@ -1937,5 +2076,212 @@ export const reviewsControllerRemove = async (productId: number, options?: Param
     method: 'DELETE'
 
 
+  }
+);}
+
+
+
+export const getContactControllerCreateUrl = () => {
+
+
+
+
+  return `/contact`
+}
+
+/**
+ * @summary Submit a public contact message (guests allowed; throttled + honeypot-protected)
+ */
+export const contactControllerCreate = async (createContactMessageDto: CreateContactMessageDto, options?: Parameters<typeof orvalFetch>[1]): Promise<ContactMessage> => {
+
+  return orvalFetch<ContactMessage>(getContactControllerCreateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createContactMessageDto)
+  }
+);}
+
+
+
+export const getContactControllerFindAllUrl = (params: ContactControllerFindAllParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/contact?${stringifiedParams}` : `/contact`
+}
+
+/**
+ * @summary Paginated admin inbox with optional unread filter
+ */
+export const contactControllerFindAll = async (params: ContactControllerFindAllParams, options?: Parameters<typeof orvalFetch>[1]): Promise<ContactMessagePageDto> => {
+
+  return orvalFetch<ContactMessagePageDto>(getContactControllerFindAllUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getContactControllerUnreadCountUrl = () => {
+
+
+
+
+  return `/contact/unread-count`
+}
+
+/**
+ * @summary Unread contact message count for the bell badge
+ */
+export const contactControllerUnreadCount = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<UnreadCountDto> => {
+
+  return orvalFetch<UnreadCountDto>(getContactControllerUnreadCountUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getContactControllerFindLatestUrl = (params: ContactControllerFindLatestParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/contact/latest?${stringifiedParams}` : `/contact/latest`
+}
+
+/**
+ * @summary Recent unread contact messages for the bell dropdown
+ */
+export const contactControllerFindLatest = async (params: ContactControllerFindLatestParams, options?: Parameters<typeof orvalFetch>[1]): Promise<ContactMessage[]> => {
+
+  return orvalFetch<ContactMessage[]>(getContactControllerFindLatestUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getContactControllerMarkReadUrl = (id: number,) => {
+
+
+
+
+  return `/contact/${id}/read`
+}
+
+/**
+ * @summary Mark a single contact message as read
+ */
+export const contactControllerMarkRead = async (id: number, options?: Parameters<typeof orvalFetch>[1]): Promise<ContactMessage> => {
+
+  return orvalFetch<ContactMessage>(getContactControllerMarkReadUrl(id),
+  {
+    ...options,
+    method: 'PATCH'
+
+
+  }
+);}
+
+
+
+export const getContactControllerMarkAllReadUrl = () => {
+
+
+
+
+  return `/contact/read-all`
+}
+
+/**
+ * @summary Mark every unread contact message as read
+ */
+export const contactControllerMarkAllRead = async ( options?: Parameters<typeof orvalFetch>[1]): Promise<UpdatedCountDto> => {
+
+  return orvalFetch<UpdatedCountDto>(getContactControllerMarkAllReadUrl(),
+  {
+    ...options,
+    method: 'PATCH'
+
+
+  }
+);}
+
+
+
+export const getContactControllerRemoveUrl = (id: number,) => {
+
+
+
+
+  return `/contact/${id}`
+}
+
+/**
+ * @summary Delete a contact message
+ */
+export const contactControllerRemove = async (id: number, options?: Parameters<typeof orvalFetch>[1]): Promise<ContactDeleteDto> => {
+
+  return orvalFetch<ContactDeleteDto>(getContactControllerRemoveUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getContactControllerReplyUrl = (id: number,) => {
+
+
+
+
+  return `/contact/${id}/reply`
+}
+
+/**
+ * @summary Email a reply to the message sender (SMTP)
+ */
+export const contactControllerReply = async (id: number,
+    replyToContactDto: ReplyToContactDto, options?: Parameters<typeof orvalFetch>[1]): Promise<ContactReplyDto> => {
+
+  return orvalFetch<ContactReplyDto>(getContactControllerReplyUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(replyToContactDto)
   }
 );}

@@ -54,6 +54,7 @@ export function SiteFooter() {
                   <Link href={i === 3 ? "/faq" : "#"} className="text-sm text-muted-foreground hover:text-foreground transition-colors">{l}</Link>
                 </li>
               ))}
+              <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">{t("footer.contact", { defaultValue: "Contact us" })}</Link></li>
               <li><Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About us</Link></li>
             </ul>
           </div>

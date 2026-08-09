@@ -6,7 +6,10 @@
     "deals": "العروض",
     "testimonials": "آراء العملاء",
     "signIn": "تسجيل الدخول",
-    "getStarted": "ابدأ الآن"
+    "getStarted": "ابدأ الآن",
+    "about": "من نحن",
+    "faq": "الأسئلة الشائعة",
+    "contact": "تواصل معنا"
   },
   "hero": {
     "badge": "مجموعة الموسم الجديد متاحة الآن",
@@ -129,6 +132,7 @@
     "emailPlaceholder": "you@email.com",
     "subscribe": "اشترك",
     "subscribed": "شكراً لاشتراكك!",
+    "contact": "تواصل معنا",
     "rights": "جميع الحقوق محفوظة."
   }
 }

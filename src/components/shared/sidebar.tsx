@@ -8,6 +8,7 @@ import {
   ChevronsRight,
   HelpCircle,
   LayoutDashboard,
+  MessagesSquare,
   Package,
   PackageCheck,
   Receipt,
@@ -26,6 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/features/auth/context/auth-provider";
+import { useUnreadCount } from "@/features/contact/hooks/use-unread-count";
 
 const COLLAPSED_KEY = "sidebar-collapsed";
 
@@ -37,6 +39,8 @@ interface NavItem {
   userOnly?: boolean;
   /** Match only the exact path (e.g. parent routes like /dashboard). */
   exact?: boolean;
+  /** Show a count pill next to the label. */
+  badgeCount?: number;
 }
 
 function SidebarLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
@@ -87,6 +91,11 @@ function SidebarLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
         />
       )}
       {!collapsed && item.label}
+      {!collapsed && item.badgeCount != null && item.badgeCount > 0 && (
+        <span className="ms-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+          {item.badgeCount > 99 ? "99+" : item.badgeCount}
+        </span>
+      )}
     </Link>
   );
 
@@ -107,6 +116,7 @@ function SidebarLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
 export function Sidebar() {
   const { isAdmin } = useAuth();
   const { t } = useTranslation("common");
+  const { unread } = useUnreadCount();
   const [collapsed, setCollapsed] = useState(
     () =>
       typeof window !== "undefined" &&
@@ -128,6 +138,7 @@ export function Sidebar() {
     { href: "/products", label: t("nav.products"), icon: Package, exact: true },
     { href: "/categories", label: t("nav.categories"), icon: Tags, adminOnly: true },
     { href: "/dashboard/faq", label: t("nav.faq"), icon: HelpCircle, adminOnly: true },
+    { href: "/dashboard/messages", label: t("nav.messages"), icon: MessagesSquare, adminOnly: true, badgeCount: unread },
     { href: "/dashboard/orders", label: t("nav.orders"), icon: Receipt, adminOnly: true },
     { href: "/users", label: t("nav.users"), icon: Users, adminOnly: true },
     { href: "/profile", label: t("nav.profile"), icon: UserRound },

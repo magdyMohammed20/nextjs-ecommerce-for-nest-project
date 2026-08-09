@@ -16,6 +16,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/auth/google") ||
     pathname.startsWith("/about") ||
     pathname.startsWith("/faq") ||
+    pathname.startsWith("/contact") ||
     isPublicBrowsingPath(pathname);
 
   if (isPublicPath) {

@@ -24,6 +24,9 @@ export function StorefrontFooter() {
           <Link href="/faq" className="transition-colors hover:text-foreground">
             {t("nav.faq")}
           </Link>
+          <Link href="/contact" className="transition-colors hover:text-foreground">
+            {t("nav.contact")}
+          </Link>
         </div>
       </div>
       <div className="border-t py-6 text-center text-xs text-muted-foreground">

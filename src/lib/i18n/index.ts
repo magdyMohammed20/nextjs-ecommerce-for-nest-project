@@ -33,6 +33,7 @@ import enUserDashboard from "./locales/en/userDashboard.json";
 import enCart from "./locales/en/cart.json";
 import enOrders from "./locales/en/orders.json";
 import enActivity from "./locales/en/activity.json";
+import enContact from "./locales/en/contact.json";
 
 import arCommon from "./locales/ar/common.json";
 import arHome from "./locales/ar/home.json";
@@ -57,6 +58,7 @@ import arUserDashboard from "./locales/ar/userDashboard.json";
 import arCart from "./locales/ar/cart.json";
 import arOrders from "./locales/ar/orders.json";
 import arActivity from "./locales/ar/activity.json";
+import arContact from "./locales/ar/contact.json";
 
 const resources = {
   en: {
@@ -83,6 +85,7 @@ const resources = {
     cart: enCart,
     orders: enOrders,
     activity: enActivity,
+    contact: enContact,
   },
   ar: {
     common: arCommon,
@@ -108,6 +111,7 @@ const resources = {
     cart: arCart,
     orders: arOrders,
     activity: arActivity,
+    contact: arContact,
   },
 } as const;
 

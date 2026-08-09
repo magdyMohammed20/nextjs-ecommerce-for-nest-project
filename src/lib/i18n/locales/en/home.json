@@ -6,7 +6,10 @@
     "deals": "Deals",
     "testimonials": "Testimonials",
     "signIn": "Sign in",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "about": "About",
+    "faq": "FAQ",
+    "contact": "Contact"
   },
   "hero": {
     "badge": "New season collection is live",
@@ -129,6 +132,7 @@
     "emailPlaceholder": "you@email.com",
     "subscribe": "Subscribe",
     "subscribed": "Thanks for subscribing!",
+    "contact": "Contact us",
     "rights": "All rights reserved."
   }
 }

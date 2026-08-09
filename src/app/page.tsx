@@ -20,6 +20,7 @@ import { SearchDropdownPanel } from "@/components/shared/search-dropdown";
 import { SiteFooter } from "@/components/shared/site-footer";
 import { Carousel } from "@/components/shared/carousel";
 import { CartBadge } from "@/features/cart/components/cart-badge";
+import { NotificationBell } from "@/features/contact/components/notification-bell";
 import { AddToCartButton } from "@/features/cart/components/add-to-cart-button";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { useCart } from "@/features/cart/hooks/use-cart";
@@ -318,6 +319,7 @@ export default function LandingPage() {
               ))}
               <Button asChild variant="ghost" size="sm"><Link href="/about">{t("nav.about", { defaultValue: "About" })}</Link></Button>
               <Button asChild variant="ghost" size="sm"><Link href="/faq">{t("nav.faq", { defaultValue: "FAQ" })}</Link></Button>
+              <Button asChild variant="ghost" size="sm"><Link href="/contact">{t("nav.contact", { defaultValue: "Contact" })}</Link></Button>
             </nav>
           </div>
           <div className="flex items-center gap-1.5">
@@ -327,6 +329,7 @@ export default function LandingPage() {
             </Button>
              <LanguageSwitcher /><ThemeToggle />
              <CartBadge />
+             <NotificationBell />
              <div className="hidden items-center gap-2 sm:flex">
               {user ? (
                 <UserMenu />
@@ -361,6 +364,15 @@ export default function LandingPage() {
                     <Link href={link.href}>{link.label}</Link>
                   </Button>
                 ))}
+                <Button asChild variant="ghost" className="w-full justify-start" onClick={() => setMobileOpen(false)}>
+                  <Link href="/about">{t("nav.about", { defaultValue: "About" })}</Link>
+                </Button>
+                <Button asChild variant="ghost" className="w-full justify-start" onClick={() => setMobileOpen(false)}>
+                  <Link href="/faq">{t("nav.faq", { defaultValue: "FAQ" })}</Link>
+                </Button>
+                <Button asChild variant="ghost" className="w-full justify-start" onClick={() => setMobileOpen(false)}>
+                  <Link href="/contact">{t("nav.contact", { defaultValue: "Contact" })}</Link>
+                </Button>
                 <div className="flex gap-2 pt-2">
                   {user ? (
                     <Button asChild variant="outline" className="flex-1" onClick={() => setMobileOpen(false)}>

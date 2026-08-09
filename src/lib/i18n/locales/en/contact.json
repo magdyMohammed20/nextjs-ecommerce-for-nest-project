@@ -1,0 +1,102 @@
+{
+  "page": {
+    "title": "Get in touch",
+    "subtitle": "Questions, feedback, or partnership ideas — our team usually replies within one business day.",
+    "channels": {
+      "emailTitle": "Email us",
+      "emailBody": "Prefer writing? Our support inbox is monitored daily.",
+      "phoneTitle": "Call us",
+      "phoneBody": "Mon–Fri, 9am–6pm. Friendly humans, no phone trees.",
+      "addressTitle": "Visit us",
+      "addressBody": "Our showroom is open to walk-ins during business hours.",
+      "addressLabel": "123 Market Street, Suite 400"
+    },
+    "formTitle": "Send us a message",
+    "formDescription": "Fill in the form below and we'll get back to you as soon as we can."
+  },
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "Jane Doe",
+    "email": "Email address",
+    "emailPlaceholder": "you@email.com",
+    "subject": "Subject",
+    "subjectPlaceholder": "How can we help?",
+    "message": "Message",
+    "messagePlaceholder": "Tell us a bit more about your question or feedback…",
+    "replyHint": "We'll reply to the email you provide.",
+    "submit": "Send message"
+  },
+  "success": {
+    "title": "Message sent!",
+    "description": "Thanks for reaching out. Our team has received your message and will reply within one business day.",
+    "sendAnother": "Send another message"
+  },
+  "toasts": {
+    "rateLimited": "You're sending messages too quickly. Please wait a minute and try again.",
+    "failed": "Something went wrong sending your message. Please try again.",
+    "failedToLoad": "Could not load your messages.",
+    "newMessage": "You have a new message from a customer.",
+    "allRead": "All messages marked as read."
+  },
+  "bell": {
+    "label": "Notifications",
+    "title": "Messages",
+    "markRead": "Mark read",
+    "markAllRead": "Mark all read",
+    "read": "Read",
+    "unread": "Unread",
+    "empty": "You're all caught up — no unread messages.",
+    "viewAll": "View all messages"
+  },
+  "inbox": {
+    "title": "Messages",
+    "description": "Messages submitted through the contact page, newest first.",
+    "cardTitle": "Customer messages",
+    "searchPlaceholder": "Search name, email or subject…",
+    "filter": {
+      "all": "All messages",
+      "unread": "Unread",
+      "read": "Read"
+    },
+    "markAllRead": "Mark all read",
+    "markedAllRead": "All messages marked as read.",
+    "empty": "No messages yet. Messages from the contact page will appear here.",
+    "emptyFiltered": "No messages match your filters.",
+    "failedToLoad": "Could not load messages.",
+    "registered": "Registered",
+    "read": "Read",
+    "unread": "Unread",
+    "reply": "Reply",
+    "view": "View",
+    "markRead": "Mark as read",
+    "delete": "Delete",
+    "deleted": "Message deleted.",
+    "replied": "Replied",
+    "repliedSent": "Reply emailed to the sender.",
+    "repliedPreview": "Reply recorded (SMTP not configured — check the server logs).",
+    "repliedAt": "Replied on {{date}}",
+    "replyDialog": {
+      "title": "Reply by email",
+      "description": "Send a reply to {{name}} <{{email}}>",
+      "subject": "Subject",
+      "body": "Reply",
+      "bodyPlaceholder": "Type your reply…",
+      "sendsTo": "The reply is emailed directly to the sender.",
+      "send": "Send reply"
+    },
+    "table": {
+      "subject": "Subject",
+      "sender": "Sender",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "detail": {
+      "from": "From {{name}} — {{email}}"
+    },
+    "deleteDialog": {
+      "title": "Delete message",
+      "description": "Are you sure you want to delete \"{{subject}}\"? This cannot be undone."
+    }
+  }
+}

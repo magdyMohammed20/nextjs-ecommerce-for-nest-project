@@ -13,6 +13,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserMenu } from "@/components/shared/user-menu";
 import { CartBadge } from "@/features/cart/components/cart-badge";
+import { NotificationBell } from "@/features/contact/components/notification-bell";
 import { useAuth } from "@/features/auth/context/auth-provider";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -28,6 +29,7 @@ export function StorefrontHeader() {
     { href: "/products", label: t("nav.shop") },
     { href: "/about", label: t("nav.about") },
     { href: "/faq", label: t("nav.faq") },
+    { href: "/contact", label: t("nav.contact") },
   ];
 
   function handleSearch(e: FormEvent<HTMLFormElement>) {
@@ -67,6 +69,7 @@ export function StorefrontHeader() {
           <LanguageSwitcher />
           <ThemeToggle />
           <CartBadge />
+          <NotificationBell />
           <div className="hidden items-center gap-2 sm:flex">
             {user ? (
               <UserMenu />

@@ -13,6 +13,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserMenu } from "@/components/shared/user-menu";
 import { CartBadge } from "@/features/cart/components/cart-badge";
+import { NotificationBell } from "@/features/contact/components/notification-bell";
 import { SearchDropdownPanel } from "@/components/shared/search-dropdown";
 import { useAuth } from "@/features/auth/context/auth-provider";
 
@@ -33,6 +34,7 @@ export function SiteNavbar() {
     { href: "/#testimonials", label: t("nav.testimonials") },
     { href: "/about", label: t("nav.about", { defaultValue: "About" }) },
     { href: "/faq", label: t("nav.faq", { defaultValue: "FAQ" }) },
+    { href: "/contact", label: t("nav.contact", { defaultValue: "Contact" }) },
   ];
 
   function handleSearch(e: FormEvent<HTMLFormElement>) {
@@ -84,6 +86,7 @@ export function SiteNavbar() {
             <LanguageSwitcher />
             <ThemeToggle />
             <CartBadge />
+            <NotificationBell />
             <div className="hidden items-center gap-2 sm:flex">
               {user ? (
                 <UserMenu />

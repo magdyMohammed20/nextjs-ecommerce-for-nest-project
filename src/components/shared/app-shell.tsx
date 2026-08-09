@@ -9,6 +9,7 @@ import { RoleBadge, UserMenu } from "./user-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { CartBadge } from "@/features/cart/components/cart-badge";
+import { NotificationBell } from "@/features/contact/components/notification-bell";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -25,6 +26,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="hidden md:block">
             <RoleBadge />
           </div>
+          <NotificationBell />
           <CartBadge />
           <UserMenu />
         </header>
