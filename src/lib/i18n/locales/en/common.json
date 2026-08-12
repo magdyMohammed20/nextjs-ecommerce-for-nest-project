@@ -38,6 +38,9 @@
     "online": "Online",
     "offline": "Offline"
   },
+  "aria": {
+    "loading": "Loading…"
+  },
   "actions": {
     "save": "Save changes",
     "cancel": "Cancel",

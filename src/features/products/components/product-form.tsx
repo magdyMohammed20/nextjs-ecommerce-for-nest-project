@@ -16,6 +16,7 @@ import {
 import type { Product } from "../types/product-types";
 import type { Category } from "@/features/categories/types/category-types";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Form,
   FormControl,
@@ -50,6 +51,7 @@ export function ProductForm({ product, mode = "create" }: ProductFormProps) {
   const { t } = useTranslation("productForm");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   useEffect(() => {
     let ignore = false;
@@ -60,6 +62,9 @@ export function ProductForm({ product, mode = "create" }: ProductFormProps) {
       })
       .catch(() => {
         // Category selector is optional; fall back to an empty list.
+      })
+      .finally(() => {
+        if (!ignore) setCategoriesLoading(false);
       });
     return () => {
       ignore = true;
@@ -202,6 +207,12 @@ export function ProductForm({ product, mode = "create" }: ProductFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{t("category")}</FormLabel>
+                  {categoriesLoading ? (
+                    <div role="status" aria-label={t("aria.loading", { ns: "common" })}>
+                      <span className="sr-only">{t("aria.loading", { ns: "common" })}</span>
+                      <Skeleton className="h-10 w-full" />
+                    </div>
+                  ) : (
                   <Select
                     onValueChange={(value) =>
                       field.onChange(value === "none" ? undefined : Number(value))
@@ -222,6 +233,7 @@ export function ProductForm({ product, mode = "create" }: ProductFormProps) {
                       ))}
                     </SelectContent>
                   </Select>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

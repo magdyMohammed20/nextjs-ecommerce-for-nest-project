@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonList } from "@/components/shared/skeletons";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
 import {
@@ -288,11 +288,7 @@ export function MessagesList() {
 
       <AnimatedResults signature={signature}>
         {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: LIMIT }).map((_, i) => (
-              <Skeleton key={i} className="h-14 w-full" />
-            ))}
-          </div>
+          <SkeletonList count={LIMIT} />
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
             <MailOpen className="h-8 w-8 text-muted-foreground" />

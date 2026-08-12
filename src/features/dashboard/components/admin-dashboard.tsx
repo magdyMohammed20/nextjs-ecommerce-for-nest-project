@@ -43,6 +43,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonStatsGrid } from "@/components/shared/skeletons";
 import { StatCardBackdrop } from "@/components/shared/stat-card-backdrop";
 
 function formatMoney(value: number) {
@@ -212,12 +213,8 @@ export function AdminDashboard() {
           <Skeleton className="h-8 w-56" />
           <Skeleton className="h-4 w-80" />
         </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-28 w-full" />
-          ))}
-        </div>
-        <div className="grid gap-6 lg:grid-cols-2">
+        <SkeletonStatsGrid count={8} className="grid-cols-2 gap-4 md:grid-cols-4" />
+        <div aria-hidden="true" className="grid gap-6 lg:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-64 w-full rounded-lg" />
           ))}

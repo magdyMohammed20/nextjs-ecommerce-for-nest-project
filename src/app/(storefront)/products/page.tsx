@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Package } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
+import { SkeletonGrid } from "@/components/shared/skeletons";
 import { ProductList } from "@/features/products/components/product-list";
 
 function ProductsContent() {
@@ -44,15 +45,7 @@ export default function ProductsPage() {
           {t("subtitle")}
         </p>
       </div>
-      <Suspense
-        fallback={
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-64 rounded-lg border bg-muted/50" />
-            ))}
-          </div>
-        }
-      >
+      <Suspense fallback={<SkeletonGrid count={8} className="gap-5" />}>
         <ProductsContent />
       </Suspense>
     </div>

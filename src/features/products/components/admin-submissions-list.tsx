@@ -23,7 +23,7 @@ import type { PaginationMeta } from "@/lib/pagination";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonList } from "@/components/shared/skeletons";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
 import { AnimatedResults } from "@/components/shared/animated-results";
@@ -470,11 +470,7 @@ export function AdminSubmissionsList() {
 
       <AnimatedResults signature={`${search}|${status}|${sortKey}|${page}`}>
         {isLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: LIMIT }).map((_, i) => (
-              <Skeleton key={i} className="h-14 w-full" />
-            ))}
-          </div>
+          <SkeletonList count={LIMIT} />
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
             <div className="rounded-full bg-muted p-4">

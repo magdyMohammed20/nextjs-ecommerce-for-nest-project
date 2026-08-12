@@ -12,7 +12,7 @@ import { PageHero } from "@/components/shared/page-hero";
 import { FaqList } from "@/features/faq/components/faq-list";
 import { faqApi } from "@/features/faq/api/faq-api";
 import type { Faq } from "@/features/faq/types/faq-types";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonList } from "@/components/shared/skeletons";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const container: Variants = {
@@ -153,11 +153,7 @@ export default function FaqPage() {
         <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
           <Reveal margin={-60}>
             {isLoading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={i} className="h-16 w-full rounded-2xl" />
-                ))}
-              </div>
+              <SkeletonList count={5} height="h-16" rowClassName="rounded-2xl" />
             ) : isEmpty ? (
               <motion.div variants={item} className="flex flex-col items-center gap-4 rounded-3xl border bg-card px-6 py-14 text-center shadow-sm">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">

@@ -1,20 +1,21 @@
 "use client";
 
-import { Package, ShoppingCart, Tags, UserRound } from "lucide-react";
+import { Mail, Package, ShoppingCart, Tags, UserRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { ActivitySummaryDto } from "../types/activity-types";
 import { formatRelativeTime } from "../lib/relative-time";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonList } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
 
-type ActionPrefix = "user" | "product" | "category" | "order";
+type ActionPrefix = "user" | "product" | "category" | "order" | "contact";
 
 const ICON_BY_PREFIX: Record<ActionPrefix, LucideIcon> = {
   user: UserRound,
   product: Package,
   category: Tags,
   order: ShoppingCart,
+  contact: Mail,
 };
 
 const CHIP_CLASS_BY_PREFIX: Record<ActionPrefix, string> = {
@@ -22,6 +23,7 @@ const CHIP_CLASS_BY_PREFIX: Record<ActionPrefix, string> = {
   product: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
   category: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
   order: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  contact: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
 };
 
 function actionToTranslationKey(action: string): string {
@@ -37,7 +39,8 @@ function activityPrefix(action: string): ActionPrefix {
     prefix === "user" ||
     prefix === "product" ||
     prefix === "category" ||
-    prefix === "order"
+    prefix === "order" ||
+    prefix === "contact"
       ? prefix
       : "user"
   );
@@ -55,13 +58,7 @@ export function ActivityFeed({
   const { t } = useTranslation("activity");
 
   if (isLoading) {
-    return (
-      <div className="space-y-3">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-8 w-full" />
-        ))}
-      </div>
-    );
+    return <SkeletonList count={5} height="h-8" />;
   }
 
   if (hasError) {

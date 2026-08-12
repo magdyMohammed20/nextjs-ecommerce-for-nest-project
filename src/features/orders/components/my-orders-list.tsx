@@ -24,6 +24,7 @@ import type { PaginationMeta } from "@/lib/pagination";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonStatsCard } from "@/components/shared/skeletons";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
 import { AnimatedResults } from "@/components/shared/animated-results";
@@ -256,21 +257,27 @@ export function MyOrdersList() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {statCards.map((card) => (
-          <Card key={card.key}>
-            <CardContent className="flex items-center gap-3 p-4">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-                <card.icon className="h-5 w-5 text-muted-foreground" />
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-xs text-muted-foreground">
-                  {card.label}
-                </p>
-                <p className="text-lg font-semibold">{card.value}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <SkeletonStatsCard key={i} className="h-full min-h-[5.5rem]" />
+          ))
+        ) : (
+          statCards.map((card) => (
+            <Card key={card.key}>
+              <CardContent className="flex items-center gap-3 p-4">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                  <card.icon className="h-5 w-5 text-muted-foreground" />
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-xs text-muted-foreground">
+                    {card.label}
+                  </p>
+                  <p className="text-lg font-semibold">{card.value}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">

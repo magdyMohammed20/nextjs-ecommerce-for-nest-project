@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonList } from "@/components/shared/skeletons";
 import { Pagination } from "@/components/shared/pagination";
 import { PresenceDot } from "@/components/shared/presence-dot";
 import { SearchInput } from "@/components/shared/search-input";
@@ -66,6 +66,7 @@ export function OrdersTable({
   const [isLoading, setIsLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [orderToView, setOrderToView] = useState<Order | null>(null);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<Order | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -159,11 +160,14 @@ export function OrdersTable({
   }
 
   async function handleView(id: number) {
+    setIsDetailLoading(true);
     try {
       const order = await ordersApi.getById(id);
       setOrderToView(order);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("toasts.loadFailed"));
+    } finally {
+      setIsDetailLoading(false);
     }
   }
 
@@ -233,11 +237,7 @@ export function OrdersTable({
       </div>
 
       {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-14 w-full" />
-          ))}
-        </div>
+        <SkeletonList count={6} />
       ) : orders.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
           <div className="rounded-full bg-muted p-4">
@@ -357,8 +357,14 @@ export function OrdersTable({
 
       <OrderDetailDialog
         order={orderToView}
-        open={Boolean(orderToView)}
-        onOpenChange={(open) => !open && setOrderToView(null)}
+        open={isDetailLoading || Boolean(orderToView)}
+        isLoading={isDetailLoading}
+        onOpenChange={(open) => {
+          if (!open) {
+            setOrderToView(null);
+            setIsDetailLoading(false);
+          }
+        }}
       />
 
       <AlertDialog

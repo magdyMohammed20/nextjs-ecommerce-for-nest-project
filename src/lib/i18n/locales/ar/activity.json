@@ -18,6 +18,8 @@
     "categoryDeleted": "حذف تصنيفاً",
     "orderCreated": "قدّم طلباً",
     "orderStatusChanged": "غيّر حالة طلب",
+    "contactMessage": "أرسل رسالة تواصل",
+    "contactReplied": "ردّ على رسالة تواصل",
     "unknown": "نفّذ إجراءً"
   },
   "time": {

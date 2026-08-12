@@ -18,6 +18,8 @@
     "categoryDeleted": "deleted a category",
     "orderCreated": "placed an order",
     "orderStatusChanged": "changed an order status",
+    "contactMessage": "sent a contact message",
+    "contactReplied": "replied to a contact message",
     "unknown": "performed an action"
   },
   "time": {

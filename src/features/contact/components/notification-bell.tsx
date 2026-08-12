@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { contactApi } from "../api/contact-api";
 import { useUnreadCount } from "../hooks/use-unread-count";
+import { SkeletonList } from "@/components/shared/skeletons";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import type { ContactMessage } from "../types/contact-types";
 import { formatDateTime } from "@/features/orders/lib/format";
@@ -153,11 +154,7 @@ export function NotificationBell() {
         <DropdownMenuSeparator />
 
         {isLoading ? (
-          <div className="space-y-2 p-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-12 animate-pulse rounded-md bg-muted" />
-            ))}
-          </div>
+          <SkeletonList count={3} className="space-y-2 p-3" />
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center gap-2 p-6 text-center">
             <Inbox className="h-6 w-6 text-muted-foreground" />

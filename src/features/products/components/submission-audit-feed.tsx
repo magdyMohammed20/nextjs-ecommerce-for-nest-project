@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { activityApi } from "@/features/activity/api/activity-api";
 import type { ActivitySummaryDto } from "@/features/activity/types/activity-types";
 import { formatRelativeTime } from "@/features/activity/lib/relative-time";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonList } from "@/components/shared/skeletons";
 import { cn } from "@/lib/utils";
 
 const FETCH_LIMIT = 40;
@@ -57,13 +57,7 @@ export function SubmissionAuditFeed() {
   }, [t]);
 
   if (isLoading) {
-    return (
-      <div className="space-y-2">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-9 w-full" />
-        ))}
-      </div>
-    );
+    return <SkeletonList count={4} height="h-9" />;
   }
 
   if (hasError) {

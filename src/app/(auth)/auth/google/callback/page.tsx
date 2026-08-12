@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/features/auth/context/auth-provider";
 
@@ -29,9 +28,19 @@ function GoogleCallbackContent() {
   }, [router, searchParams, signInWithToken]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3 py-16">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      <p className="text-sm text-muted-foreground">{t("completing")}</p>
+    <div
+      role="status"
+      aria-label={t("aria.loading", { ns: "common" })}
+      className="flex min-h-[60vh] flex-col items-center justify-center gap-4"
+    >
+      <div
+        aria-hidden="true"
+        className="h-10 w-64 space-y-3"
+      >
+        <div className="h-4 w-3/4 animate-pulse rounded-md bg-muted" />
+        <div className="h-4 w-full animate-pulse rounded-md bg-muted" />
+      </div>
+      <p className="sr-only">{t("completing")}</p>
     </div>
   );
 }

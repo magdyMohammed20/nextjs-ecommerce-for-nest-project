@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { SkeletonDialog } from "@/components/shared/skeletons";
 import { OrderStatusBadge } from "./order-status-badge";
 import { OrderStatusStepper } from "./order-status-stepper";
 import { formatDateTime, formatMoney } from "../lib/format";
@@ -17,21 +18,35 @@ interface OrderDetailDialogProps {
   order: Order | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isLoading?: boolean;
 }
 
 export function OrderDetailDialog({
   order,
   open,
   onOpenChange,
+  isLoading = false,
 }: OrderDetailDialogProps) {
   const { t } = useTranslation("orders");
 
-  if (!order) return null;
+  const loading = isLoading || !order;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
+        {loading ? (
+          <div role="status" aria-label={t("aria.loading", { ns: "common" })}>
+            <DialogHeader>
+              <DialogTitle className="sr-only">
+                {t("aria.loading", { ns: "common" })}
+              </DialogTitle>
+            </DialogHeader>
+            <span className="sr-only">{t("aria.loading", { ns: "common" })}</span>
+            <SkeletonDialog />
+          </div>
+        ) : (
+          <>
+            <DialogHeader>
           <DialogTitle>{t("detail.title", { id: order.id })}</DialogTitle>
           <DialogDescription>
             {order.customerName} · {order.customerEmail}
@@ -135,6 +150,8 @@ export function OrderDetailDialog({
             )}
           </ul>
         </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -29,6 +29,8 @@ import type { HomeResponseDto } from "@/features/home/types/home-types";
 import type { Product } from "@/features/products/types/product-types";
 import { ProductImage } from "@/features/products/components/product-image";
 import { resolveCategoryIcon } from "@/features/categories/constants/category-icons";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonGrid } from "@/components/shared/skeletons";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -153,12 +155,25 @@ export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [homeData, setHomeData] = useState<HomeResponseDto | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { ref: viewAllRef, visible: viewAllVisible } = useReveal(0);
 
   useEffect(() => {
-    homeApi.getHome().then(setHomeData).catch(() => {
-      // Home data fails gracefully — fall back to static i18n content
-    });
+    let ignore = false;
+    homeApi
+      .getHome()
+      .then((data) => {
+        if (!ignore) setHomeData(data);
+      })
+      .catch(() => {
+        // Home data fails gracefully — fall back to static i18n content
+      })
+      .finally(() => {
+        if (!ignore) setIsLoading(false);
+      });
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   const stats = t("stats", { returnObjects: true }) as { value: number; suffix: string; label: string }[];
@@ -488,7 +503,19 @@ export default function LandingPage() {
         {/* Categories */}
         <section id="categories" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
           <SectionHeading title={t("categories.title")} subtitle={t("categories.subtitle")} />
-          {categoryCarousel ? (
+          {isLoading ? (
+            <div role="status" aria-label={t("aria.loading", { ns: "common" })} className="mt-12">
+              <span className="sr-only">{t("aria.loading", { ns: "common" })}</span>
+              <div aria-hidden="true" className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="flex h-40 flex-col items-center justify-center gap-3 rounded-2xl border bg-card p-5">
+                    <Skeleton className="h-12 w-12 rounded-2xl" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : categoryCarousel ? (
             <Reveal margin={-80} className="mt-12">
               <Carousel>{categoriesList.map((cat, i) => renderCategoryCard(cat, i, true))}</Carousel>
             </Reveal>
@@ -503,7 +530,16 @@ export default function LandingPage() {
         <section id="deals" className="bg-muted/40 py-20 lg:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeading title={t("featured.title")} subtitle={t("featured.subtitle")} />
-            {featuredCarousel ? (
+            {isLoading ? (
+              <div role="status" aria-label={t("aria.loading", { ns: "common" })} className="mt-12">
+                <span className="sr-only">{t("aria.loading", { ns: "common" })}</span>
+                <SkeletonGrid
+                  count={8}
+                  imageClassName="aspect-[4/3]"
+                  className="gap-6 sm:grid-cols-2 lg:grid-cols-4"
+                />
+              </div>
+            ) : featuredCarousel ? (
               <Reveal margin={-80} className="mt-12">
                 <Carousel>{featuredList.map((product, i) => renderFeaturedCard(product, i, true))}</Carousel>
               </Reveal>
@@ -522,10 +558,19 @@ export default function LandingPage() {
         </section>
 
         {/* Latest products */}
-        {liveLatest.length > 0 && (
+        {(isLoading || liveLatest.length > 0) && (
           <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-24">
             <SectionHeading title={t("latest.title", { defaultValue: "Latest arrivals" })} subtitle={t("latest.subtitle", { defaultValue: "Fresh additions to the catalog" })} />
-            {latestCarousel ? (
+            {isLoading ? (
+              <div role="status" aria-label={t("aria.loading", { ns: "common" })} className="mt-12">
+                <span className="sr-only">{t("aria.loading", { ns: "common" })}</span>
+                <SkeletonGrid
+                  count={8}
+                  imageClassName="aspect-[4/3]"
+                  className="gap-6 sm:grid-cols-2 lg:grid-cols-4"
+                />
+              </div>
+            ) : latestCarousel ? (
               <Reveal margin={-80} className="mt-12">
                 <Carousel>
                   {liveLatest.slice(0, 8).map((product, i) => (
