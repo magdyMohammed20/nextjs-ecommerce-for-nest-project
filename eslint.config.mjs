@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Project-specific generated/vendored files:
+    "node_modules/**",
+    "storybook-static/**",
+    "public/mockServiceWorker.js",
   ]),
 ]);
 

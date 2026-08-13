@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "generate:api": "orval"
+    "generate:api": "orval",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "stories:check": "node scripts/stories-check.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
@@ -32,14 +35,26 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "^10.5.7",
+    "@storybook/addon-themes": "^10.5.7",
+    "@storybook/nextjs-vite": "^10.5.7",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "msw": "^2.15.0",
+    "msw-storybook-addon": "^3.0.0",
     "orval": "^8.23.0",
+    "playwright": "^1.62.1",
+    "storybook": "^10.5.7",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
