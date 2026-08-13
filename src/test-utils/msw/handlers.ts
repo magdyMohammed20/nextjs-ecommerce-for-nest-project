@@ -20,11 +20,17 @@ import {
 
 const base = API_URL;
 
+let mockDelay: number | "infinite" = 150;
+
+export function setMockDelay(value: number | "infinite") {
+  mockDelay = value;
+}
+
 async function envelope<T>(
   body: T,
-  { status = 200, wait = 150 }: { status?: number; wait?: number | "infinite" } = {},
+  { status = 200, wait }: { status?: number; wait?: number | "infinite" } = {},
 ) {
-  await delay(wait);
+  await delay(wait ?? mockDelay);
   return HttpResponse.json({ data: body }, { status });
 }
 
@@ -70,7 +76,7 @@ export const defaultHandlers = [
 
   http.get(`${base}/contact`, () => envelope(paginated(contactMessages))),
   http.get(`${base}/contact/latest`, () => envelope(latestContactMessages)),
-  http.get(`${base}/contact/unread-count`, () => envelope({ count: 1 })),
+  http.get(`${base}/contact/unread-count`, () => envelope({ unread: 1 })),
 
   http.get(`${base}/stats`, () => envelope(statsData)),
 
