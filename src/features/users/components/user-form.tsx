@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { usersApi } from "../api/users-api";
+import { useUpdateUser } from "../hooks/use-users";
 import { isRootAdmin } from "../lib/root-admin";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { editUserSchema, type EditUserFormValues } from "../schemas/user-schema";
@@ -39,6 +39,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
   const { t } = useTranslation("userForm");
   const { user: currentUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const updateUser = useUpdateUser(user.id);
 
   const isRoot = isRootAdmin(user.email);
   const canChangeRole = isRootAdmin(currentUser?.email);
@@ -67,7 +68,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
         status: statusLocked ? "active" : values.status,
         ...(values.password ? { password: values.password } : {}),
       };
-      await usersApi.update(user.id, payload);
+      await updateUser.mutateAsync(payload);
       toast.success(t("toasts.userUpdated", { ns: "common" }));
       router.push("/users");
     } catch (error) {

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Ban, Check, Images, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { categoriesApi } from "../api/categories-api";
+import { useCreateCategory, useUpdateCategory } from "../hooks/use-categories";
 import {
   categorySchema,
   type CategoryFormValues,
@@ -50,6 +50,8 @@ interface CategoryFormProps {
 export function CategoryForm({ category }: CategoryFormProps) {
   const router = useRouter();
   const { t } = useTranslation("categoriesAdmin");
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory(category?.id ?? 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const slugTouched = useRef(Boolean(category));
@@ -83,10 +85,10 @@ export function CategoryForm({ category }: CategoryFormProps) {
       };
 
       if (category) {
-        await categoriesApi.update(category.id, payload);
+        await updateCategory.mutateAsync(payload);
         toast.success(t("toasts.categoryUpdated"));
       } else {
-        await categoriesApi.create(payload);
+        await createCategory.mutateAsync(payload);
         toast.success(t("toasts.categoryCreated"));
       }
       router.push("/categories");

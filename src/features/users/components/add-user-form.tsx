@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { usersApi } from "../api/users-api";
+import { useCreateUser } from "../hooks/use-users";
 import { isRootAdmin } from "../lib/root-admin";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { createUserSchema, type CreateUserFormValues } from "../schemas/user-schema";
@@ -34,6 +34,7 @@ export function AddUserForm() {
   const { t } = useTranslation("userForm");
   const { user: currentUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const createUser = useCreateUser();
 
   const canChangeRole = isRootAdmin(currentUser?.email);
 
@@ -51,7 +52,7 @@ export function AddUserForm() {
   async function onSubmit(values: CreateUserFormValues) {
     setIsSubmitting(true);
     try {
-      await usersApi.create({ ...values, role: canChangeRole ? values.role : "user" });
+      await createUser.mutateAsync({ ...values, role: canChangeRole ? values.role : "user" });
       toast.success(t("toasts.userCreated", { ns: "common", name: values.name }));
       router.push("/users");
     } catch (error) {

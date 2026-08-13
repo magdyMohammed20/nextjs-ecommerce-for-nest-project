@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import { Check, ChevronDown, Package, Pencil, Plus, Trash2, X } from "lucide-react";
@@ -8,10 +8,9 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
 import { cn } from "@/lib/utils";
-import { productsApi } from "../api/products-api";
-import { categoriesApi } from "@/features/categories/api/categories-api";
-import type { Category, Product } from "../types/product-types";
-import type { PaginationMeta } from "@/lib/pagination";
+import { useProductUsage, useProducts, useRemoveProduct } from "../hooks/use-products";
+import { useCategories } from "@/features/categories/hooks/use-categories";
+import type { Product } from "../types/product-types";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { ProductCard } from "./product-card";
 import { ProductImage } from "./product-image";
@@ -28,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonGrid } from "@/components/shared/skeletons";
+import { QueryErrorState } from "@/components/shared/query-states";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
 import {
@@ -150,7 +150,6 @@ export function ProductList({
   const { t: tCat } = useTranslation("categories");
   const [limit, setLimit] = useState(DEFAULT_LIMIT);
 
-  const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState(initialSearch);
   const [search, setSearch] = useState(initialSearch);
@@ -159,94 +158,50 @@ export function ProductList({
   const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
   const debouncedMinPrice = useDebouncedValue(minPrice, 400);
   const debouncedMaxPrice = useDebouncedValue(maxPrice, 400);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [meta, setMeta] = useState<PaginationMeta>({
-    page: 1,
-    limit,
-    total: 0,
-    totalPages: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasLoaded, setHasLoaded] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  const [deleteUsage, setDeleteUsage] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  function openDeleteDialog(product: Product) {
-    setProductToDelete(product);
-    setDeleteUsage(null);
-    productsApi
-      .getUsage(product.id)
-      .then((usage) => setDeleteUsage(usage.orderCount))
-      .catch(() => setDeleteUsage(0));
-  }
-
-  // Load categories once on mount
-  useEffect(() => {
-    categoriesApi.getAll().catch(() => {
-      // non-fatal: category filter just won't show
-    }).then((cats) => {
-      if (cats) setCategories(cats);
-    });
-  }, []);
-
-  useEffect(() => {
-    let ignore = false;
-
-    productsApi
-      .getAll({
-        page,
-        limit,
-        search,
-        categoryIds,
-        minPrice: debouncedMinPrice,
-        maxPrice: debouncedMaxPrice,
-      })
-      .then((res) => {
-        if (!ignore) {
-          setProducts(res.data);
-          setMeta(res.meta);
-          setHasLoaded(true);
-        }
-      })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : t("toasts.failedToLoadProducts", { ns: "common" }),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [
+  const { data: categoriesData } = useCategories();
+  const categories = categoriesData ?? [];
+  const {
+    data,
+    isPending,
+    isFetching,
+    isError,
+    refetch,
+  } = useProducts({
     page,
     limit,
     search,
     categoryIds,
-    debouncedMinPrice,
-    debouncedMaxPrice,
-    refreshKey,
-    t,
-  ]);
+    minPrice: debouncedMinPrice,
+    maxPrice: debouncedMaxPrice,
+  });
+  const removeProduct = useRemoveProduct();
+  const products = data?.data ?? [];
+  const meta = data?.meta ?? {
+    page: 1,
+    limit,
+    total: 0,
+    totalPages: 0,
+  };
+  const { data: usageData, isError: usageError } = useProductUsage(
+    productToDelete?.id ?? NaN,
+  );
+  const deleteUsage = usageError ? 0 : (usageData?.orderCount ?? null);
+
+  function openDeleteDialog(product: Product) {
+    setProductToDelete(product);
+  }
 
   function handlePageChange(nextPage: number) {
     setPage(nextPage);
-    setIsLoading(true);
   }
 
   function handleSearchChange(nextSearch: string) {
     if (nextSearch === search) return;
     setSearch(nextSearch);
     setPage(1);
-    setIsLoading(true);
   }
 
   function handleLimitChange(nextLimit: string) {
@@ -254,7 +209,6 @@ export function ProductList({
     if (parsed === limit) return;
     setLimit(parsed);
     setPage(1);
-    setIsLoading(true);
   }
 
   function toggleCategory(id: number) {
@@ -262,7 +216,6 @@ export function ProductList({
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
     setPage(1);
-    setIsLoading(true);
   }
 
   function clearAll() {
@@ -272,7 +225,6 @@ export function ProductList({
     setMinPrice(undefined);
     setMaxPrice(undefined);
     setPage(1);
-    setIsLoading(true);
   }
 
   function handlePriceChange([lo, hi]: [number, number]) {
@@ -295,7 +247,6 @@ export function ProductList({
         setQuery("");
         setSearch("");
         setPage(1);
-        setIsLoading(true);
       },
     });
   }
@@ -314,7 +265,6 @@ export function ProductList({
         setMinPrice(undefined);
         setMaxPrice(undefined);
         setPage(1);
-        setIsLoading(true);
       },
     });
   }
@@ -323,13 +273,10 @@ export function ProductList({
     if (!productToDelete) return;
     setIsDeleting(true);
     try {
-      await productsApi.remove(productToDelete.id);
+      await removeProduct.mutateAsync(productToDelete.id);
       const lastItemOnPage = products?.length === 1 && meta.page > 1;
-      setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
       if (lastItemOnPage) {
         setPage(meta.page - 1);
-      } else {
-        setRefreshKey((key) => key + 1);
       }
       toast.success(t("toasts.productDeleted", { ns: "common" }));
       setProductToDelete(null);
@@ -378,7 +325,6 @@ export function ProductList({
                     if (categoryIds.length > 0) {
                       setCategoryIds([]);
                       setPage(1);
-                      setIsLoading(true);
                     }
                   }}
                 />
@@ -453,7 +399,7 @@ export function ProductList({
             </div>
           )}
 
-      {isLoading && !hasLoaded ? (
+      {isPending ? (
         isAdmin ? (
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -470,6 +416,11 @@ export function ProductList({
         ) : (
           <SkeletonGrid count={8} className="gap-4" />
         )
+      ) : isError ? (
+        <QueryErrorState
+          title={t("toasts.failedToLoadProducts", { ns: "common" })}
+          onRetry={refetch}
+        />
       ) : products?.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
           <div className="rounded-full bg-muted p-4">
@@ -486,10 +437,10 @@ export function ProductList({
         </div>
       ) : (
         <div
-          aria-busy={isLoading}
+          aria-busy={isFetching}
           className={cn(
             "transition-opacity duration-300",
-            isLoading && hasLoaded ? "pointer-events-none opacity-50" : "opacity-100",
+            isFetching && !isPending ? "pointer-events-none opacity-50" : "opacity-100",
           )}
         >
         {isAdmin ? (

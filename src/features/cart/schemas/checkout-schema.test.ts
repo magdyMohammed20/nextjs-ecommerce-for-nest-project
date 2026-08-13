@@ -17,7 +17,7 @@ describe("checkoutSchema", () => {
   });
 
   it("accepts optional notes", () => {
-    const rest = { ...valid };
+    const rest = { ...valid } as Partial<typeof valid>;
     delete rest.notes;
     expect(checkoutSchema.safeParse(rest).success).toBe(true);
   });

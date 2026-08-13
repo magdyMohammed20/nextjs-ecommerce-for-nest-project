@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { productsApi } from "../api/products-api";
-import type { Product } from "../types/product-types";
+import { useProduct, useProductUsage, useRemoveProduct } from "../hooks/use-products";
 import { recordRecentlyViewed } from "../lib/recently-viewed";
+import { QueryErrorState } from "@/components/shared/query-states";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { AddToCartButton } from "@/features/cart/components/add-to-cart-button";
 import { ProductImage } from "./product-image";
@@ -66,55 +66,33 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
   const router = useRouter();
   const { t } = useTranslation("products");
 
-  const [product, setProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteUsage, setDeleteUsage] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const { data: product, isLoading, isError, refetch } = useProduct(productId);
+  const removeProduct = useRemoveProduct();
+  const { data: usageData, isError: usageError } = useProductUsage(productId);
+  const deleteUsage = usageError ? 0 : (usageData?.orderCount ?? null);
+
+  useEffect(() => {
+    if (product) {
+      recordRecentlyViewed({
+        id: product.id,
+        name: product.name,
+        imageUrl: product.imageUrl ?? null,
+        price: Number(product.price),
+      });
+    }
+  }, [product]);
 
   function openDeleteDialog() {
     setDeleteOpen(true);
-    setDeleteUsage(null);
-    productsApi
-      .getUsage(productId)
-      .then((usage) => setDeleteUsage(usage.orderCount))
-      .catch(() => setDeleteUsage(0));
   }
-
-  useEffect(() => {
-    let ignore = false;
-
-    productsApi
-      .getById(productId)
-      .then((loaded) => {
-        if (!ignore) {
-          setProduct(loaded);
-          setIsLoading(false);
-          recordRecentlyViewed({
-            id: loaded.id,
-            name: loaded.name,
-            imageUrl: loaded.imageUrl ?? null,
-            price: Number(loaded.price),
-          });
-        }
-      })
-      .catch(() => {
-        if (!ignore) {
-          setNotFound(true);
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [productId]);
 
   async function handleDelete() {
     setIsDeleting(true);
     try {
-      await productsApi.remove(productId);
+      await removeProduct.mutateAsync(productId);
       toast.success(t("toasts.productDeleted", { ns: "common" }));
       router.push("/products");
     } catch (error) {
@@ -129,7 +107,18 @@ export function ProductDetails({ productId }: ProductDetailsProps) {
     return <ProductDetailsSkeleton />;
   }
 
-  if (notFound || !product) {
+  if (isError) {
+    return (
+      <div className="w-full py-10">
+        <QueryErrorState
+          title={t("toasts.failedToLoadProduct", { ns: "common" })}
+          onRetry={refetch}
+        />
+      </div>
+    );
+  }
+
+  if (!product) {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-16 text-center">
         <div className="rounded-full bg-muted p-4">

@@ -1,47 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { ArrowLeft, Mail, Shield, UserRound } from "lucide-react";
-import { toast } from "sonner";
+import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { usersApi } from "../api/users-api";
+import { useUser } from "../hooks/use-users";
 import { EditUserForm } from "./user-form";
-import type { User } from "../types/user-types";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { QueryErrorState } from "@/components/shared/query-states";
 
 export function EditUser({ userId }: { userId: number }) {
   const { t } = useTranslation("userForm");
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    let ignore = false;
-
-    usersApi
-      .getById(userId)
-      .then((loaded) => {
-        if (!ignore) setUser(loaded);
-      })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(
-            error instanceof Error ? error.message : t("toasts.failedToLoadUser", { ns: "common" }),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [userId, t]);
+  const { data: user, isLoading, isError, refetch } = useUser(userId);
 
   if (isLoading) {
     return (
@@ -58,8 +31,15 @@ export function EditUser({ userId }: { userId: number }) {
     );
   }
 
-  if (!user) {
-    return (
+  if (isError || !user) {
+    return isError ? (
+      <div className="w-full py-10">
+        <QueryErrorState
+          title={t("toasts.failedToLoadUser", { ns: "common", defaultValue: "Failed to load user" })}
+          onRetry={refetch}
+        />
+      </div>
+    ) : (
       <div className="py-20 text-center text-sm text-muted-foreground">
         {t("userNotFound", { ns: "users" })}
       </div>

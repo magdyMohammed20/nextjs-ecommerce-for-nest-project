@@ -159,12 +159,16 @@ html[lang="ar"] .font-heading {
   font-family: var(--font-arabic), var(--font-sora), system-ui, sans-serif;
 }
 
-html {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  html,
+  * {
+    scroll-behavior: smooth;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  html,
+  * {
     scroll-behavior: auto;
   }
 }

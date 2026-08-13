@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Hash, Pencil, Tags, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { categoriesApi } from "../api/categories-api";
+import { useCategoriesPage, useRemoveCategory } from "../hooks/use-categories";
 import { resolveCategoryIcon } from "../constants/category-icons";
 import type { Category } from "../types/category-types";
-import type { PaginationMeta } from "@/lib/pagination";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -23,6 +22,7 @@ import { SkeletonList } from "@/components/shared/skeletons";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
 import { AnimatedResults } from "@/components/shared/animated-results";
+import { QueryErrorState } from "@/components/shared/query-states";
 import {
   Select,
   SelectContent,
@@ -46,59 +46,32 @@ const DEFAULT_LIMIT = 10;
 
 export function CategoryList() {
   const { t } = useTranslation("categoriesAdmin");
-  const [categories, setCategories] = useState<Category[]>([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(DEFAULT_LIMIT);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
-  const [meta, setMeta] = useState<PaginationMeta>({
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { data, isLoading, isError, refetch } = useCategoriesPage({ page, limit, search });
+  const removeCategory = useRemoveCategory();
+
+  const categories = data?.data ?? [];
+  const meta = data?.meta ?? {
     page: 1,
     limit: DEFAULT_LIMIT,
     total: 0,
     totalPages: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    let ignore = false;
-
-    categoriesApi
-      .getAllPage({ page, limit, search })
-      .then((res) => {
-        if (!ignore) {
-          setCategories(res.data);
-          setMeta(res.meta);
-        }
-      })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(
-            error instanceof Error ? error.message : t("toasts.failedToLoadCategories"),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [page, limit, search, refreshKey, t]);
+  };
 
   function handlePageChange(nextPage: number) {
     setPage(nextPage);
-    setIsLoading(true);
   }
 
   function handleSearchChange(nextSearch: string) {
     if (nextSearch === search) return;
     setSearch(nextSearch);
     setPage(1);
-    setIsLoading(true);
   }
 
   function handleLimitChange(nextLimit: string) {
@@ -106,20 +79,16 @@ export function CategoryList() {
     if (parsed === limit) return;
     setLimit(parsed);
     setPage(1);
-    setIsLoading(true);
   }
 
   async function handleDelete() {
     if (!categoryToDelete) return;
     setIsDeleting(true);
     try {
-      await categoriesApi.remove(categoryToDelete.id);
       const lastItemOnPage = categories.length === 1 && meta.page > 1;
-      setCategories((prev) => prev.filter((c) => c.id !== categoryToDelete.id));
+      await removeCategory.mutateAsync(categoryToDelete.id);
       if (lastItemOnPage) {
         setPage(meta.page - 1);
-      } else {
-        setRefreshKey((key) => key + 1);
       }
       toast.success(t("toasts.categoryDeleted"));
       setCategoryToDelete(null);
@@ -163,6 +132,11 @@ export function CategoryList() {
       <AnimatedResults signature={`${search}|${limit}|${page}`}>
         {isLoading ? (
           <SkeletonList count={5} />
+        ) : isError ? (
+          <QueryErrorState
+            title={t("toasts.failedToLoadCategories")}
+            onRetry={refetch}
+          />
         ) : categories.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
             <div className="rounded-full bg-muted p-4">

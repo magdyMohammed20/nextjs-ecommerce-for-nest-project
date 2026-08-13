@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -18,20 +18,16 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
-import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { statsApi } from "../api/stats-api";
-import { productsApi } from "@/features/products/api/products-api";
+import { useQuery } from "@tanstack/react-query";
+import { useStats } from "../hooks/use-stats";
 import { activityApi } from "@/features/activity/api/activity-api";
 import { ActivityFeed } from "@/features/activity/components/activity-feed";
-import type { ActivitySummaryDto } from "@/features/activity/types/activity-types";
-import { usersApi } from "@/features/users/api/users-api";
 import { ordersApi } from "@/features/orders/api/orders-api";
-import type { OrderSummary } from "@/features/orders/types/order-types";
 import { OrderStatusBadge } from "@/features/orders/components/order-status-badge";
 import { formatDate } from "@/features/orders/lib/format";
-import type { StatsDto } from "@/lib/generated/api";
-import type { User } from "@/features/users/types/user-types";
+import { useUsers } from "@/features/users/hooks/use-users";
+import { useProducts } from "@/features/products/hooks/use-products";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -45,6 +41,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { SkeletonStatsGrid } from "@/components/shared/skeletons";
 import { StatCardBackdrop } from "@/components/shared/stat-card-backdrop";
+import { QueryErrorState } from "@/components/shared/query-states";
 
 function formatMoney(value: number) {
   return `$${value.toLocaleString(undefined, {
@@ -101,112 +98,49 @@ function ActiveUsersIndicator({ label }: { label: string }) {
 export function AdminDashboard() {
   const { user } = useAuth();
   const { t } = useTranslation("dashboard");
-  const [users, setUsers] = useState<User[]>([]);
-  const [stats, setStats] = useState<StatsDto | null>(null);
-  const [latestOrders, setLatestOrders] = useState<OrderSummary[]>([]);
-  const [activity, setActivity] = useState<ActivitySummaryDto[]>([]);
-  const [pendingSubmissions, setPendingSubmissions] = useState<number>(0);
-  const [activityLoading, setActivityLoading] = useState(true);
-  const [activityError, setActivityError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [ordersLoading, setOrdersLoading] = useState(true);
-  const [ordersError, setOrdersError] = useState(false);
 
-  useEffect(() => {
-    Promise.all([
-      statsApi.getStats(),
-      usersApi.getAll({ limit: 5 }),
-      productsApi.getAll({ status: "pending", limit: 1 }),
-    ])
-      .then(([statsData, userData, pendingData]) => {
-        setStats(statsData);
-        setUsers(userData.data);
-        setPendingSubmissions(pendingData.meta.total);
-      })
-      .catch((error) =>
-        toast.error(
-          error instanceof Error ? error.message : t("toasts.failedToLoadDashboard", { ns: "common" }),
-        ),
-      )
-      .finally(() => setIsLoading(false));
-  }, [t]);
+  const {
+    data: stats,
+    isPending: statsPending,
+    isError: statsError,
+  } = useStats(30_000);
 
-  useEffect(() => {
-    let ignore = false;
+  const {
+    data: usersData,
+    isPending: usersPending,
+    isError: usersError,
+  } = useUsers({ page: 1, limit: 5, search: "" });
 
-    activityApi
-      .getLatest(8)
-      .then((entries) => {
-        if (!ignore) setActivity(entries);
-      })
-      .catch(() => {
-        if (!ignore) setActivityError(true);
-      })
-      .finally(() => {
-        if (!ignore) setActivityLoading(false);
-      });
+  // Poll pending submissions so the review counter stays current.
+  const {
+    data: pendingData,
+    isPending: pendingPending,
+    isError: pendingError,
+  } = useProducts({ status: "pending", limit: 1 }, 30_000);
 
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  const {
+    data: activity,
+    isPending: activityPending,
+    isError: activityError,
+  } = useQuery({
+    queryKey: ["activity", "latest"],
+    queryFn: () => activityApi.getLatest(8),
+  });
 
-  // Poll stats so the online-users counter updates as people sign in/out.
-  useEffect(() => {
-    let ignore = false;
+  const {
+    data: latestOrders,
+    isPending: ordersPending,
+    isError: ordersError,
+  } = useQuery({
+    queryKey: ["orders", "latest"],
+    queryFn: () => ordersApi.getLatest(),
+  });
 
-    const poll = () => {
-      statsApi
-        .getStats()
-        .then((latest) => {
-          if (!ignore) setStats(latest);
-        })
-        .catch(() => undefined);
-      productsApi
-        .getAll({ status: "pending", limit: 1 })
-        .then((res) => {
-          if (!ignore) setPendingSubmissions(res.meta.total);
-        })
-        .catch(() => undefined);
-    };
+  const users = usersData?.data ?? [];
+  const pendingSubmissions = pendingData?.meta.total ?? 0;
+  const activityItems = activity ?? [];
 
-    poll();
-    const id = setInterval(poll, 30_000);
-
-    return () => {
-      ignore = true;
-      clearInterval(id);
-    };
-  }, []);
-
-  useEffect(() => {
-    let ignore = false;
-
-    ordersApi
-      .getLatest()
-      .then((orders) => {
-        if (!ignore) setLatestOrders(orders);
-      })
-      .catch((error) => {
-        if (!ignore) {
-          setOrdersError(true);
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : t("toasts.failedToLoad", { ns: "orders" }),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setOrdersLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [t]);
-
-  if (isLoading) {
+  if (statsPending || usersPending || pendingPending || activityPending || ordersPending) {
     return (
       <div className="space-y-6">
         <div className="space-y-2">
@@ -219,6 +153,14 @@ export function AdminDashboard() {
             <Skeleton key={i} className="h-64 w-full rounded-lg" />
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (statsError || usersError || pendingError) {
+    return (
+      <div className="w-full py-16">
+        <QueryErrorState title={t("toasts.failedToLoadDashboard", { ns: "common" })} />
       </div>
     );
   }
@@ -390,7 +332,7 @@ export function AdminDashboard() {
             </Button>
           </CardHeader>
           <CardContent>
-            {ordersLoading ? (
+            {ordersPending ? (
               <div className="space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Skeleton key={i} className="h-8 w-full" />
@@ -439,8 +381,8 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <ActivityFeed
-              items={activity}
-              isLoading={activityLoading}
+              items={activityItems}
+              isLoading={activityPending}
               hasError={activityError}
             />
           </CardContent>

@@ -22,7 +22,7 @@ describe("productSchema", () => {
   });
 
   it("accepts optional categoryId being undefined", () => {
-    const rest = { ...valid };
+    const rest = { ...valid } as Partial<typeof valid>;
     delete rest.categoryId;
     expect(productSchema.safeParse(rest).success).toBe(true);
   });

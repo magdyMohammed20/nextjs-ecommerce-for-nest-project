@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Check,
@@ -14,16 +14,16 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { productsApi } from "../api/products-api";
+import { useProducts, useUpdateProductStatus } from "../hooks/use-products";
 import type { Product, ProductStatus } from "../types/product-types";
 import { ProductStatusBadge } from "./product-status-badge";
 import { ProductImage } from "./product-image";
 import { formatDate, formatMoney } from "@/features/orders/lib/format";
-import type { PaginationMeta } from "@/lib/pagination";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { SkeletonList } from "@/components/shared/skeletons";
+import { QueryErrorState } from "@/components/shared/query-states";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
 import { AnimatedResults } from "@/components/shared/animated-results";
@@ -108,19 +108,11 @@ export function AdminSubmissionsList() {
   const { t } = useTranslation("dashboard");
   const { t: tCommon } = useTranslation("common");
 
-  const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<ProductStatus | "">("pending");
   const [sortKey, setSortKey] = useState<SortKey>("newest");
-  const [meta, setMeta] = useState<PaginationMeta>({
-    page: 1,
-    limit: LIMIT,
-    total: 0,
-    totalPages: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [reviewing, setReviewing] = useState<Product | null>(null);
   const [reviewNote, setReviewNote] = useState("");
@@ -132,48 +124,39 @@ export function AdminSubmissionsList() {
 
   const sortOption = SORT_OPTIONS.find((option) => option.key === sortKey)!;
 
-  const loadProducts = useCallback(() => {
-    let ignore = false;
+  const {
+    data,
+    isFetching,
+    isError,
+    refetch,
+  } = useProducts({
+    page,
+    limit: LIMIT,
+    search,
+    status: status || undefined,
+    sortBy: sortOption.sortBy,
+    sortOrder: sortOption.sortOrder,
+  });
+  const updateProductStatus = useUpdateProductStatus();
+  const products = data?.data ?? [];
+  const meta = data?.meta ?? {
+    page: 1,
+    limit: LIMIT,
+    total: 0,
+    totalPages: 0,
+  };
 
-    productsApi
-      .getAll({
-        page,
-        limit: LIMIT,
-        search,
-        status: status || undefined,
-        sortBy: sortOption.sortBy,
-        sortOrder: sortOption.sortOrder,
-      })
-      .then((res) => {
-        if (ignore) return;
-        if (res.data.length === 0 && page > 1) {
-          setPage(Math.max(1, res.meta.totalPages));
-          return;
-        }
-        setProducts(res.data);
-        setMeta(res.meta);
-      })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(
-            error instanceof Error ? error.message : t("submissions.failedToLoad"),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
+  useEffect(() => {
+    if (data && data.data.length === 0 && page > 1) {
+      const raf = requestAnimationFrame(() => {
+        setPage(Math.max(1, data.meta.totalPages));
       });
-
-    return () => {
-      ignore = true;
-    };
-  }, [page, search, status, sortOption, t]);
-
-  useEffect(() => loadProducts(), [loadProducts]);
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [data, page]);
 
   function handlePageChange(nextPage: number) {
     setPage(nextPage);
-    setIsLoading(true);
   }
 
   function handleSearchChange(nextSearch: string) {
@@ -181,7 +164,6 @@ export function AdminSubmissionsList() {
     setSearch(nextSearch);
     setPage(1);
     setSelectedIds(new Set());
-    setIsLoading(true);
   }
 
   function handleStatusFilter(next: string) {
@@ -196,7 +178,6 @@ export function AdminSubmissionsList() {
     setSortKey(next as SortKey);
     setPage(1);
     setSelectedIds(new Set());
-    setIsLoading(true);
   }
 
   function openReview(product: Product) {
@@ -211,23 +192,16 @@ export function AdminSubmissionsList() {
     setShowRejectForm(true);
   }
 
-  const updateRow = (id: number, updates: Partial<Product>) => {
-    setProducts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updates } : p)),
-    );
-  };
-
   async function handleApprove(product: Product) {
     setUpdatingId(product.id);
-    const prev = { ...product };
-    updateRow(product.id, { status: "active", rejectionNote: null });
     try {
-      await productsApi.updateStatus(product.id, { status: "active" });
+      await updateProductStatus.mutateAsync({
+        id: product.id,
+        data: { status: "active" },
+      });
       toast.success(t("submissions.approved"));
       setReviewing(null);
-      loadProducts();
     } catch (error) {
-      updateRow(product.id, prev);
       toast.error(
         error instanceof Error
           ? error.message
@@ -240,15 +214,14 @@ export function AdminSubmissionsList() {
 
   async function handleReopen(product: Product) {
     setUpdatingId(product.id);
-    const prev = { ...product };
-    updateRow(product.id, { status: "pending", rejectionNote: null });
     try {
-      await productsApi.updateStatus(product.id, { status: "pending" });
+      await updateProductStatus.mutateAsync({
+        id: product.id,
+        data: { status: "pending" },
+      });
       toast.success(t("submissions.reopened"));
       setReviewing(null);
-      loadProducts();
     } catch (error) {
-      updateRow(product.id, prev);
       toast.error(
         error instanceof Error
           ? error.message
@@ -262,21 +235,17 @@ export function AdminSubmissionsList() {
   async function confirmRejectFromReview() {
     if (!reviewing) return;
     setUpdatingId(reviewing.id);
-    const prev = { ...reviewing };
-    updateRow(reviewing.id, {
-      status: "rejected",
-      rejectionNote: reviewNote || undefined,
-    });
     try {
-      await productsApi.updateStatus(reviewing.id, {
-        status: "rejected",
-        rejectionNote: reviewNote || undefined,
+      await updateProductStatus.mutateAsync({
+        id: reviewing.id,
+        data: {
+          status: "rejected",
+          rejectionNote: reviewNote || undefined,
+        },
       });
       toast.success(t("submissions.rejected"));
       setReviewing(null);
-      loadProducts();
     } catch (error) {
-      updateRow(reviewing.id, prev);
       toast.error(
         error instanceof Error
           ? error.message
@@ -324,8 +293,10 @@ export function AdminSubmissionsList() {
     let failed = 0;
     for (const id of selectedIds) {
       try {
-        await productsApi.updateStatus(id, { status: "active" });
-        updateRow(id, { status: "active", rejectionNote: null });
+        await updateProductStatus.mutateAsync({
+          id,
+          data: { status: "active" },
+        });
         ok += 1;
       } catch {
         failed += 1;
@@ -333,7 +304,6 @@ export function AdminSubmissionsList() {
     }
     setSelectedIds(new Set());
     setBulkBusy(false);
-    loadProducts();
     if (ok > 0) toast.success(t("submissions.bulk.approved", { count: ok }));
     if (failed > 0) {
       toast.error(t("submissions.bulk.failed", { count: failed }));
@@ -348,11 +318,13 @@ export function AdminSubmissionsList() {
     const note = bulkRejectNote || undefined;
     for (const id of selectedIds) {
       try {
-        await productsApi.updateStatus(id, {
-          status: "rejected",
-          rejectionNote: note,
+        await updateProductStatus.mutateAsync({
+          id,
+          data: {
+            status: "rejected",
+            rejectionNote: note,
+          },
         });
-        updateRow(id, { status: "rejected", rejectionNote: note ?? null });
         ok += 1;
       } catch {
         failed += 1;
@@ -362,7 +334,6 @@ export function AdminSubmissionsList() {
     setBulkBusy(false);
     setBulkRejectOpen(false);
     setBulkRejectNote("");
-    loadProducts();
     if (ok > 0) toast.success(t("submissions.bulk.rejected", { count: ok }));
     if (failed > 0) {
       toast.error(t("submissions.bulk.failed", { count: failed }));
@@ -385,6 +356,7 @@ export function AdminSubmissionsList() {
   ];
 
   const isUpdating = (id: number) => updatingId === id;
+  const needsFallback = page > 1 && data?.data.length === 0;
 
   return (
     <div className="space-y-5">
@@ -469,8 +441,13 @@ export function AdminSubmissionsList() {
       )}
 
       <AnimatedResults signature={`${search}|${status}|${sortKey}|${page}`}>
-        {isLoading ? (
+        {isFetching || needsFallback ? (
           <SkeletonList count={LIMIT} />
+        ) : isError ? (
+          <QueryErrorState
+            title={t("submissions.failedToLoad")}
+            onRetry={refetch}
+          />
         ) : products.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
             <div className="rounded-full bg-muted p-4">

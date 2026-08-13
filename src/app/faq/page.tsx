@@ -10,7 +10,7 @@ import { SiteNavbar } from "@/components/shared/site-navbar";
 import { SiteFooter } from "@/components/shared/site-footer";
 import { PageHero } from "@/components/shared/page-hero";
 import { FaqList } from "@/features/faq/components/faq-list";
-import { faqApi } from "@/features/faq/api/faq-api";
+import { useActiveFaqs } from "@/features/faq/hooks/use-faqs";
 import type { Faq } from "@/features/faq/types/faq-types";
 import { SkeletonList } from "@/components/shared/skeletons";
 
@@ -93,40 +93,13 @@ export default function FaqPage() {
     }[],
     [t],
   );
-  const [liveItems, setLiveItems] = useState<{
-    question: string;
-    answer: string;
-  }[] | null>(null);
-  const [isEmpty, setIsEmpty] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: faqs = [], isLoading, isError } = useActiveFaqs();
+  const liveItems = useMemo(
+    () => toLocalizedItems(faqs, isArabic),
+    [faqs, isArabic],
+  );
+  const isEmpty = liveItems.length === 0;
   const { ref: contactRef, visible: contactVisible } = useReveal(0);
-
-  useEffect(() => {
-    let ignore = false;
-
-    faqApi
-      .getActive()
-      .then((faqs) => {
-        const localized = toLocalizedItems(faqs, isArabic);
-        if (!ignore) {
-          setLiveItems(localized);
-          setIsEmpty(localized.length === 0);
-        }
-      })
-      .catch(() => {
-        if (!ignore) {
-          setLiveItems(staticItems);
-          setIsEmpty(false);
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [isArabic, t, staticItems]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -154,6 +127,8 @@ export default function FaqPage() {
           <Reveal margin={-60}>
             {isLoading ? (
               <SkeletonList count={5} height="h-16" rowClassName="rounded-2xl" />
+            ) : isError ? (
+              <FaqList items={staticItems} />
             ) : isEmpty ? (
               <motion.div variants={item} className="flex flex-col items-center gap-4 rounded-3xl border bg-card px-6 py-14 text-center shadow-sm">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
@@ -166,7 +141,7 @@ export default function FaqPage() {
                 </Button>
               </motion.div>
             ) : (
-              <FaqList items={liveItems ?? staticItems} />
+              <FaqList items={liveItems} />
             )}
           </Reveal>
         </section>

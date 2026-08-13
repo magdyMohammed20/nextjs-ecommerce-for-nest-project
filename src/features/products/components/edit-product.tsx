@@ -1,41 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { productsApi } from "../api/products-api";
+import { useProduct } from "../hooks/use-products";
 import { ProductForm } from "./product-form";
-import type { Product } from "../types/product-types";
+import { QueryErrorState } from "@/components/shared/query-states";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function EditProduct({ productId }: { productId: number }) {
   const { t } = useTranslation("productForm");
-  const [product, setProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    let ignore = false;
-
-    productsApi
-      .getById(productId)
-      .then((loaded) => {
-        if (!ignore) setProduct(loaded);
-      })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(
-            error instanceof Error ? error.message : t("toasts.failedToLoadProduct", { ns: "common" }),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [productId, t]);
+  const { data: product, isLoading, isError, refetch } = useProduct(productId);
 
   if (isLoading) {
     return (
@@ -65,8 +38,15 @@ export function EditProduct({ productId }: { productId: number }) {
     );
   }
 
-  if (!product) {
-    return (
+  if (isError || !product) {
+    return isError ? (
+      <div className="w-full py-10">
+        <QueryErrorState
+          title={t("toasts.failedToLoadProduct", { ns: "common" })}
+          onRetry={refetch}
+        />
+      </div>
+    ) : (
       <div className="py-20 text-center text-sm text-muted-foreground">
         {t("productNotFound")}
       </div>

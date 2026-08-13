@@ -1,41 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { categoriesApi } from "../api/categories-api";
+import { useCategories } from "../hooks/use-categories";
 import { CategoryForm } from "./category-form";
-import type { Category } from "../types/category-types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { QueryErrorState } from "@/components/shared/query-states";
 
 export function EditCategory({ categoryId }: { categoryId: number }) {
   const { t } = useTranslation("categoriesAdmin");
-  const [category, setCategory] = useState<Category | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    let ignore = false;
-
-    categoriesApi
-      .getAll()
-      .then((all) => {
-        if (!ignore) setCategory(all.find((c) => c.id === categoryId) ?? null);
-      })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(
-            error instanceof Error ? error.message : t("toasts.failedToLoadCategories"),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [categoryId, t]);
+  const { data: allCategories, isLoading, isError, refetch } = useCategories();
+  const category = allCategories?.find((c) => c.id === categoryId) ?? null;
 
   if (isLoading) {
     return (
@@ -52,6 +26,17 @@ export function EditCategory({ categoryId }: { categoryId: number }) {
             <Skeleton className="h-10 w-40" />
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="w-full py-10">
+        <QueryErrorState
+          title={t("toasts.failedToLoadCategories")}
+          onRetry={refetch}
+        />
       </div>
     );
   }

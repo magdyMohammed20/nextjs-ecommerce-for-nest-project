@@ -11,7 +11,7 @@ if (!i18n.isInitialized) {
   await i18n.init();
 }
 
-globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+(globalThis as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;
 
 setMockDelay(0);
 
@@ -73,7 +73,7 @@ Element.prototype.releasePointerCapture ??= () => {};
 Element.prototype.hasPointerCapture ??= () => false;
 
 class ImageStub {
-  private listeners: Record<string, (() => void) | null> = {};
+  private listeners: Record<string, ((event: Event) => void) | null> = {};
   complete = true;
   naturalWidth = 1;
   naturalHeight = 1;
@@ -89,7 +89,7 @@ class ImageStub {
   get src() {
     return this._src;
   }
-  addEventListener(type: string, callback: () => void) {
+  addEventListener(type: string, callback: (event: Event) => void) {
     this.listeners[type] = callback;
   }
   removeEventListener(type: string) {

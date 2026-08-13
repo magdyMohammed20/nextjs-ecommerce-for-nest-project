@@ -24,8 +24,7 @@ import { NotificationBell } from "@/features/contact/components/notification-bel
 import { AddToCartButton } from "@/features/cart/components/add-to-cart-button";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { useCart } from "@/features/cart/hooks/use-cart";
-import { homeApi } from "@/features/home/api/home-api";
-import type { HomeResponseDto } from "@/features/home/types/home-types";
+import { useHome } from "@/features/home/hooks/use-home";
 import type { Product } from "@/features/products/types/product-types";
 import { ProductImage } from "@/features/products/components/product-image";
 import { resolveCategoryIcon } from "@/features/categories/constants/category-icons";
@@ -140,6 +139,7 @@ export default function LandingPage() {
   const { t } = useTranslation("home");
   const { user, isAdmin } = useAuth();
   const { addItem } = useCart();
+  const { data: homeData, isLoading } = useHome();
 
   function handleAddToCart(productId: number | null, product?: Product) {
     if (!productId || isAdmin) return;
@@ -154,27 +154,7 @@ export default function LandingPage() {
   }
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [homeData, setHomeData] = useState<HomeResponseDto | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const { ref: viewAllRef, visible: viewAllVisible } = useReveal(0);
-
-  useEffect(() => {
-    let ignore = false;
-    homeApi
-      .getHome()
-      .then((data) => {
-        if (!ignore) setHomeData(data);
-      })
-      .catch(() => {
-        // Home data fails gracefully — fall back to static i18n content
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, []);
 
   const stats = t("stats", { returnObjects: true }) as { value: number; suffix: string; label: string }[];
   const staticCategories = t("categories.items", { returnObjects: true }) as string[];

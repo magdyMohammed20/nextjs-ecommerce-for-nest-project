@@ -1,42 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { HelpCircle } from "lucide-react";
-import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { FaqForm } from "./faq-form";
-import { faqApi } from "../api/faq-api";
-import type { Faq } from "../types/faq-types";
+import { useManageFaqs } from "../hooks/use-faqs";
 import { Skeleton } from "@/components/ui/skeleton";
+import { QueryErrorState } from "@/components/shared/query-states";
 
 export function EditFaq({ faqId }: { faqId: number }) {
   const { t } = useTranslation("faqAdmin");
-  const [faq, setFaq] = useState<Faq | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    let ignore = false;
-
-    faqApi
-      .getManage()
-      .then((items) => {
-        if (!ignore) setFaq(items.find((f) => f.id === faqId) ?? null);
-      })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(
-            error instanceof Error ? error.message : t("toasts.failedToLoadFaqs"),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [faqId, t]);
+  const { data: faqs = [], isLoading, isError, refetch } = useManageFaqs();
+  const faq = faqs.find((f) => f.id === faqId) ?? null;
 
   if (isLoading) {
     return (
@@ -54,6 +28,17 @@ export function EditFaq({ faqId }: { faqId: number }) {
             <Skeleton className="h-10 w-40" />
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="w-full py-10">
+        <QueryErrorState
+          title={t("toasts.failedToLoadFaqs")}
+          onRetry={refetch}
+        />
       </div>
     );
   }

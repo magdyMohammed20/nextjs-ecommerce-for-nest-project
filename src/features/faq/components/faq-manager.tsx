@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { HelpCircle, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { faqApi } from "../api/faq-api";
+import { useManageFaqs, useRemoveFaq, useUpdateFaq } from "../hooks/use-faqs";
 import type { Faq } from "../types/faq-types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SkeletonList } from "@/components/shared/skeletons";
+import { QueryErrorState } from "@/components/shared/query-states";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,42 +33,17 @@ import {
 
 export function FaqManager() {
   const { t } = useTranslation("faqAdmin");
-  const [faqs, setFaqs] = useState<Faq[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [faqToDelete, setFaqToDelete] = useState<Faq | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [togglingId, setTogglingId] = useState<number | null>(null);
 
-  useEffect(() => {
-    let ignore = false;
-
-    faqApi
-      .getManage()
-      .then((items) => {
-        if (!ignore) setFaqs(items);
-      })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(
-            error instanceof Error ? error.message : t("toasts.failedToLoadFaqs"),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [t]);
+  const { data: faqs = [], isLoading, isError, refetch } = useManageFaqs();
+  const removeFaq = useRemoveFaq();
 
   async function handleDelete() {
     if (!faqToDelete) return;
     setIsDeleting(true);
     try {
-      await faqApi.remove(faqToDelete.id);
-      setFaqs((prev) => prev.filter((f) => f.id !== faqToDelete.id));
+      await removeFaq.mutateAsync(faqToDelete.id);
       toast.success(t("toasts.faqDeleted"));
       setFaqToDelete(null);
     } catch (error) {
@@ -76,23 +52,6 @@ export function FaqManager() {
       );
     } finally {
       setIsDeleting(false);
-    }
-  }
-
-  async function handleToggleActive(faq: Faq) {
-    setTogglingId(faq.id);
-    try {
-      const updated = await faqApi.update(faq.id, { isActive: !faq.isActive });
-      setFaqs((prev) => prev.map((f) => (f.id === faq.id ? updated : f)));
-      toast.success(
-        updated.isActive ? t("toasts.faqPublished") : t("toasts.faqUnpublished"),
-      );
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : t("toasts.failedToUpdateFaq"),
-      );
-    } finally {
-      setTogglingId(null);
     }
   }
 
@@ -109,6 +68,11 @@ export function FaqManager() {
 
       {isLoading ? (
         <SkeletonList count={5} />
+      ) : isError ? (
+        <QueryErrorState
+          title={t("toasts.failedToLoadFaqs")}
+          onRetry={refetch}
+        />
       ) : faqs.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
           <div className="rounded-full bg-muted p-4">
@@ -146,12 +110,7 @@ export function FaqManager() {
                   </TableCell>
                   <TableCell className="text-end">
                     <div className="flex items-center justify-end gap-3">
-                      <Switch
-                        checked={faq.isActive}
-                        disabled={togglingId === faq.id}
-                        onCheckedChange={() => handleToggleActive(faq)}
-                        aria-label={t("toggleStatus")}
-                      />
+                      <FaqToggleSwitch faq={faq} />
                       <div className="flex justify-end gap-2">
                         <Button asChild size="sm" variant="outline">
                           <Link href={`/dashboard/faq/${faq.id}/edit`}>
@@ -204,5 +163,36 @@ export function FaqManager() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+  );
+}
+
+function FaqToggleSwitch({ faq }: { faq: Faq }) {
+  const { t } = useTranslation("faqAdmin");
+  const [isToggling, setIsToggling] = useState(false);
+  const updateFaq = useUpdateFaq(faq.id);
+
+  async function handleToggleActive() {
+    setIsToggling(true);
+    try {
+      const updated = await updateFaq.mutateAsync({ isActive: !faq.isActive });
+      toast.success(
+        updated.isActive ? t("toasts.faqPublished") : t("toasts.faqUnpublished"),
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t("toasts.failedToUpdateFaq"),
+      );
+    } finally {
+      setIsToggling(false);
+    }
+  }
+
+  return (
+    <Switch
+      checked={faq.isActive}
+      disabled={isToggling}
+      onCheckedChange={handleToggleActive}
+      aria-label={t("toggleStatus")}
+    />
   );
 }

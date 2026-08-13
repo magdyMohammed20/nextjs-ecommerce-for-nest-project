@@ -1,20 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { productsApi } from "../api/products-api";
-import { categoriesApi } from "@/features/categories/api/categories-api";
+import {
+  useCreateProduct,
+  useSubmitProduct,
+  useUpdateProduct,
+} from "../hooks/use-products";
+import { useCategories } from "@/features/categories/hooks/use-categories";
 import {
   productSchema,
   type ProductFormValues,
 } from "../schemas/product-schema";
 import type { Product } from "../types/product-types";
-import type { Category } from "@/features/categories/types/category-types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -50,26 +53,12 @@ export function ProductForm({ product, mode = "create" }: ProductFormProps) {
   const router = useRouter();
   const { t } = useTranslation("productForm");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
-  useEffect(() => {
-    let ignore = false;
-    categoriesApi
-      .getAll()
-      .then((data) => {
-        if (!ignore) setCategories(data);
-      })
-      .catch(() => {
-        // Category selector is optional; fall back to an empty list.
-      })
-      .finally(() => {
-        if (!ignore) setCategoriesLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  const { data: categoriesData, isPending: categoriesLoading } = useCategories();
+  const categories = categoriesData ?? [];
+  const createProduct = useCreateProduct();
+  const submitProduct = useSubmitProduct();
+  const updateProduct = useUpdateProduct(product?.id ?? NaN);
 
   const form = useForm<ProductFormValues>({
     mode: "onTouched",
@@ -106,18 +95,18 @@ export function ProductForm({ product, mode = "create" }: ProductFormProps) {
       };
 
       if (mode === "submit") {
-         await productsApi.submit(payload);
+         await submitProduct.mutateAsync(payload);
         toast.success(t("toasts.submittedForApproval", { ns: "common" }));
         router.push("/products/mine");
       } else if (product) {
-        await productsApi.update(product.id, {
+        await updateProduct.mutateAsync({
           ...payload,
           categoryId: values.categoryId ?? null,
         });
         toast.success(t("toasts.productUpdated", { ns: "common" }));
         router.push("/products");
       } else {
-        await productsApi.create(payload);
+        await createProduct.mutateAsync(payload);
         toast.success(t("toasts.productCreated", { ns: "common" }));
         router.push("/products");
       }

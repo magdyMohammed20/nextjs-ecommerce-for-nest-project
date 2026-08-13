@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
@@ -30,6 +30,25 @@ import { useAuth } from "@/features/auth/context/auth-provider";
 import { useUnreadCount } from "@/features/contact/hooks/use-unread-count";
 
 const COLLAPSED_KEY = "sidebar-collapsed";
+const COLLAPSED_EVENT = "sidebar-collapsed-change";
+
+function subscribeCollapsed(callback: () => void) {
+  window.addEventListener(COLLAPSED_EVENT, callback);
+  return () => window.removeEventListener(COLLAPSED_EVENT, callback);
+}
+
+function useCollapsed() {
+  const collapsed = useSyncExternalStore(
+    subscribeCollapsed,
+    () => window.localStorage.getItem(COLLAPSED_KEY) === "1",
+    () => false,
+  );
+  const setCollapsed = useCallback((next: boolean) => {
+    window.localStorage.setItem(COLLAPSED_KEY, next ? "1" : "0");
+    window.dispatchEvent(new Event(COLLAPSED_EVENT));
+  }, []);
+  return [collapsed, setCollapsed] as const;
+}
 
 interface NavItem {
   href: string;
@@ -117,16 +136,10 @@ export function Sidebar() {
   const { isAdmin } = useAuth();
   const { t } = useTranslation("common");
   const { unread } = useUnreadCount();
-  const [collapsed, setCollapsed] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.localStorage.getItem(COLLAPSED_KEY) === "1",
-  );
+  const [collapsed, setCollapsed] = useCollapsed();
 
   function toggleCollapsed() {
-    const next = !collapsed;
-    setCollapsed(next);
-    window.localStorage.setItem(COLLAPSED_KEY, next ? "1" : "0");
+    setCollapsed(!collapsed);
   }
 
   const navItems: NavItem[] = [

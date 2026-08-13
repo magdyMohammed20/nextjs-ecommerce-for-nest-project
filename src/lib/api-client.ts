@@ -49,6 +49,13 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     bodyJson = null;
   }
 
+  if (res.ok && bodyJson === null) {
+    throw new ApiError(
+      res.status,
+      "Unexpected response from the server. Make sure the backend is running.",
+    );
+  }
+
   if (!res.ok) {
     const messageField = (bodyJson as { message?: unknown } | null)?.message;
     const errors = Array.isArray(messageField) ? (messageField as string[]) : undefined;

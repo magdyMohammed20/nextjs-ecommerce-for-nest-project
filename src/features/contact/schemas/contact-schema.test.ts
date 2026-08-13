@@ -15,7 +15,7 @@ describe("contactSchema", () => {
   });
 
   it("accepts a missing honeypot", () => {
-    const rest = { ...valid };
+    const rest = { ...valid } as Partial<typeof valid>;
     delete rest.honeypot;
     expect(contactSchema.safeParse(rest).success).toBe(true);
   });

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { cartApi } from "../api/cart-api";
+import { cartQueryKeys } from "../api/queryKeys";
 import type { AddToCartPayload, CartDto } from "../types/cart-types";
 import type { Product } from "@/features/products/types/product-types";
 import { useAuth } from "@/features/auth/context/auth-provider";
@@ -18,7 +19,7 @@ import {
   type GuestCartItem,
 } from "../lib/guest-cart";
 
-export const cartQueryKey = ["cart"] as const;
+export const cartQueryKey = cartQueryKeys.all;
 
 export type AddItemPayload = AddToCartPayload & { product?: Product };
 
@@ -35,13 +36,13 @@ export function useCart() {
   );
 
   const serverQuery = useQuery({
-    queryKey: cartQueryKey,
+    queryKey: cartQueryKeys.all,
     queryFn: cartApi.getCart,
     enabled: isAuthenticated,
   });
 
   const invalidate = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: cartQueryKey });
+    queryClient.invalidateQueries({ queryKey: cartQueryKeys.all });
   }, [queryClient]);
 
   // Merge any guest cart into the server cart once the user signs in.

@@ -1,15 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Check, Clock, Pencil, Shield, Trash2, User as UserIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { usersApi } from "../api/users-api";
 import { isRootAdmin } from "../lib/root-admin";
+import { useRemoveUser, useUpdateUserStatus, useUsers } from "../hooks/use-users";
 import type { User } from "../types/user-types";
 import type { UserStatus } from "@/features/auth/types/auth-types";
-import type { PaginationMeta } from "@/lib/pagination";
 import { useAuth } from "@/features/auth/context/auth-provider";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { Button } from "@/components/ui/button";
@@ -26,6 +25,7 @@ import { SkeletonList } from "@/components/shared/skeletons";
 import { Pagination } from "@/components/shared/pagination";
 import { SearchInput } from "@/components/shared/search-input";
 import { AnimatedResults } from "@/components/shared/animated-results";
+import { QueryErrorState } from "@/components/shared/query-states";
 import { PresenceDot } from "@/components/shared/presence-dot";
 import { formatDateTime } from "@/features/orders/lib/format";
 import {
@@ -57,58 +57,32 @@ export function UserList() {
   const { user: currentUser } = useAuth();
   const { t } = useTranslation("users");
 
-  const [users, setUsers] = useState<User[]>([]);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
-  const [meta, setMeta] = useState<PaginationMeta>({
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const { data, isLoading, isError, refetch } = useUsers({ page, limit: LIMIT, search });
+  const removeUser = useRemoveUser();
+  const updateUserStatus = useUpdateUserStatus();
+
+  const users = data?.data ?? [];
+  const meta = data?.meta ?? {
     page: 1,
     limit: LIMIT,
     total: 0,
     totalPages: 0,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [userToDelete, setUserToDelete] = useState<User | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    let ignore = false;
-
-    usersApi
-      .getAll({ page, limit: LIMIT, search })
-      .then((res) => {
-        if (!ignore) {
-          setUsers(res.data);
-          setMeta(res.meta);
-        }
-      })
-      .catch((error) => {
-        if (!ignore) {
-          toast.error(
-            error instanceof Error ? error.message : t("toasts.failedToLoadUsers", { ns: "common" }),
-          );
-        }
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [page, search, refreshKey, t]);
+  };
 
   function handlePageChange(nextPage: number) {
     setPage(nextPage);
-    setIsLoading(true);
   }
 
   function handleSearchChange(nextSearch: string) {
     if (nextSearch === search) return;
     setSearch(nextSearch);
     setPage(1);
-    setIsLoading(true);
   }
 
   async function handleDelete() {
@@ -120,13 +94,10 @@ export function UserList() {
     }
     setIsDeleting(true);
     try {
-      await usersApi.remove(userToDelete.id);
       const lastItemOnPage = users.length === 1 && meta.page > 1;
-      setUsers((prev) => prev.filter((u) => u.id !== userToDelete.id));
+      await removeUser.mutateAsync(userToDelete.id);
       if (lastItemOnPage) {
         setPage(meta.page - 1);
-      } else {
-        setRefreshKey((key) => key + 1);
       }
       toast.success(t("toasts.userDeleted", { ns: "common" }));
       setUserToDelete(null);
@@ -145,8 +116,7 @@ export function UserList() {
       return;
     }
     try {
-      const updated = await usersApi.updateStatus(user.id, status);
-      setUsers((prev) => prev.map((u) => (u.id === user.id ? updated : u)));
+      await updateUserStatus.mutateAsync({ id: user.id, status });
       toast.success(
         status === "active"
           ? t("toasts.userApproved", { ns: "common", name: user.name })
@@ -172,6 +142,11 @@ export function UserList() {
       <AnimatedResults signature={`${search}|${page}`}>
         {isLoading ? (
           <SkeletonList count={6} />
+        ) : isError ? (
+          <QueryErrorState
+            title={t("errors.failedToLoad", { ns: "common", defaultValue: "Failed to load users" })}
+            onRetry={refetch}
+          />
         ) : users.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-16 text-center">
             <div className="rounded-full bg-muted p-4">

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { faqApi } from "../api/faq-api";
+import { useCreateFaq, useUpdateFaq } from "../hooks/use-faqs";
 import { faqSchema, type FaqFormValues } from "../schemas/faq-schema";
 import type { Faq } from "../types/faq-types";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,8 @@ export function FaqForm({ faq }: FaqFormProps) {
   const router = useRouter();
   const { t } = useTranslation("faqAdmin");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const createFaq = useCreateFaq();
+  const updateFaq = useUpdateFaq(faq?.id ?? 0);
 
   const form = useForm<FaqFormValues>({
     mode: "onTouched",
@@ -68,10 +70,10 @@ export function FaqForm({ faq }: FaqFormProps) {
       };
 
       if (faq) {
-        await faqApi.update(faq.id, payload);
+        await updateFaq.mutateAsync(payload);
         toast.success(t("toasts.faqUpdated"));
       } else {
-        await faqApi.create(payload);
+        await createFaq.mutateAsync(payload);
         toast.success(t("toasts.faqCreated"));
       }
       router.push("/dashboard/faq");
